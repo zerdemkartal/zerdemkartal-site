@@ -27,7 +27,7 @@ export async function generateMetadata({ params }) {
     title: seo.title || `${hit.a.n} — Astroloji Danışmanlığı | zerdemkartal`,
     description: seo.description || hit.a.d || '',
     path: `/danismanliklar/analiz/${hit.slug}`,
-    ogType: 'product',
+    ogType: 'website',
     image: LOGO
   });
 }
