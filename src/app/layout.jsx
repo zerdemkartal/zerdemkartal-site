@@ -10,6 +10,8 @@ const GLOBAL_CSS = `
   ::selection { background: #E4DAF6; color: #2B1D12; }
   a { color: #8E7CC3; }
   a:hover { color: #6B4FA0; }
+  .zk-hover-card { transition: box-shadow .25s ease, border-color .25s ease, transform .25s ease; }
+  .zk-hover-card:hover { border-color: #8E7CC3 !important; box-shadow: 0 0 0 3px rgba(142,124,195,0.22), 0 16px 36px rgba(142,124,195,0.20); transform: translateY(-2px); }
 `;
 
 export default function RootLayout({ children }) {

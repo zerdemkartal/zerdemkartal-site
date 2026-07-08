@@ -52,6 +52,7 @@ function buildJsonLd(c) {
 
 const btnDark = { background: T.dark, color: '#F5F1E6', borderRadius: 999, padding: '14px 28px', textDecoration: 'none', fontWeight: 600, fontSize: 15.5 };
 const btnGhost = { border: `1px solid ${T.border}`, color: T.ink, borderRadius: 999, padding: '14px 28px', textDecoration: 'none', fontSize: 15.5 };
+const WHATSAPP = 'https://wa.me/905454564275?text=' + encodeURIComponent('Merhaba, astroloji danışmanlığı için randevu almak istiyorum.');
 
 export default async function Danismanliklar() {
   const c = await load();
@@ -79,7 +80,7 @@ export default async function Danismanliklar() {
           {(hero.stats || []).map((s, i) => <span key={i}>{s}</span>)}
         </div>
         <div style={{ display: 'flex', gap: 14, marginTop: 28, flexWrap: 'wrap' }}>
-          <a href="/iletisim" style={btnDark}>{hero.primaryBtn || 'Randevu al'}</a>
+          <a href={WHATSAPP} target="_blank" rel="noopener" style={btnDark}>{hero.primaryBtn || 'Randevu al'}</a>
           <a href="#analiz" style={btnGhost}>{hero.secondaryBtn || 'Analizleri gör'}</a>
         </div>
       </section>
@@ -88,9 +89,9 @@ export default async function Danismanliklar() {
       <section style={{ ...sectionStyle, paddingTop: 40 }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 16 }}>
           {(c.trust || []).map((t, i) => (
-            <div key={i} style={{ background: T.cream, border: `1px solid ${T.border}`, borderRadius: 16, padding: '20px 22px' }}>
-              <div style={{ fontFamily: T.serif, fontSize: 30, fontWeight: 600 }}>{t.big}</div>
-              <div style={{ fontSize: 13.5, color: T.muted, marginTop: 2 }}>{t.small}</div>
+            <div key={i} style={{ background: T.cream, border: `1px solid ${T.border}`, borderRadius: 16, padding: '26px 22px', textAlign: 'center' }}>
+              <div style={{ fontFamily: T.serif, fontSize: 40, fontWeight: 600 }}>{t.big}</div>
+              <div style={{ fontSize: 14, color: T.muted, marginTop: 6 }}>{t.small}</div>
             </div>
           ))}
         </div>
@@ -108,8 +109,8 @@ export default async function Danismanliklar() {
               {(g.items || []).map((a, ci) => {
                 const slug = slugOf(gi, ci);
                 return (
-                  <a key={ci} id={`analiz-${slug}`} href={`/danismanliklar/analiz/${slug}`}
-                    style={{ display: 'block', background: '#FFFFFF', border: a.feat ? `1.5px solid ${T.purple}` : `1px solid ${T.border}`, borderRadius: 16, padding: '18px 20px', textDecoration: 'none', color: T.ink, scrollMarginTop: 90 }}>
+                  <a key={ci} id={`analiz-${slug}`} href={`/danismanliklar/analiz/${slug}`} className="zk-hover-card"
+                    style={{ display: 'block', background: '#FFFFFF', border: `1px solid ${T.border}`, borderRadius: 16, padding: '18px 20px', textDecoration: 'none', color: T.ink, scrollMarginTop: 90 }}>
                     <div style={{ fontFamily: T.serif, fontSize: 19, fontWeight: 500 }}>{a.n}</div>
                     <p style={{ fontSize: 14, lineHeight: 1.55, color: T.ink2, margin: '8px 0 14px' }}>{a.d}</p>
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
@@ -183,7 +184,7 @@ export default async function Danismanliklar() {
           <h2 style={{ fontFamily: T.serif, fontWeight: 500, fontSize: 'clamp(26px, 3.4vw, 38px)', margin: 0 }}>{cta.title}</h2>
           <p style={{ fontSize: 16.5, lineHeight: 1.7, color: '#D8D2C2', margin: '12px auto 0', maxWidth: 560 }}>{cta.paragraph}</p>
           <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginTop: 26 }}>
-            <a href="/iletisim" style={{ background: '#F5F1E6', color: T.ink, borderRadius: 999, padding: '14px 30px', textDecoration: 'none', fontWeight: 600 }}>{cta.primaryBtn || 'Randevu al'}</a>
+            <a href={WHATSAPP} target="_blank" rel="noopener" style={{ background: '#F5F1E6', color: T.ink, borderRadius: 999, padding: '14px 30px', textDecoration: 'none', fontWeight: 600 }}>{cta.primaryBtn || 'Randevu al'}</a>
             <a href="https://instagram.com/zerdemkartal" target="_blank" rel="noopener" style={{ border: '1px solid #6B5A44', color: '#F5F1E6', borderRadius: 999, padding: '14px 30px', textDecoration: 'none' }}>{cta.secondaryBtn || "Instagram'dan yaz"}</a>
           </div>
           <div style={{ fontSize: 13, color: '#A7A296', marginTop: 20 }}>{cta.foot}</div>
