@@ -1,0 +1,119 @@
+// zerdemkartal Faz 2 — veri modeli (localStorage zk_* → tablolar)
+// Kaynak katalog: prototip zk-data.js › REGISTRY + devir paketi README "Veri modeli"
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql" // SQLite ile başlamak için: "sqlite"
+  url       = env("DATABASE_URL") // pooled (Neon -pooler) — uygulama çalışırken
+  directUrl = env("DIRECT_URL")   // direct/havuzsuz — migration + seed için
+}
+
+// zk_anasayfa / zk_danismanlik / zk_programlar / zk_pd_astropen / zk_pd_hermes /
+// zk_astroloji101 / zk_harita / zk_hakkimda → tek tablo, key'li JSON blob.
+// Blob şeması her View'ın Component.DEFAULT/DEF()'i ile tanımlı (devir paketi).
+model PageContent {
+  key       String   @id // "anasayfa" | "danismanlik" | ...
+  data      Json
+  updatedAt DateTime @updatedAt
+}
+
+// zk_blog_tree → düz tablo (ağaç parentId+order ile kurulur; API ağacı derleyip döner)
+model BlogNode {
+  id       String  @id // prototipteki node id'leri korunur (p-*, f-*)
+  type     String // "folder" | "page"
+  title    String
+  parentId String?
+  order    Int     @default(0)
+  glyph    String?
+  // page alanları
+  body     String? // WYSIWYG HTML
+  md       String? // Markdown kaynağı (varsa)
+  excerpt  String?
+  date     String? // "YYYY-MM-DD" (prototip formatı korunur)
+  seoTitle String?
+  seoDesc  String?
+  status   String  @default("published") // "published" | "draft"
+  coverId  String? // Asset.id
+  updatedAt DateTime @updatedAt
+}
+
+// zk_blog_showcase → tek satır config
+model BlogShowcase {
+  id   Int  @id @default(1)
+  data Json // { mode: "auto" | "manual", ids: [], interval: n }
+}
+
+// zk_admin_settings → tek satır
+model Setting {
+  id   Int  @id @default(1)
+  data Json // { accent, instagram, youtube, email }
+}
+
+// zk_admin_talep → talepler / ön siparişler / iletişim
+model Lead {
+  id        String   @id @default(cuid())
+  name      String
+  email     String?
+  type      String // "Doğum Haritası" | "... (ön sipariş)" | "İletişim · <konu>" | ...
+  message   String?
+  note      String? // panel notu
+  status    String   @default("new") // "new" | "progress" | "done"
+  rvDate    String? // randevu talebi: "YYYY-MM-DD" (slot maskeleme bu ikiliyle yapılır)
+  rvTime    String? // "HH:MM"
+  createdAt DateTime @default(now())
+}
+
+// zk_siparis → Hermes lisans siparişleri (Faz 2.5 prototipte mock ödeme; canlıda iyzico/PayTR)
+model Order {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  product   String   @default("Hermes")
+  price     Int // TRY, tam sayı (ör. 3000)
+  license   String   @unique // "ZK-XXXX-XXXX-XXXX"
+  status    String   @default("paid") // "paid" | "delivered"
+  createdAt DateTime @default(now())
+}
+
+// zk_uye_hesaplar (+ zk_astroloji101_progress üyeye bağlanır)
+model Member {
+  id       String   @id @default(cuid())
+  name     String
+  email    String   @unique
+  passHash String? // Google hesaplarında null
+  provider String? // "google" | null
+  sub      String? // Google subject
+  picture  String?
+  birth    String? // "YYYY-MM-DD", isteğe bağlı
+  joinedAt DateTime @default(now())
+  progress Json? // Astroloji 101 SRS ilerlemesi (boxes/due/streak/badges)
+}
+
+// zk_bulten → bülten aboneleri (Faz 4)
+model Newsletter {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  source    String? // "iletisim" | ...
+  createdAt DateTime @default(now())
+}
+
+// Panel + MCP girişi
+model AdminUser {
+  id       String @id @default(cuid())
+  email    String @unique
+  passHash String
+  role     String @default("admin")
+}
+
+// image-slot yüklemeleri (base64 → gerçek dosya/URL)
+model Asset {
+  id        String   @id @default(cuid())
+  slotId    String   @unique // prototipteki image-slot id'si (cat-*, ap-*, zkcover-*)
+  url       String
+  mime      String
+  size      Int
+  createdAt DateTime @default(now())
+}
