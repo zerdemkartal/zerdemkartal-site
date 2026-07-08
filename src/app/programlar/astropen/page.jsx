@@ -1,9 +1,11 @@
 import { makeProgramPage } from '@/components/ProgramDetay';
+import { PD_ASTROPEN } from '@/lib/defaults';
 
 export const revalidate = 300;
 
 const { generateMetadata, Page } = makeProgramPage({
   key: 'pd_astropen',
+  def: PD_ASTROPEN,
   path: '/programlar/astropen',
   name: 'AstroPen',
   paid: false,

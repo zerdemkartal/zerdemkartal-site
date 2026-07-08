@@ -53,6 +53,7 @@ function buildJsonLd(c) {
 const btnDark = { background: T.dark, color: '#F5F1E6', borderRadius: 999, padding: '14px 28px', textDecoration: 'none', fontWeight: 600, fontSize: 15.5 };
 const btnGhost = { border: `1px solid ${T.border}`, color: T.ink, borderRadius: 999, padding: '14px 28px', textDecoration: 'none', fontSize: 15.5 };
 const WHATSAPP = 'https://wa.me/905454564275?text=' + encodeURIComponent('Merhaba, astroloji danışmanlığı için randevu almak istiyorum.');
+const btnWhats = { background: '#25D366', color: '#FFFFFF', borderRadius: 999, padding: '14px 24px', textDecoration: 'none', fontWeight: 600, fontSize: 15.5 };
 
 export default async function Danismanliklar() {
   const c = await load();
@@ -72,15 +73,16 @@ export default async function Danismanliklar() {
       <Nav active="/danismanliklar" />
 
       {/* HERO */}
-      <section style={{ ...sectionStyle, paddingTop: 60 }}>
+      <section style={{ ...sectionStyle, paddingTop: 60, textAlign: 'center' }}>
         <div style={kickerStyle}>{hero.kicker}</div>
         <h1 style={h1Style}>{hero.titleA}<span style={{ color: T.purple, fontStyle: 'italic' }}>{hero.titleEm}</span>{hero.titleB}</h1>
-        <p style={pStyle}>{hero.paragraph}</p>
-        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', margin: '16px 0 0', color: T.muted, fontSize: 14.5 }}>
+        <p style={{ ...pStyle, margin: '16px auto 0' }}>{hero.paragraph}</p>
+        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', justifyContent: 'center', margin: '16px 0 0', color: T.muted, fontSize: 14.5 }}>
           {(hero.stats || []).map((s, i) => <span key={i}>{s}</span>)}
         </div>
-        <div style={{ display: 'flex', gap: 14, marginTop: 28, flexWrap: 'wrap' }}>
-          <a href={WHATSAPP} target="_blank" rel="noopener" style={btnDark}>{hero.primaryBtn || 'Randevu al'}</a>
+        <div style={{ display: 'flex', gap: 14, marginTop: 28, flexWrap: 'wrap', justifyContent: 'center' }}>
+          <a href="/iletisim" style={btnDark}>{hero.primaryBtn || 'Randevu al'}</a>
+          <a href={WHATSAPP} target="_blank" rel="noopener" style={btnWhats}>WhatsApp'tan yaz</a>
           <a href="#analiz" style={btnGhost}>{hero.secondaryBtn || 'Analizleri gör'}</a>
         </div>
       </section>
@@ -184,8 +186,8 @@ export default async function Danismanliklar() {
           <h2 style={{ fontFamily: T.serif, fontWeight: 500, fontSize: 'clamp(26px, 3.4vw, 38px)', margin: 0 }}>{cta.title}</h2>
           <p style={{ fontSize: 16.5, lineHeight: 1.7, color: '#D8D2C2', margin: '12px auto 0', maxWidth: 560 }}>{cta.paragraph}</p>
           <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginTop: 26 }}>
-            <a href={WHATSAPP} target="_blank" rel="noopener" style={{ background: '#F5F1E6', color: T.ink, borderRadius: 999, padding: '14px 30px', textDecoration: 'none', fontWeight: 600 }}>{cta.primaryBtn || 'Randevu al'}</a>
-            <a href="https://instagram.com/zerdemkartal" target="_blank" rel="noopener" style={{ border: '1px solid #6B5A44', color: '#F5F1E6', borderRadius: 999, padding: '14px 30px', textDecoration: 'none' }}>{cta.secondaryBtn || "Instagram'dan yaz"}</a>
+            <a href="/iletisim" style={{ background: '#F5F1E6', color: T.ink, borderRadius: 999, padding: '14px 30px', textDecoration: 'none', fontWeight: 600 }}>{cta.primaryBtn || 'Randevu al'}</a>
+            <a href={WHATSAPP} target="_blank" rel="noopener" style={{ background: '#25D366', color: '#FFFFFF', borderRadius: 999, padding: '14px 30px', textDecoration: 'none', fontWeight: 600 }}>WhatsApp'tan yaz</a>
           </div>
           <div style={{ fontSize: 13, color: '#A7A296', marginTop: 20 }}>{cta.foot}</div>
         </div>

@@ -100,7 +100,7 @@ export default async function AnaSayfa() {
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16, marginTop: 24 }}>
           {(d.cards || []).map((k, i) => (
-            <a key={i} href="/danismanliklar" style={{ ...card, border: k.feat ? `1.5px solid ${T.purple}` : card.border }}>
+            <a key={i} href="/danismanliklar" className="zk-hover-card" style={card}>
               <div style={{ fontFamily: T.serif, fontSize: 20 }}>{k.title}</div>
               <p style={{ fontSize: 14, color: T.muted, margin: '8px 0 14px' }}>{k.sub}</p>
               <span style={priceChip}>{k.price}</span>
@@ -117,7 +117,7 @@ export default async function AnaSayfa() {
         <p style={pStyle}>{e.paragraph}</p>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16, marginTop: 24 }}>
           {(e.cards || []).map((k, i) => (
-            <div key={i} style={{ ...card, cursor: 'default', border: k.feat ? `1.5px solid ${T.purple}` : card.border }}>
+            <div key={i} className="zk-hover-card" style={{ ...card, cursor: 'default' }}>
               <div style={{ ...kickerStyle, fontSize: 11 }}>{k.badge}</div>
               <div style={{ fontFamily: T.serif, fontSize: 20, margin: '8px 0 0' }}>{k.title}</div>
               <p style={{ fontSize: 14, color: T.ink2, margin: '8px 0 14px' }}>{k.desc}</p>

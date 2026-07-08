@@ -1,9 +1,11 @@
 import { makeProgramPage } from '@/components/ProgramDetay';
+import { PD_HERMES } from '@/lib/defaults';
 
 export const revalidate = 300;
 
 const { generateMetadata, Page } = makeProgramPage({
   key: 'pd_hermes',
+  def: PD_HERMES,
   path: '/programlar/hermes',
   name: 'Hermes',
   paid: true,

@@ -172,3 +172,117 @@ export const DANISMANLIK = {
     foot: 'Online · Türkçe · kayıt seninle paylaşılır · %100 gizli'
   }
 };
+
+export const PD_ASTROPEN = {
+  seo: {
+    title: 'AstroPen — Ücretsiz Masaüstü Astroloji Programı | zerdemkartal',
+    description: 'AstroPen: doğum haritanı saniyeler içinde çıkaran, gökyüzünü senin dilinde yazan ücretsiz masaüstü astroloji programı. Windows ve macOS için.'
+  },
+  hero: {
+    kicker: 'ÜCRETSİZ · MASAÜSTÜ UYGULAMA',
+    title: 'AstroPen',
+    p: 'Hızlı doğum haritası, günlük gökyüzü özeti ve astro-günlük — hepsi tek, sade ve ücretsiz bir masaüstü uygulamasında.',
+    stat1: 'Tamamen ücretsiz',
+    stat2: 'Kayıt gerektirmez',
+    stat3: 'Çevrimdışı çalışır'
+  },
+  ozellik: {
+    kicker: 'NELER YAPAR',
+    title: 'Hafif, hızlı ve ücretsiz.',
+    cards: [
+      { glyph: '✦', title: 'Hızlı doğum haritası', desc: 'Tarih, saat ve yer gir; haritan ve kısa yorumu saniyeler içinde.' },
+      { glyph: '☾', title: 'Günlük gökyüzü', desc: 'Bugün gökyüzünde ne var — sade, günlük bir özet.' },
+      { glyph: '✳', title: 'Astro-günlük', desc: 'Notların, o günün gökyüzüyle hizalanır.' },
+      { glyph: '↓', title: 'Ücretsiz & çevrimdışı', desc: 'Kurulumdan sonra internetsiz çalışır, hep ücretsiz.' }
+    ]
+  },
+  adimlar: {
+    title: 'Üç adımda başla',
+    items: [
+      { title: 'Ücretsiz indir', desc: 'Windows veya macOS için birkaç dakikada kurulur.' },
+      { title: 'Doğum bilgini gir', desc: 'Tarih, saat ve yer — haritan hazır.' },
+      { title: 'Günlüğüne dön', desc: 'Her gün gökyüzüyle hizalı notlar tut.' }
+    ]
+  },
+  sistem: {
+    title: 'Sistem gereksinimleri',
+    win: ['Windows 10 / 11 (64-bit)', '4 GB RAM', '300 MB boş disk alanı'],
+    mac: ['macOS 12 Monterey ve üzeri', 'Apple Silicon & Intel', '300 MB boş disk alanı']
+  },
+  sss: {
+    title: 'Sık sorulanlar',
+    items: [
+      { q: 'AstroPen gerçekten ücretsiz mi?', a: 'Evet, AstroPen tamamen ücretsizdir; kart bilgisi ya da abonelik istemez.' },
+      { q: "Hermes Astroloji Programı'ndan farkı ne?", a: 'AstroPen hızlı harita, günlük gökyüzü ve not için hafif bir uygulamadır. Hermes Astroloji Programı ise derin analiz, sinastri, öngörü raporları ve danışman araçları sunan profesyonel programdır.' },
+      { q: "Windows ve macOS'ta çalışır mı?", a: 'Evet, hem Windows (10/11) hem macOS (12+) için ücretsiz sürümü vardır.' },
+      { q: 'İnternet gerekli mi?', a: 'Kurulumdan sonra çevrimdışı çalışır; yalnızca güncellemeler için internet gerekir.' }
+    ]
+  },
+  cta: { title: 'Gökyüzünü ücretsiz indir.', p: 'Kayıt yok, ücret yok — Windows ve macOS için hemen başla.' }
+};
+
+export const PD_HERMES = {
+  seo: {
+    title: 'Hermes Astroloji Programı — Profesyonel Masaüstü Yazılım | zerdemkartal',
+    description: 'Hermes: profesyonel masaüstü astroloji programı. Doğum haritası, transitler, sinastri ve öngörü teknikleri — ön satışa özel tek seferlik lisans.'
+  },
+  hero: {
+    kicker: 'HERMES ASTROLOJİ · PROFESYONEL PROGRAM',
+    title: 'Hermes',
+    p: 'Gökyüzünü izleyen, senin dilinde yazan masaüstü astroloji programı. Doğum haritan, transitlerin, sinastrin ve günlüğün — tek sakin ekranda.',
+    stat1: '★ 4.9 / 5',
+    stat2: 'Windows & macOS',
+    stat3: 'Tek seferlik lisans'
+  },
+  ozellik: {
+    kicker: 'ÖZELLİKLER',
+    title: 'Gökyüzünü okumak için her şey',
+    cards: [
+      { glyph: '✦', title: 'Doğum haritası & yorum', desc: 'Gezegenler, evler ve açılar; hepsi akıcı Türkçe yorumuyla.' },
+      { glyph: '☾', title: 'Transit takvimi', desc: 'Gökyüzü trafiği gün gün, kişisel uyarılarla.' },
+      { glyph: '↺', title: 'Retro uyarıları', desc: 'Merkür, Venüs ve Mars retroları önceden haberinde.' },
+      { glyph: '∞', title: 'Sinastri', desc: 'İki haritanın karşılaştırması — ilişkinin gökyüzü.' },
+      { glyph: '✧', title: 'Öngörü raporları', desc: 'Aylık ve yıllık raporlar; PDF olarak dışa aktar.' },
+      { glyph: '✳', title: 'Günlük & çevrimdışı', desc: 'Notların gökyüzüyle hizalanır; internetsiz de çalışır.' }
+    ]
+  },
+  adimlar: {
+    title: 'Üç adımda gökyüzün',
+    items: [
+      { title: 'İndir & kur', desc: 'Windows veya macOS için birkaç dakikada kurulur.' },
+      { title: 'Doğum bilgini gir', desc: 'Tarih, saat ve yer — gerisini Hermes halleder.' },
+      { title: 'Oku & günlüğe dön', desc: 'Haritanı Türkçe yorumla oku; her gün gökyüzüyle hizalan.' }
+    ]
+  },
+  sistem: {
+    title: 'Sistem gereksinimleri',
+    win: ['Windows 10 / 11 (64-bit)', '4 GB RAM (8 GB önerilir)', '500 MB boş disk alanı', 'Kurulum & güncelleme için internet'],
+    mac: ['macOS 12 Monterey ve üzeri', 'Apple Silicon & Intel', '4 GB RAM (8 GB önerilir)', '500 MB boş disk alanı']
+  },
+  fiyat: {
+    kicker: 'ÖN SATIŞA ÖZEL',
+    price: '₺3.000',
+    oldPrice: '₺9.999',
+    rows: ['✳ Tüm özellikler — sınırsız harita ve profil', '✳ Windows ve macOS sürümleri', '✳ 2 cihaza kadar tek lisans', '✳ Çıkan tüm güncellemeler dahil'],
+    alt: 'Ödeme bağlantısı ön sipariş sonrası e-posta ile paylaşılır'
+  },
+  yorumlar: {
+    title: 'Kullananlar ne diyor',
+    items: [
+      { quote: "Yıllardır farklı programlar denedim; Hermes'in Türkçe yorumu bambaşka bir netlik veriyor.", name: 'Selin A.', role: 'Astroloji öğrencisi' },
+      { quote: 'Transit takvimi ve retro uyarıları günlük planımı bambaşka bir yere taşıdı.', name: 'Kaan T.', role: 'Hermes kullanıcısı' },
+      { quote: 'Danışmanlık verirken haritaları saniyeler içinde çıkarıyorum; işimi çok hızlandırdı.', name: 'Derya M.', role: 'Danışman' }
+    ]
+  },
+  sss: {
+    title: 'Sık sorulanlar',
+    items: [
+      { q: 'Lisans tek seferlik mi?', a: 'Evet. Hermes tek seferlik satın alınır; abonelik yoktur, ömür boyu kullanırsın.' },
+      { q: 'Güncellemeler ücretli mi?', a: 'Hayır. Çıkan tüm sürümler ve güncellemeler ömür boyu ücretsizdir.' },
+      { q: 'Kaç cihazda kullanabilirim?', a: 'Bir lisans, aynı kişiye ait 2 cihaza kadar kullanılabilir.' },
+      { q: 'Ön satış ne demek?', a: 'Program yayına hazırlanırken erken alanlar ₺3.000 özel fiyattan edinir; yayında liste fiyatı ₺9.999 olacaktır.' },
+      { q: 'İnternet gerekli mi?', a: 'Kurulumdan sonra çevrimdışı çalışır; yalnızca güncellemeler için internet gerekir.' }
+    ]
+  },
+  cta: { title: 'Gökyüzünü masaüstüne indir.', p: 'Ön satışa özel ₺3.000 — tek seferlik, ömür boyu senin.' }
+};

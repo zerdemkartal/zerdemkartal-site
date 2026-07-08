@@ -47,7 +47,7 @@ export default function HomeHero({ slides = [], flow = {} }) {
   const btn = { display: 'inline-flex', alignItems: 'center', gap: 11, background: ACCENT, border: '1px solid rgba(43,29,18,0.35)', borderRadius: 15, padding: '17px 30px', fontSize: 17, fontWeight: 600, color: INK, textDecoration: 'none', boxShadow: '0 1px 0 rgba(43,29,18,0.08), 0 12px 28px rgba(142,124,195,0.18)' };
 
   return (
-    <section style={{ position: 'relative', overflow: 'hidden', paddingBottom: 20 }}>
+    <section style={{ position: 'relative', overflow: 'hidden', paddingBottom: 150 }}>
       <div style={{ position: 'relative', zIndex: 10, textAlign: 'center', padding: '92px 32px 0' }}>
         <div onMouseEnter={() => { paused.current = true; }} onMouseLeave={() => { paused.current = false; }} style={{ overflow: 'hidden', maxWidth: 960, margin: '0 auto' }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', transition: 'transform 0.7s cubic-bezier(0.4,0,0.2,1)', transform: `translateX(-${active * 100}%)` }}>
@@ -78,9 +78,9 @@ export default function HomeHero({ slides = [], flow = {} }) {
       </div>
 
       {/* eğri boyunca akan dekoratif yazı */}
-      <svg aria-hidden="true" style={{ position: 'absolute', left: -70, bottom: -10, width: 1900, height: 460, pointerEvents: 'none', zIndex: 1 }} viewBox="0 0 1900 640" fill="none">
+      <svg aria-hidden="true" style={{ position: 'absolute', left: -70, bottom: -50, width: 1900, height: 640, pointerEvents: 'none', zIndex: 1 }} viewBox="0 0 1900 640" fill="none">
         <path id="zk-flow-path" d={FLOW_PATH} stroke="none" />
-        <text style={{ fontFamily: "'Hanken Grotesk', sans-serif", fontSize: 19, letterSpacing: '0.04em', fill: '#B3AEA1' }}>
+        <text style={{ fontFamily: "'Hanken Grotesk', sans-serif", fontSize: 22, letterSpacing: '0.04em', fill: '#B3AEA1' }}>
           <textPath ref={textRef} href="#zk-flow-path" startOffset="0" />
         </text>
       </svg>

@@ -7,9 +7,9 @@ import { SITE, ORG, pageMeta, priceNum } from '@/lib/site';
 import { JsonLd } from '@/components/JsonLd';
 import { Nav, Footer, T, kickerStyle, h1Style, h2Style, pStyle, sectionStyle } from '@/components/Chrome';
 
-export function makeProgramPage({ key, path, name, seoDef, paid }) {
+export function makeProgramPage({ key, path, name, seoDef, paid, def = {} }) {
   const URL_ = SITE + path;
-  const load = () => getContent(key, {});
+  const load = () => getContent(key, def);
 
   async function generateMetadata() {
     const c = await load();

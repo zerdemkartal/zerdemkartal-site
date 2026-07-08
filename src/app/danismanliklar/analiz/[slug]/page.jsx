@@ -70,6 +70,7 @@ export default async function AnalizPage({ params }) {
         </div>
         <div style={{ display: 'flex', gap: 14, marginTop: 30, flexWrap: 'wrap' }}>
           <a href="/iletisim" style={{ background: T.dark, color: '#F5F1E6', borderRadius: 999, padding: '14px 28px', textDecoration: 'none', fontWeight: 600 }}>Randevu al</a>
+          <a href={`https://wa.me/905454564275?text=${encodeURIComponent((a.n || 'Danışmanlık') + ' için randevu almak istiyorum.')}`} target="_blank" rel="noopener" style={{ background: '#25D366', color: '#FFFFFF', borderRadius: 999, padding: '14px 28px', textDecoration: 'none', fontWeight: 600 }}>WhatsApp'tan yaz</a>
           <a href={`/danismanliklar#analiz-${hit.slug}`} style={{ border: `1px solid ${T.border}`, color: T.ink, borderRadius: 999, padding: '14px 28px', textDecoration: 'none' }}>Tüm analizler</a>
         </div>
       </section>
