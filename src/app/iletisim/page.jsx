@@ -6,8 +6,8 @@ import IletisimForm from './IletisimForm';
 
 const URL_ = SITE + '/iletisim';
 const SEO = {
-  title: 'İletişim — zerdemkartal',
-  description: 'Danışmanlık, programlar veya iş birliği için yaz: iletişim formu, e-posta ve sosyal hesaplar.'
+  title: 'İletişim — Hermes',
+  description: 'Hermes hakkında sorular, satın alma ve iş birliği için yaz: iletişim formu, e-posta ve sosyal hesaplar.'
 };
 
 export const metadata = pageMeta({ ...SEO, path: '/iletisim' });
@@ -22,7 +22,7 @@ export default function Iletisim() {
     ] }
   ] };
 
-  const card = { display: 'block', background: '#FFFFFF', border: `1px solid ${T.border}`, borderRadius: 18, padding: '20px 24px', color: T.ink, textDecoration: 'none' };
+  const card = { display: 'block', background: T.card, border: `1px solid ${T.border}`, borderRadius: 18, padding: '20px 24px', color: T.ink, textDecoration: 'none' };
 
   return (
     <main>
@@ -30,9 +30,11 @@ export default function Iletisim() {
       <Nav active="/iletisim" />
 
       <section style={{ ...sectionStyle, paddingTop: 64 }}>
-        <div style={kickerStyle}>İLETİŞİM</div>
-        <h1 style={h1Style}>Gökyüzü hakkında <span style={{ color: T.muted }}>konuşalım</span></h1>
-        <p style={pStyle}>Danışmanlık, programlar, iş birliği ya da aklına takılan herhangi bir şey — yaz, en geç iki iş günü içinde dönüş yapılır.</p>
+        <div style={{ textAlign: 'center', maxWidth: 820, margin: '0 auto' }}>
+          <div style={kickerStyle}>İLETİŞİM</div>
+          <h1 style={h1Style}>Gökyüzü hakkında <span style={{ color: T.muted }}>konuşalım</span></h1>
+          <p style={{ ...pStyle, marginLeft: 'auto', marginRight: 'auto' }}>Hermes hakkında bir soru, satın alma, iş birliği ya da aklına takılan herhangi bir şey — yaz, en geç iki iş günü içinde dönüş yapılır.</p>
+        </div>
       </section>
 
       <section style={{ ...sectionStyle, display: 'grid', gridTemplateColumns: 'minmax(260px, 380px) 1fr', gap: 40, alignItems: 'start' }}>

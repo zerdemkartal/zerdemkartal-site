@@ -9,7 +9,7 @@ export function buildTree(rows) {
     .sort((a, b) => a.order - b.order)
     .map((r) => r.type === 'folder'
       ? { id: r.id, type: 'folder', title: r.title, glyph: r.glyph || undefined, open: false, children: mk(r.id) }
-      : { id: r.id, type: 'page', title: r.title, body: r.body || '', md: r.md || undefined, excerpt: r.excerpt || '', date: r.date || '', draft: r.status === 'draft' || undefined, seo: { title: r.seoTitle || '', description: r.seoDesc || '' } });
+      : { id: r.id, type: 'page', title: r.title, glyph: r.glyph || undefined, body: r.body || '', md: r.md || undefined, excerpt: r.excerpt || '', date: r.date || '', draft: r.status === 'draft' || undefined, seo: { title: r.seoTitle || '', description: r.seoDesc || '' } });
   return { v: 2, nodes: mk(null) };
 }
 

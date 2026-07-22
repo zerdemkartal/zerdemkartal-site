@@ -38,12 +38,12 @@ export default async function Hakkimda() {
       <JsonLd data={jsonld} />
       <Nav active="/hakkimda" />
 
-      <section style={{ ...sectionStyle, paddingTop: 84, maxWidth: 920 }}>
+      <section style={{ ...sectionStyle, paddingTop: 84, maxWidth: 920, textAlign: 'center' }}>
         <div style={kickerStyle}>HAKKIMDA</div>
         <h1 style={{ fontFamily: T.serif, fontWeight: 430, fontSize: 'clamp(34px, 4.6vw, 52px)', lineHeight: 1.28, letterSpacing: '-0.02em', margin: '22px 0 0', whiteSpace: 'pre-line' }}>
           {c.statement || '“Hiçliğin peşinde” — gökyüzüne bakan, okuyan, yazan ve öğreten bağımsız bir stüdyo.'}
         </h1>
-        <img src="/assets/logo-transparent.png" alt="zerdemkartal logosu" style={{ width: 180, marginTop: 54 }} />
+        <img src="/assets/logo-transparent.png" alt="zerdemkartal logosu" style={{ width: 180, marginTop: 54, display: 'inline-block' }} />
       </section>
 
       <Footer />

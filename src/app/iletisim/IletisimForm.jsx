@@ -3,10 +3,10 @@
 // (prototipte zk_admin_talep'e push ediliyordu; kayıt şekli aynı: type='İletişim · <konu>').
 import { useState } from 'react';
 
-const KONULAR = ['Danışmanlık', 'Programlar (AstroPen / Hermes)', 'Eğitim & Astroloji 101', 'İş birliği', 'Diğer'];
+const KONULAR = ['Hermes — satın alma / ön sipariş', 'Hermes — teknik soru', 'Lisans & fatura', 'İş birliği', 'Diğer'];
 
-const field = { border: '1px solid #E8E3D6', borderRadius: 10, padding: '13px 15px', fontSize: 15, fontFamily: 'inherit', background: '#FFFFFF', color: '#2B1D12' };
-const label = { display: 'flex', flexDirection: 'column', gap: 6, fontSize: 13.5, color: '#6B675E' };
+const field = { border: '1px solid var(--h-border)', borderRadius: 10, padding: '13px 15px', fontSize: 15, fontFamily: 'inherit', background: 'var(--h-card)', color: 'var(--h-ink)' };
+const label = { display: 'flex', flexDirection: 'column', gap: 6, fontSize: 13.5, color: 'var(--h-muted)' };
 
 export default function IletisimForm() {
   const [f, setF] = useState({ name: '', email: '', konu: KONULAR[0], message: '', kvkk: false });
@@ -32,15 +32,15 @@ export default function IletisimForm() {
 
   if (state === 'done') {
     return (
-      <div style={{ background: '#F4F1E8', border: '1px solid #E8E3D6', borderRadius: 22, padding: '44px 40px' }}>
-        <div style={{ fontFamily: "'Newsreader', serif", fontSize: 28 }}>Mesajın ulaştı ✳</div>
-        <p style={{ fontSize: 15.5, lineHeight: 1.7, color: '#3A2D20', marginTop: 12 }}>En geç iki iş günü içinde {f.email} adresine dönüş yapılır.</p>
+      <div style={{ background: 'var(--h-cream)', border: '1px solid var(--h-border)', borderRadius: 22, padding: '44px 40px' }}>
+        <div style={{ fontFamily: "'Newsreader', serif", fontSize: 28 }}>Mesajın ulaştı ☿&#xFE0E;</div>
+        <p style={{ fontSize: 15.5, lineHeight: 1.7, color: 'var(--h-ink2)', marginTop: 12 }}>En geç iki iş günü içinde {f.email} adresine dönüş yapılır.</p>
       </div>
     );
   }
 
   return (
-    <form onSubmit={submit} style={{ background: '#FFFFFF', border: '1px solid #E8E3D6', borderRadius: 22, padding: '34px 34px 38px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+    <form onSubmit={submit} style={{ background: 'var(--h-card)', border: '1px solid var(--h-border)', borderRadius: 22, padding: '34px 34px 38px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
       <label style={label}>Adın
         <input required value={f.name} onChange={set('name')} style={field} placeholder="Ad Soyad" />
       </label>

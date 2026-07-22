@@ -2,7 +2,7 @@ import { prisma } from '@/lib/db';
 import { requireAdmin } from '@/lib/auth';
 import { z } from 'zod';
 
-const PatchIn = z.object({ status: z.enum(['paid', 'delivered']) });
+const PatchIn = z.object({ status: z.enum(['pending', 'paid', 'delivered', 'cancelled']) });
 
 // PATCH /api/orders/:id — admin: teslim işaretle (lisans e-postası gönderildi vb.)
 export async function PATCH(request, { params }) {

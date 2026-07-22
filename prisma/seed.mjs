@@ -52,8 +52,9 @@ async function main() {
   // 2) Blog ağacı (export'ta varsa onu, yoksa library.json)
   let tree = keys.zk_blog_tree ? (typeof keys.zk_blog_tree === 'string' ? JSON.parse(keys.zk_blog_tree) : keys.zk_blog_tree) : null;
   if (!tree && existsSync(sd('library.json'))) tree = JSON.parse(readFileSync(sd('library.json'), 'utf8'));
-  if (tree?.nodes) {
-    const rows = flattenTree(tree.nodes);
+  const treeNodes = Array.isArray(tree) ? tree : tree?.nodes;
+  if (treeNodes?.length) {
+    const rows = flattenTree(treeNodes);
     for (const r of rows) await prisma.blogNode.upsert({ where: { id: r.id }, create: r, update: r });
     console.log('blog:', rows.length, 'düğüm');
   }

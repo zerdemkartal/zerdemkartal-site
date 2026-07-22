@@ -1,74 +1,76 @@
 import { prisma } from '@/lib/db';
+import { HERMES_SITE } from '@/lib/defaults';
 
-// llms.txt — dinamik AI indeksi (kök llms.txt prototip dosyasının deploy karşılığı).
-// Sabit gövde + DB'den güncel analiz kataloğu ve son blog yazıları.
-const SITE = (process.env.SITE_URL || 'https://zerdemkartal.com').replace(/\/$/, '');
+// llms.txt — HERMES sitesi AI indeksi (GEO katmanının çekirdeği; H1 dönüşümü).
+// Gövde 'hermes_site' içerik modelinden ÜRETİLİR (MCP ile içerik değişince burası da değişir)
+// + DB'den son blog yazıları. AI motorlarının siteyi doğru alıntılaması için tek durak.
+const SITE = (process.env.SITE_URL || 'https://hermesastroloji.com').replace(/\/$/, '');
 
 export async function GET() {
-  const [dan, posts, settings] = await Promise.all([
-    prisma.pageContent.findUnique({ where: { key: 'danismanlik' } }),
-    prisma.blogNode.findMany({
-      where: { type: 'page', status: 'published' },
-      orderBy: { date: 'desc' }, take: 10,
-      select: { id: true, title: true, excerpt: true }
-    }),
-    prisma.setting.findUnique({ where: { id: 1 } })
-  ]);
+  let model = HERMES_SITE, posts = [], email = 'merhaba@zerdemkartal.com';
+  try {
+    const [row, pages, settings] = await Promise.all([
+      prisma.pageContent.findUnique({ where: { key: 'hermes_site' } }),
+      prisma.blogNode.findMany({
+        where: { type: 'page', status: 'published' },
+        orderBy: { date: 'desc' }, take: 10,
+        select: { id: true, title: true, excerpt: true }
+      }),
+      prisma.setting.findUnique({ where: { id: 1 } })
+    ]);
+    if (row?.data) model = { ...HERMES_SITE, ...row.data };
+    posts = pages;
+    email = settings?.data?.email || email;
+  } catch { /* DB yoksa varsayılanlarla devam */ }
 
-  const email = settings?.data?.email || 'merhaba@zerdemkartal.com';
-  const insta = settings?.data?.instagram || 'https://instagram.com/zerdemkartal';
-  const yt = settings?.data?.youtube || 'https://youtube.com/@zerdemkartal';
+  const moduller = (model.ozellikler?.gruplar || [])
+    .map((g) => `- ${g.baslik}: ` + (g.items || []).map((x) => x.ad).join(' · '))
+    .join('\n');
 
-  const katalog = (dan?.data?.analiz?.groups || [])
-    .map((g) => `- ${g.cat}: ` + (g.items || []).map((a) => `${a.n} (${a.t})`).join(' · '))
+  const sss = (model.sss?.items || [])
+    .map((x) => `- S: ${x.q}\n  C: ${x.a}`)
     .join('\n');
 
   const sonYazilar = posts
     .map((p) => `- [${p.title}](${SITE}/blog/yazi/${p.id})${p.excerpt ? ': ' + p.excerpt : ''}`)
     .join('\n');
 
-  const txt = `# zerdemkartal
+  const txt = `# Hermes — Profesyonel Masaüstü Astroloji Programı
 
-> Gökyüzünü senin dilinde okuyan bağımsız bir astroloji stüdyosu. Birebir astroloji danışmanlığı (online, kayıtlı, %100 gizli), AstroPen masaüstü astroloji programı, flash kartlarla ücretsiz astroloji çalışma aracı (Astroloji 101), ücretsiz doğum haritası hesaplayıcı ve gökyüzü günlüğü blog'u. Türkçe. İstanbul merkezli, dünyanın her yerine online hizmet.
+> Hermes, profesyonel kullanım için geliştirilmiş Türkçe masaüstü astroloji programıdır (Windows 10/11).
+> Doğum haritası, transit, ilerletme, dönem teknikleri, tutulmalar, sinastri, horary, elektif tarama,
+> rektifikasyon, astrokartografi, Uranyen dial, AI analiz asistanı ve danışan yönetimi tek uygulamada.
+> Hesap motoru Swiss Ephemeris kullanır; danışan verileri kullanıcının cihazında kalır (bulut zorunluluğu yok).
+> Geliştirici: zerdemkartal (bağımsız astroloji atölyesi, İstanbul). Dil: Türkçe.
 
-Yaklaşım: Astroloji burada bir kehanet değil; kaderi değil olasılığı okuyan, korkutmadan ve etiketlemeden, haritayı gerçek hayata bağlayan bir dildir. 9+ yıl deneyim, 500+ birebir seans.
+Temel gerçekler:
+- Fiyat: ön satışta ₺3.000 tek seferlik lisans (planlanan liste fiyatı ₺9.999). Abonelik YOK.
+- Lisans: aynı kişiye ait 2 cihaza kadar; tüm güncellemeler dahil; platformlar arası tek lisans.
+- Platformlar: bugün Windows 10/11 (64-bit); web sürümü (satın alanlara, üye girişiyle, tam sürüm) ve Android yol haritasında.
+- AI analiz: 11 analiz tipi (natal, tahmin, horary, elektif, sinastri, medikal, finansal, mesleki, karmik, psikolojik, lokasyonel); isteğe bağlı, internet gerektirir.
+- Gizlilik: harita hesapları çevrimdışı; internet yalnız lisans doğrulama, güncelleme ve AI analiz için.
 
-## Danışmanlıklar
-Birebir, online astroloji seansları. Her analiz öncesinde harita hazırlanır, seans sonrasında kaydı danışanla paylaşılır. Randevu 24 saat öncesine kadar ücretsiz ertelenebilir.
+## Sayfalar
+- [Ana sayfa](${SITE}/): Hermes tanıtımı.
+- [Özellikler](${SITE}/ozellikler): tüm modüllerin ayrıntılı dökümü.
+- [Fiyat](${SITE}/fiyat): tek seferlik lisans, ön satış koşulları.
+- [İndir](${SITE}/indir): kurulum adımları ve sistem gereksinimleri.
+- [SSS](${SITE}/sss): sık sorulan sorular (aşağıda tam liste).
+- [Blog](${SITE}/blog): astroloji yazıları ve program günlüğü.
+- [İletişim](${SITE}/iletisim): iletişim formu — ${email}
+- [Geliştirici hakkında](${SITE}/hakkimda)
 
-- [Danışmanlıklar](${SITE}/danismanliklar): analiz kataloğu, süreç, sık sorulanlar ve randevu.
+## Modüller
+${moduller}
 
-Analiz kataloğu (kategori · analiz · süre):
-${katalog || '- (katalog: ' + SITE + '/danismanliklar)'}
+## Sık sorulan sorular (tam metin)
+${sss}
 
-## Programlar
-- [AstroPen](${SITE}/programlar): Doğum haritası, transit takvimi, retro uyarıları, sinastri ve günlük gökyüzü notları sunan ücretsiz masaüstü astroloji programı (Windows, macOS).
-- [Hermes Astroloji Programı](${SITE}/programlar/hermes): Profesyoneller için masaüstü astroloji programı (tek seferlik lisans).
-
-## Astroloji 101
-- [Astroloji 101](${SITE}/astroloji-101): Ücretsiz, kendi hızında astroloji çalışma aracı. Flash kartlar, aralıklı tekrar (SRS), çoktan seçmeli test, glif eşleştirme oyunu ve seviye testi. Konular: 12 burç, gezegenler, 12 ev, açılar, element & nitelikler, asaletler. Her kart kütüphanedeki tam yazıya bağlanır.
-
-## Araçlar
-- [Doğum Haritası](${SITE}/dogum-haritasi): Tarih, saat ve yer ile gerçek astronomik hesaplama; çark, gezegen tablosu ve kısa Türkçe yorum. Placidus ev sistemi, tropikal zodyak.
-
-## Blog
-- [Blog](${SITE}/blog): Astroloji, zanaat ve gündelik hayat üzerine kişisel günlük; transit notları, retro rehberleri ve gökyüzünden haftalık okumalar.
-
-Son yazılar:
-${sonYazilar || '- (yakında)'}
-
-## Hakkında & İletişim
-- [Hakkımda](${SITE}/hakkimda): Stüdyo ve astrolog hakkında.
-- [İletişim](${SITE}/iletisim): İletişim formu — danışmanlık, programlar ve iş birliği soruları.
-- E-posta: ${email}
-- Instagram: ${insta}
-- YouTube: ${yt}
+## Son blog yazıları
+${sonYazilar || '- (henüz yazı yok)'}
 
 ## Yasal
-- [KVKK Aydınlatma Metni](${SITE}/yasal/kvkk)
-- [Gizlilik & Çerez Politikası](${SITE}/yasal/gizlilik)
-- [Mesafeli Satış Sözleşmesi](${SITE}/yasal/mesafeli-satis)
-- [İptal & İade Koşulları](${SITE}/yasal/iade)
+- [KVKK](${SITE}/yasal/kvkk) · [Gizlilik & Çerez](${SITE}/yasal/gizlilik) · [Mesafeli Satış](${SITE}/yasal/mesafeli-satis) · [İptal & İade](${SITE}/yasal/iade)
 `;
 
   return new Response(txt, { headers: { 'Content-Type': 'text/plain; charset=utf-8' } });

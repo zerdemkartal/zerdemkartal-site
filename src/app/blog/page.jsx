@@ -1,53 +1,57 @@
-// BLOG — SSR portu (piksel referansı: Blog.dc.html; veri = BlogNode tablosu).
-// Kütüphane ağacı (klasörler + yazılar) sunucuda basılır; hash router yerine temiz URL'ler.
+// BLOG — SSR portu (piksel referansı: Blog.dc.html; veri = BlogNode tablosu, boşsa library.json fallback).
+// Kütüphane = sol kategori sidebar + "en sevilenler" akan şeridi + kart galerisi (BlogExplorer, istemci bileşeni).
 import { prisma } from '@/lib/db';
 import { SITE, ORG, WEBSITE, pageMeta } from '@/lib/site';
 import { JsonLd } from '@/components/JsonLd';
-import { Nav, Footer, T, kickerStyle, h1Style, pStyle, sectionStyle } from '@/components/Chrome';
+import { Nav, Footer } from '@/components/Chrome';
 import { buildTree } from '@/lib/blog';
+import { libraryRows } from '@/lib/blogData';
+import BlogExplorer from './BlogExplorer';
 
 export const revalidate = 300;
 
 const URL_ = SITE + '/blog';
 const SEO = {
-  title: 'Blog — Gökyüzü Günlüğü & Astroloji Kütüphanesi | zerdemkartal',
+  title: 'Blog — Gökyüzü Günlüğü & Astroloji Kütüphanesi | Hermes',
   description: 'Transit notları, retro rehberleri ve burçlardan evlere uzanan astroloji kütüphanesi — sade bir Türkçeyle.'
 };
-
 export const metadata = pageMeta({ ...SEO, path: '/blog' });
 
-function Tree({ nodes, depth = 0 }) {
-  return (
-    <ul style={{ listStyle: 'none', margin: 0, padding: depth ? '0 0 0 22px' : 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
-      {nodes.map((n) => (
-        <li key={n.id}>
-          {n.type === 'folder' ? (
-            <details open={depth === 0}>
-              <summary style={{ fontFamily: T.serif, fontSize: depth ? 17 : 20, cursor: 'pointer', padding: '6px 0' }}>
-                {n.glyph ? <span aria-hidden="true" style={{ marginRight: 8 }}>{n.glyph}</span> : null}{n.title}
-              </summary>
-              <Tree nodes={n.children || []} depth={depth + 1} />
-            </details>
-          ) : (
-            <a href={`/blog/yazi/${n.id}`} style={{ display: 'flex', justifyContent: 'space-between', gap: 18, padding: '7px 0', color: T.ink, textDecoration: 'none', fontSize: 15.5 }}>
-              <span>{n.title}</span>
-              {n.date && <span style={{ color: T.muted, fontSize: 13, whiteSpace: 'nowrap' }}>{n.date}</span>}
-            </a>
-          )}
-        </li>
-      ))}
-    </ul>
-  );
+const PALETTE = [
+  { bg: '#F6E9E3', fg: '#C0562F' }, { bg: '#E9F0E4', fg: '#5C7A4A' }, { bg: '#E7EEF5', fg: '#3F6D96' },
+  { bg: '#E4F0EE', fg: '#3E827A' }, { bg: 'var(--h-tint)', fg: 'var(--h-tint-ink)' }, { bg: '#F4ECD9', fg: '#9A7A2E' },
+  { bg: '#F3E7EC', fg: '#9A4E68' }, { bg: '#E8EDE6', fg: '#5F7355' }
+];
+const strip = (h) => (h || '').replace(/<[^>]+>/g, ' ').replace(/&[a-z0-9#]+;/gi, ' ').replace(/\s+/g, ' ').trim();
+const snip = (h) => { const s = strip(h); return s.length > 130 ? s.slice(0, 130).replace(/\s+\S*$/, '') + '…' : s; };
+const firstPage = (node) => { for (const c of (node.children || [])) { if (c.type === 'page') return c; const f = firstPage(c); if (f) return f; } return null; };
+
+function trimNodes(list, color, catTitle) {
+  return (list || []).map((n) => n.type === 'folder'
+    ? { id: n.id, type: 'folder', title: n.title, glyph: n.glyph || '✦', color, children: trimNodes(n.children, color, catTitle) }
+    : { id: n.id, type: 'page', title: n.title, glyph: n.glyph || '✦', snippet: snip(n.body), color, catTitle });
 }
 
 export default async function Blog() {
-  const rows = await prisma.blogNode.findMany({ where: { OR: [{ status: 'published' }, { type: 'folder' }] } }).catch(() => []);
+  let rows = await prisma.blogNode.findMany({ where: { OR: [{ status: 'published' }, { type: 'folder' }] } }).catch(() => []);
+  if (!rows.length) rows = libraryRows();
   const tree = buildTree(rows);
-  const latest = rows.filter((r) => r.type === 'page').sort((a, b) => (a.date < b.date ? 1 : -1)).slice(0, 6);
+
+  const nodes = (tree.nodes || []).map((n, i) => {
+    const color = PALETTE[i % PALETTE.length];
+    return n.type === 'folder'
+      ? { id: n.id, type: 'folder', title: n.title, glyph: n.glyph || '✦', color, children: trimNodes(n.children, color, n.title) }
+      : { id: n.id, type: 'page', title: n.title, glyph: n.glyph || '✦', snippet: snip(n.body), color, catTitle: '' };
+  });
+
+  const featured = nodes.filter((n) => n.type === 'folder').map((n) => {
+    const p = firstPage(n);
+    return p ? { id: p.id, title: p.title, glyph: p.glyph, catTitle: n.title, color: p.color, snippet: p.snippet } : null;
+  }).filter(Boolean).slice(0, 14);
 
   const jsonld = { '@context': 'https://schema.org', '@graph': [
     ORG, WEBSITE,
-    { '@type': 'Blog', '@id': URL_ + '#blog', url: URL_, name: 'zerdemkartal — Gökyüzü Günlüğü', description: SEO.description, inLanguage: 'tr-TR', publisher: { '@id': SITE + '/#org' } },
+    { '@type': 'Blog', '@id': URL_ + '#blog', url: URL_, name: 'Hermes — Gökyüzü Günlüğü', description: SEO.description, inLanguage: 'tr-TR', publisher: { '@id': SITE + '/#org' } },
     { '@type': 'BreadcrumbList', itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Ana Sayfa', item: SITE + '/' },
       { '@type': 'ListItem', position: 2, name: 'Blog', item: URL_ }
@@ -59,32 +63,9 @@ export default async function Blog() {
       <JsonLd data={jsonld} />
       <Nav active="/blog" />
 
-      <section style={{ ...sectionStyle, paddingTop: 64 }}>
-        <div style={kickerStyle}>GÖKYÜZÜ GÜNLÜĞÜ</div>
-        <h1 style={h1Style}>Okumak da <span style={{ color: T.muted }}>bir yolculuk</span></h1>
-      </section>
-
-      <section style={sectionStyle}>
-        <h2 style={{ fontFamily: T.serif, fontWeight: 470, fontSize: 26, margin: 0 }}>Son yazılar</h2>
-        <div style={{ marginTop: 16, borderTop: `1px solid ${T.border}` }}>
-          {latest.map((p) => (
-            <a key={p.id} href={`/blog/yazi/${p.id}`} style={{ display: 'block', padding: '18px 4px', borderBottom: `1px solid ${T.border}`, color: T.ink, textDecoration: 'none' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 24 }}>
-                <span style={{ fontFamily: T.serif, fontSize: 21 }}>{p.title}</span>
-                <span style={{ color: T.muted, fontSize: 14, whiteSpace: 'nowrap' }}>{p.date}</span>
-              </div>
-              {p.excerpt && <p style={{ ...pStyle, fontSize: 14.5, marginTop: 6, maxWidth: 720 }}>{p.excerpt}</p>}
-            </a>
-          ))}
-        </div>
-      </section>
-
-      <section style={sectionStyle}>
-        <h2 style={{ fontFamily: T.serif, fontWeight: 470, fontSize: 26, margin: 0 }}>Kütüphane</h2>
-        <div style={{ marginTop: 18, background: '#FFFFFF', border: `1px solid ${T.border}`, borderRadius: 20, padding: '26px 30px' }}>
-          <Tree nodes={tree.nodes || []} />
-        </div>
-      </section>
+      <div style={{ maxWidth: 1240, margin: '40px auto 0', padding: '0 16px' }}>
+        <BlogExplorer nodes={nodes} featured={featured} />
+      </div>
 
       <Footer />
     </main>

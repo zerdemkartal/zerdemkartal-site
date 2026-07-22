@@ -6,8 +6,8 @@ import UyeAuth from './UyeAuth';
 
 const URL_ = SITE + '/uye';
 const SEO = {
-  title: 'Üyelik — zerdemkartal',
-  description: 'zerdemkartal üyeliği: Astroloji 101 ilerlemen, rozetlerin ve doğum haritası kısayolun tek hesapta.'
+  title: 'Üye girişi — Hermes',
+  description: 'Hermes hesabın: lisansın, siparişlerin ve yayınlandığında web uygulaması erişimin tek hesapta.'
 };
 
 export const metadata = pageMeta({ ...SEO, path: '/uye', noindex: true });

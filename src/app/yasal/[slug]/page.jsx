@@ -16,13 +16,13 @@ const B = ({ children }) => <span style={{ fontWeight: 600 }}>{children}</span>;
 const DOCS = {
   kvkk: {
     title: 'KVKK Aydınlatma Metni',
-    desc: '6698 sayılı KVKK m.10 uyarınca zerdemkartal.com aydınlatma metni: işlenen veriler, amaçlar, aktarım, saklama süresi ve haklarınız.',
+    desc: '6698 sayılı KVKK m.10 uyarınca hermesastroloji.com aydınlatma metni: işlenen veriler, amaçlar, aktarım, saklama süresi ve haklarınız.',
     body: (
       <>
         <h1 style={h2}>KVKK Aydınlatma Metni</h1>
         <div style={sub}>6698 sayılı Kişisel Verilerin Korunması Kanunu m.10 uyarınca · Yürürlük: 7 Temmuz 2026</div>
         <h2 style={h3}>1. Veri sorumlusu</h2>
-        <p style={p}>Bu sitede (zerdemkartal.com) toplanan kişisel verileriniz bakımından veri sorumlusu, <Bosluk>[unvan / ad soyad]</Bosluk>, <Bosluk>[adres]</Bosluk> (&quot;zerdemkartal&quot;) olup her türlü talebiniz için merhaba@zerdemkartal.com adresine yazabilirsiniz.</p>
+        <p style={p}>Bu sitede (hermesastroloji.com) toplanan kişisel verileriniz bakımından veri sorumlusu, <Bosluk>[unvan / ad soyad]</Bosluk>, <Bosluk>[adres]</Bosluk> (&quot;zerdemkartal&quot;) olup her türlü talebiniz için merhaba@zerdemkartal.com adresine yazabilirsiniz.</p>
         <h2 style={h3}>2. Hangi verileri işliyoruz</h2>
         <ul style={ul}>
           <li><B>Kimlik ve iletişim:</B> ad soyad, e-posta adresi (üyelik, iletişim formu, talep ve ön sipariş formları).</li>
@@ -48,12 +48,12 @@ const DOCS = {
   },
   gizlilik: {
     title: 'Gizlilik & Çerez Politikası',
-    desc: 'zerdemkartal.com gizlilik ve çerez politikası: çerezler, yerel depolama, doğum bilgileri, güvenlik ve değişiklikler.',
+    desc: 'hermesastroloji.com gizlilik ve çerez politikası: çerezler, yerel depolama, doğum bilgileri, güvenlik ve değişiklikler.',
     body: (
       <>
         <h1 style={h2}>Gizlilik &amp; Çerez Politikası</h1>
         <div style={sub}>Yürürlük: 7 Temmuz 2026</div>
-        <p style={{ ...p, margin: '26px 0 0' }}>Bu politika, zerdemkartal.com&#39;u ziyaret ettiğinizde hangi bilgilerin, ne amaçla ve hangi araçlarla işlendiğini açıklar. İlke basit: <B>yalnızca hizmet için gerekeni toplarız, veri satmayız, reklam ağlarıyla paylaşmayız.</B></p>
+        <p style={{ ...p, margin: '26px 0 0' }}>Bu politika, hermesastroloji.com&#39;u ziyaret ettiğinizde hangi bilgilerin, ne amaçla ve hangi araçlarla işlendiğini açıklar. İlke basit: <B>yalnızca hizmet için gerekeni toplarız, veri satmayız, reklam ağlarıyla paylaşmayız.</B></p>
         <h2 style={h3}>1. Çerezler ve yerel depolama</h2>
         <ul style={ul}>
           <li><B>Zorunlu:</B> oturumunuzu ve site tercihlerinizi hatırlamak için çerez ve tarayıcı yerel depolaması (localStorage) kullanılır. Üyelik oturumu, Astroloji 101 ilerlemesi ve doğum haritası girdileriniz bu kapsamdadır.</li>
@@ -73,7 +73,7 @@ const DOCS = {
   },
   'mesafeli-satis': {
     title: 'Mesafeli Satış Sözleşmesi',
-    desc: 'zerdemkartal.com mesafeli satış sözleşmesi: taraflar, konu, fiyat ve ödeme, teslimat, cayma hakkı ve uyuşmazlık.',
+    desc: 'hermesastroloji.com mesafeli satış sözleşmesi: taraflar, konu, fiyat ve ödeme, teslimat, cayma hakkı ve uyuşmazlık.',
     body: (
       <>
         <h1 style={h2}>Mesafeli Satış Sözleşmesi</h1>
@@ -81,7 +81,7 @@ const DOCS = {
         <h2 style={h3}>1. Taraflar</h2>
         <p style={p}><B>Satıcı:</B> <Bosluk>[unvan / ad soyad]</Bosluk> — <Bosluk>[adres]</Bosluk> — <Bosluk>[vergi dairesi / no]</Bosluk> — merhaba@zerdemkartal.com<br /><B>Alıcı:</B> sipariş formunda ad, soyad ve e-posta bilgilerini veren kişi.</p>
         <h2 style={h3}>2. Konu</h2>
-        <p style={p}>Sözleşmenin konusu, zerdemkartal.com üzerinden satışa sunulan <B>dijital ürünlerin</B> (Hermes Astroloji Programı lisansı) ve <B>danışmanlık hizmetlerinin</B> (astroloji analiz seansları) satışı ve teslimine ilişkin tarafların hak ve yükümlülükleridir. AstroPen ücretsizdir ve bu sözleşmenin kapsamı dışındadır.</p>
+        <p style={p}>Sözleşmenin konusu, hermesastroloji.com üzerinden satışa sunulan <B>dijital ürünlerin</B> (Hermes Astroloji Programı lisansı) ve <B>danışmanlık hizmetlerinin</B> (astroloji analiz seansları) satışı ve teslimine ilişkin tarafların hak ve yükümlülükleridir. AstroPen ücretsizdir ve bu sözleşmenin kapsamı dışındadır.</p>
         <h2 style={h3}>3. Ürün, fiyat ve ödeme</h2>
         <p style={p}>Ürün/hizmetin temel nitelikleri ve vergiler dâhil satış fiyatı, sipariş anında ilgili sayfada yazan bilgilerdir. Ön satış döneminde Hermes lisansı, ilan edilen ön satış bedeli üzerinden satılır; program yayınlandığında ek ücret talep edilmez. Ödeme, sitede sunulan ödeme kuruluşu aracılığıyla yapılır.</p>
         <h2 style={h3}>4. Teslimat</h2>
@@ -100,7 +100,7 @@ const DOCS = {
   },
   iade: {
     title: 'İptal & İade Koşulları',
-    desc: 'zerdemkartal.com iptal ve iade koşulları: dijital ürünler (Hermes), danışmanlık seansları, ücretsiz içerikler ve iade süreci.',
+    desc: 'hermesastroloji.com iptal ve iade koşulları: dijital ürünler (Hermes), danışmanlık seansları, ücretsiz içerikler ve iade süreci.',
     body: (
       <>
         <h1 style={h2}>İptal &amp; İade Koşulları</h1>

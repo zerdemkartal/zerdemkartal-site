@@ -68,14 +68,37 @@ model Lead {
 
 // zk_siparis → Hermes lisans siparişleri (Faz 2.5 prototipte mock ödeme; canlıda iyzico/PayTR)
 model Order {
+  id          String   @id @default(cuid())
+  name        String
+  email       String
+  product     String   @default("Hermes")
+  price       Int // TRY, tam sayı (ör. 3000)
+  license     String?  @unique // ESKİ ZK-XXXX (opsiyonel; artık üretilmiyor — lisans çevrimdışı imzalanır)
+  status      String   @default("pending") // pending | paid | delivered | cancelled
+  deviceLimit Int      @default(2) // "2 cihaza kadar" referans sınırı
+  payProvider String? // "iyzico" | "paytr" | "mock"
+  payRef      String? // PSP referansı
+  createdAt   DateTime @default(now())
+  requests    LicenseRequest[]
+}
+
+// Masaüstü "Lisans İste" (lisans.html) istekleri → geliştirici ÇEVRİMDIŞI imzalar (Kripto Yönetim).
+// Site İMZALAMAZ; yalnız toplar + ödemeli siparişe (email) bağlar + panel/MCP'de gösterir. (H2)
+model LicenseRequest {
   id        String   @id @default(cuid())
-  name      String
+  ad        String
+  soyad     String
   email     String
-  product   String   @default("Hermes")
-  price     Int // TRY, tam sayı (ör. 3000)
-  license   String   @unique // "ZK-XXXX-XXXX-XXXX"
-  status    String   @default("paid") // "paid" | "delivered"
+  makineId  String
+  uygulama  String   @default("hermes")
+  status    String   @default("bekliyor") // bekliyor | imzalandi | gonderildi | reddedildi
+  note      String?
+  order     Order?   @relation(fields: [orderId], references: [id])
+  orderId   String?
   createdAt DateTime @default(now())
+
+  @@index([email])
+  @@index([makineId])
 }
 
 // zk_uye_hesaplar (+ zk_astroloji101_progress üyeye bağlanır)
