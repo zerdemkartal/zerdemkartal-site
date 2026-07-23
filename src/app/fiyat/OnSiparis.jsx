@@ -28,12 +28,26 @@ export default function OnSiparis({ label: cta = 'Ön sipariş ver', price = 300
     e.preventDefault();
     if (!f.name.trim() || !f.email.trim() || !f.kvkk || state === 'sending') return;
     setState('sending');
+    const payload = { name: f.name.trim(), email: f.email.trim(), product: 'Hermes', price: Number(price) || 3000 };
     try {
-      const r = await fetch('/api/orders', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: f.name.trim(), email: f.email.trim(), product: 'Hermes', price: Number(price) || 3000 })
+      // 1) iyzico ödeme sayfasını başlatmayı dene
+      const r = await fetch('/api/pay/iyzico/start', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
       });
-      setState(r.ok ? 'done' : 'error');
+      if (r.ok) {
+        const d = await r.json().catch(() => null);
+        if (d && d.paymentPageUrl) { window.location.href = d.paymentPageUrl; return; } // iyzico'ya yönlendir
+        setState('error'); return;
+      }
+      // 2) iyzico henüz yapılandırılmadıysa (503) → dürüst ön sipariş kaydı
+      if (r.status === 503) {
+        const r2 = await fetch('/api/orders', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+        });
+        setState(r2.ok ? 'done' : 'error');
+        return;
+      }
+      setState('error');
     } catch { setState('error'); }
   }
 
@@ -66,7 +80,7 @@ export default function OnSiparis({ label: cta = 'Ön sipariş ver', price = 300
             ) : (
               <form onSubmit={submit}>
                 <div style={{ fontFamily: "'Newsreader', serif", fontSize: 24, color: 'var(--h-ink)' }}>Ön sipariş</div>
-                <p style={{ fontSize: 14, color: 'var(--h-muted)', marginTop: 6 }}>Hermes ön satış — ödeme bağlantısı e-postana gönderilir. Abonelik yok, tek seferlik lisans.</p>
+                <p style={{ fontSize: 14, color: 'var(--h-muted)', marginTop: 6 }}>Hermes ön satış — bilgilerini gir, güvenli ödeme sayfasına (iyzico) yönlendirilirsin. Abonelik yok, tek seferlik lisans.</p>
                 <label style={label}>Ad Soyad
                   <input required value={f.name} onChange={set('name')} style={field} placeholder="Ad Soyad" />
                 </label>
@@ -79,7 +93,7 @@ export default function OnSiparis({ label: cta = 'Ön sipariş ver', price = 300
                 </label>
                 <div style={{ display: 'flex', gap: 10, marginTop: 20, alignItems: 'center' }}>
                   <button type="submit" disabled={state === 'sending' || !f.kvkk} style={{ ...btnPri, opacity: (state === 'sending' || !f.kvkk) ? 0.6 : 1 }}>
-                    {state === 'sending' ? 'Gönderiliyor…' : 'Ön siparişi oluştur'}
+                    {state === 'sending' ? 'Yönlendiriliyor…' : 'Ödemeye geç'}
                   </button>
                   <button type="button" onClick={close} style={{ background: 'none', border: 'none', color: 'var(--h-muted)', cursor: 'pointer', fontFamily: 'inherit', fontSize: 14 }}>Vazgeç</button>
                 </div>
