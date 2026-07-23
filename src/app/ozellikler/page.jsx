@@ -42,9 +42,9 @@ export default async function Ozellikler() {
 
       <section style={{ ...sectionStyle, paddingTop: 64 }}>
         <div style={{ textAlign: 'center', maxWidth: 820, margin: '0 auto' }}>
-          <div style={kickerStyle}>{oz.hero.kicker}</div>
-          <h1 style={h1Style}>{oz.hero.title}</h1>
-          <p style={{ ...pStyle, marginLeft: 'auto', marginRight: 'auto' }}>{oz.hero.p}</p>
+          <div style={kickerStyle} data-he data-path="ozellikler.hero.kicker">{oz.hero.kicker}</div>
+          <h1 style={h1Style} data-he data-path="ozellikler.hero.title">{oz.hero.title}</h1>
+          <p style={{ ...pStyle, marginLeft: 'auto', marginRight: 'auto' }} data-he data-path="ozellikler.hero.p">{oz.hero.p}</p>
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginTop: 24, justifyContent: 'center' }}>
           {(oz.gruplar || []).map((g) => (
@@ -53,17 +53,17 @@ export default async function Ozellikler() {
         </div>
       </section>
 
-      {(oz.gruplar || []).map((g) => (
+      {(oz.gruplar || []).map((g, gi) => (
         <section key={g.id} id={g.id} style={sectionStyle}>
           <div style={{ textAlign: 'center', maxWidth: 760, margin: '0 auto' }}>
-            <h2 style={h2Style}>{g.baslik}</h2>
-            <p style={{ ...pStyle, marginLeft: 'auto', marginRight: 'auto' }}>{g.giris}</p>
+            <h2 style={h2Style} data-he data-path={`ozellikler.gruplar.${gi}.baslik`}>{g.baslik}</h2>
+            <p style={{ ...pStyle, marginLeft: 'auto', marginRight: 'auto' }} data-he data-path={`ozellikler.gruplar.${gi}.giris`}>{g.giris}</p>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(270px, 1fr))', gap: 18, marginTop: 26 }}>
             {(g.items || []).map((x, i) => (
               <div key={i} style={cardStyle}>
-                <div style={{ fontFamily: T.serif, fontSize: 19 }}>{x.ad}</div>
-                <p style={{ ...pStyle, fontSize: 14.5, marginTop: 8 }}>{x.desc}</p>
+                <div style={{ fontFamily: T.serif, fontSize: 19 }} data-he data-path={`ozellikler.gruplar.${gi}.items.${i}.ad`}>{x.ad}</div>
+                <p style={{ ...pStyle, fontSize: 14.5, marginTop: 8 }} data-he data-path={`ozellikler.gruplar.${gi}.items.${i}.desc`}>{x.desc}</p>
               </div>
             ))}
           </div>

@@ -37,9 +37,9 @@ export default async function Sss() {
 
       <section style={{ ...sectionStyle, paddingTop: 64 }}>
         <div style={{ textAlign: 'center', maxWidth: 820, margin: '0 auto' }}>
-          <div style={kickerStyle}>{hero.kicker}</div>
-          <h1 style={h1Style}>{hero.title}</h1>
-          <p style={{ ...pStyle, marginLeft: 'auto', marginRight: 'auto' }}>{hero.p}</p>
+          <div style={kickerStyle} data-he data-path="sss.hero.kicker">{hero.kicker}</div>
+          <h1 style={h1Style} data-he data-path="sss.hero.title">{hero.title}</h1>
+          <p style={{ ...pStyle, marginLeft: 'auto', marginRight: 'auto' }} data-he data-path="sss.hero.p">{hero.p}</p>
         </div>
       </section>
 
@@ -47,8 +47,8 @@ export default async function Sss() {
         <div style={{ maxWidth: 820 }}>
           {(items || []).map((q, i) => (
             <details key={i} style={{ borderBottom: `1px solid ${T.border}`, padding: '18px 4px' }}>
-              <summary style={{ fontFamily: T.serif, fontSize: 19, cursor: 'pointer' }}>{q.q}</summary>
-              <p style={{ ...pStyle, fontSize: 15.5 }}>{q.a}</p>
+              <summary style={{ fontFamily: T.serif, fontSize: 19, cursor: 'pointer' }} data-he data-path={`sss.items.${i}.q`}>{q.q}</summary>
+              <p style={{ ...pStyle, fontSize: 15.5 }} data-he data-path={`sss.items.${i}.a`}>{q.a}</p>
             </details>
           ))}
         </div>

@@ -25,7 +25,7 @@ function buildJsonLd(c) {
 
 export default async function Home() {
   const c = await getHermes();
-  const { hero, moduller, akis, ai, gizlilik, fiyatBand } = c.home;
+  const { hero, moduller, akis, gizlilik, fiyatBand } = c.home;
 
   return (
     <main>
@@ -70,18 +70,6 @@ export default async function Home() {
           ))}
         </div>
         <p style={{ marginTop: 22 }}><a href="/ozellikler">Tüm özellikleri modül modül incele →</a></p>
-      </section>
-
-      {/* AI ANALİZ */}
-      <section style={sectionStyle}>
-        <div style={{ background: T.cream, border: `1px solid ${T.border}`, borderRadius: 28, padding: '44px 40px' }}>
-          <div style={{ ...kickerStyle, color: T.accentText }} data-he data-path="home.ai.kicker">{ai.kicker}</div>
-          <h2 style={h2Style} data-he data-path="home.ai.title">{ai.title}</h2>
-          <p style={pStyle} data-he data-path="home.ai.p">{ai.p}</p>
-          <ul style={{ ...pStyle, fontSize: 15, paddingLeft: 20 }}>
-            {(ai.rows || []).map((r, i) => <li key={i} data-he data-path={`home.ai.rows.${i}`}>{r}</li>)}
-          </ul>
-        </div>
       </section>
 
       {/* 3 ADIM */}

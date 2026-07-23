@@ -43,9 +43,9 @@ export default async function Indir() {
 
       <section style={{ ...sectionStyle, paddingTop: 64 }}>
         <div style={{ textAlign: 'center', maxWidth: 820, margin: '0 auto' }}>
-          <div style={kickerStyle}>{hero.kicker}</div>
-          <h1 style={h1Style}>{hero.title}</h1>
-          <p style={{ ...pStyle, marginLeft: 'auto', marginRight: 'auto' }}>{hero.p}</p>
+          <div style={kickerStyle} data-he data-path="indir.hero.kicker">{hero.kicker}</div>
+          <h1 style={h1Style} data-he data-path="indir.hero.title">{hero.title}</h1>
+          <p style={{ ...pStyle, marginLeft: 'auto', marginRight: 'auto' }} data-he data-path="indir.hero.p">{hero.p}</p>
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 24, alignItems: 'center', justifyContent: 'center' }}>
           <a href="/fiyat" style={btnPrimary}>Ön sipariş ver</a>
@@ -54,11 +54,11 @@ export default async function Indir() {
       </section>
 
       <section style={sectionStyle}>
-        <h2 style={{ ...h2Style, textAlign: 'center' }}>{adimlar.title}</h2>
+        <h2 style={{ ...h2Style, textAlign: 'center' }} data-he data-path="indir.adimlar.title">{adimlar.title}</h2>
         <ol style={{ ...pStyle, maxWidth: 720, paddingLeft: 22, display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {(adimlar.items || []).map((s, i) => <li key={i}><strong>{s.title}</strong> — {s.desc}</li>)}
+          {(adimlar.items || []).map((s, i) => <li key={i}><strong data-he data-path={`indir.adimlar.items.${i}.title`}>{s.title}</strong> — <span data-he data-path={`indir.adimlar.items.${i}.desc`}>{s.desc}</span></li>)}
         </ol>
-        <p style={{ ...pStyle, fontSize: 14.5, color: T.muted }}>{surum.not}</p>
+        <p style={{ ...pStyle, fontSize: 14.5, color: T.muted }} data-he data-path="indir.surum.not">{surum.not}</p>
         {rel && (
           <p style={{ ...pStyle, fontSize: 14, color: T.muted, marginTop: 8 }}>
             Son yayın: sürüm {rel.version}{rel.publishedAt ? ` · ${new Date(rel.publishedAt).toLocaleDateString('tr-TR')}` : ''}
@@ -68,17 +68,17 @@ export default async function Indir() {
       </section>
 
       <section style={sectionStyle}>
-        <h2 style={{ ...h2Style, textAlign: 'center' }}>{sistem.title}</h2>
+        <h2 style={{ ...h2Style, textAlign: 'center' }} data-he data-path="indir.sistem.title">{sistem.title}</h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 18, marginTop: 24, maxWidth: 780 }}>
           <div style={{ ...cardStyle, background: T.cream }}>
             <div style={{ fontWeight: 700, marginBottom: 10 }}>Windows</div>
             <ul style={{ margin: 0, paddingLeft: 20, fontSize: 14.5, lineHeight: 1.8, color: T.ink2 }}>
-              {(sistem.win || []).map((r, i) => <li key={i}>{r}</li>)}
+              {(sistem.win || []).map((r, i) => <li key={i} data-he data-path={`indir.sistem.win.${i}`}>{r}</li>)}
             </ul>
           </div>
           <div style={cardStyle}>
             <div style={{ fontWeight: 700, marginBottom: 10 }}>Yol haritası</div>
-            <p style={{ ...pStyle, fontSize: 14.5, margin: 0 }}>{sistem.not}</p>
+            <p style={{ ...pStyle, fontSize: 14.5, margin: 0 }} data-he data-path="indir.sistem.not">{sistem.not}</p>
             <p style={{ marginTop: 14, fontSize: 14.5 }}><a href="/sss">Web sürümü hakkında SSS →</a></p>
           </div>
         </div>

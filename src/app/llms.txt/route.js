@@ -39,16 +39,14 @@ export async function GET() {
 
 > Hermes, profesyonel kullanım için geliştirilmiş Türkçe masaüstü astroloji programıdır (Windows 10/11).
 > Doğum haritası, transit, ilerletme, dönem teknikleri, tutulmalar, sinastri, horary, elektif tarama,
-> rektifikasyon, astrokartografi, Uranyen dial, AI analiz asistanı ve danışan yönetimi tek uygulamada.
+> rektifikasyon, astrokartografi, Uranyen dial ve danışan yönetimi tek uygulamada.
 > Hesap motoru Swiss Ephemeris kullanır; danışan verileri kullanıcının cihazında kalır (bulut zorunluluğu yok).
 > Geliştirici: zerdemkartal (bağımsız astroloji atölyesi, İstanbul). Dil: Türkçe.
 
 Temel gerçekler:
 - Fiyat: ön satışta ₺3.000 tek seferlik lisans (planlanan liste fiyatı ₺9.999). Abonelik YOK.
 - Lisans: aynı kişiye ait 2 cihaza kadar; tüm güncellemeler dahil; platformlar arası tek lisans.
-- Platformlar: bugün Windows 10/11 (64-bit); web sürümü (satın alanlara, üye girişiyle, tam sürüm) ve Android yol haritasında.
-- AI analiz: 11 analiz tipi (natal, tahmin, horary, elektif, sinastri, medikal, finansal, mesleki, karmik, psikolojik, lokasyonel); isteğe bağlı, internet gerektirir.
-- Gizlilik: harita hesapları çevrimdışı; internet yalnız lisans doğrulama, güncelleme ve AI analiz için.
+- Platformlar: bugün Windows 10/11 (64-bit); web sürümü (satın alanlara, üye girişiyle, tam sürüm) ve Android yol haritasında.- Gizlilik: harita hesapları çevrimdışı; internet yalnız lisans doğrulama ve güncelleme için.
 
 ## Sayfalar
 - [Ana sayfa](${SITE}/): Hermes tanıtımı.

@@ -10,11 +10,11 @@ export const HERMES_SITE = {
   seo: {
     home: {
       title: 'Hermes — Profesyonel Masaüstü Astroloji Programı',
-      description: 'Hermes: doğum haritası, transit, sinastri, horary, rektifikasyon, astrokartografi ve AI analiz asistanı tek programda. Verilerin cihazında kalır. Tek seferlik lisans, her platform.'
+      description: 'Hermes: doğum haritası, transit, sinastri, horary, rektifikasyon ve astrokartografi tek programda. Verilerin cihazında kalır. Tek seferlik lisans, her platform.'
     },
     ozellikler: {
       title: 'Özellikler — Hermes Astroloji Programı',
-      description: 'Hermes’in tüm modülleri: Swiss Ephemeris hassasiyetinde harita motoru, zamanlama teknikleri, sinastri, horary, elektif tarama, rektifikasyon, astrokartografi, Uranyen dial ve AI analiz.'
+      description: 'Hermes’in tüm modülleri: Swiss Ephemeris hassasiyetinde harita motoru, zamanlama teknikleri, sinastri, horary, elektif tarama, rektifikasyon, astrokartografi ve Uranyen dial.'
     },
     fiyat: {
       title: 'Fiyat — Hermes | Tek seferlik lisans, her platform',
@@ -26,7 +26,7 @@ export const HERMES_SITE = {
     },
     sss: {
       title: 'Sık Sorulan Sorular — Hermes Astroloji Programı',
-      description: 'Hermes hakkında merak edilenler: lisans, ödeme, güncellemeler, çevrimdışı çalışma, veri gizliliği, web sürümü ve AI analiz asistanı.'
+      description: 'Hermes hakkında merak edilenler: lisans, ödeme, güncellemeler, çevrimdışı çalışma, veri gizliliği ve web sürümü.'
     }
   },
 
@@ -50,7 +50,6 @@ export const HERMES_SITE = {
         { glyph: '☿︎', title: 'Horary (Soru Astrolojisi)', desc: 'Soru haritası kurulumu ve klasik horary değerlendirmesi için ayrılmış modül.' },
         { glyph: '⌖', title: 'Rektifikasyon & Elektif', desc: 'Yaşam olaylarından doğum saati düzeltme; uygun an için tarih aralığı taraması.' },
         { glyph: '◎', title: 'Astrokartografi & Uranyen', desc: 'Dünya haritası üzerinde yer analizi; 90° dial ve orta noktalarla Uranyen çalışması.' },
-        { glyph: '✦', title: 'AI analiz asistanı', desc: 'Natal’dan karmik’e 11 analiz tipinde, korku dili kurmayan üslupla yazılmış Türkçe analiz taslakları.' },
         { glyph: '❧', title: 'Danışan atölyesi', desc: 'Danışan kayıtları, notlar, olay günlüğü, raporlar, kütüphane ve AA harita arşivi.' }
       ]
     },
@@ -62,16 +61,10 @@ export const HERMES_SITE = {
         { title: 'Atölyeni büyüt', desc: 'Danışanlarını, notlarını ve araştırmalarını tek yerde biriktir; her şey cihazında kalır.' }
       ]
     },
-    ai: {
-      kicker: '✦ AI ANALİZ',
-      title: 'Yapay zekâ, astroloğun kalemiyle',
-      p: 'Hermes’in analiz asistanı hazır kalıp basmaz: çoklu tanıklık ister, önce yapıya sonra ayrıntıya bakar ve kaderci dil kurmadan yazar. Natal, tahmin, horary, elektif, sinastri, medikal, finansal, mesleki, karmik, psikolojik ve lokasyonel — 11 analiz tipinin her birinin kendi metodolojisi vardır.',
-      rows: ['11 analiz tipi, tip başına ayrı metodoloji', 'Türkçe, insan gibi yazan üslup rehberi', 'Analizler danışan dosyasına kaydedilir']
-    },
     gizlilik: {
       kicker: 'GİZLİLİK',
       title: 'Verilerin senin cihazında',
-      p: 'Danışan verileri buluta gitmez; harita hesapları tamamen çevrimdışı yapılır. İnternet yalnız üç şey için gerekir: lisans doğrulama, güncellemeler ve (istersen) AI analiz.',
+      p: 'Danışan verileri buluta gitmez; harita hesapları tamamen çevrimdışı yapılır. İnternet yalnız iki şey için gerekir: lisans doğrulama ve güncellemeler.',
       rows: ['Danışan verisi cihazda — bulut zorunluluğu yok', 'Hesap motoru çevrimdışı çalışır', 'Otomatik güncelleme; sürümler imzalı dağıtılır']
     },
     fiyatBand: {
@@ -125,17 +118,7 @@ export const HERMES_SITE = {
           { ad: 'Astrokartografi', desc: 'Gezegen hatlarını dünya haritası üzerine çizer; yer değiştirme sorularına görsel cevap.' },
           { ad: 'Uranyen astroloji', desc: '90° dial, orta noktalar ve yakınlaştırmalı kadran; Uranyen ekolüyle çalışanlar için.' }
         ]
-      },
-      {
-        id: 'ai', baslik: 'AI analiz asistanı ✦',
-        giris: 'Analiz asistanı, astroloji bilgisine üslup terbiyesi eklenmiş bir yazım ortağıdır: kaderci dil, korku dili ve klişe yasak.',
-        items: [
-          { ad: '11 analiz tipi', desc: 'Natal, tahmin, horary, elektif, sinastri, medikal, finansal, mesleki, karmik, psikolojik, lokasyonel — her tipin kendi metodoloji dosyası vardır.' },
-          { ad: 'Analiz sohbeti', desc: 'Harita verisinin üzerinde soru-cevap; analiz tek adımda da alınabilir.' },
-          { ad: 'Kayıt & arşiv', desc: 'Üretilen analizler danışan dosyasına işlenir; sonra dönüp bakarsın.' }
-        ]
-      },
-      {
+      },      {
         id: 'atolye', baslik: 'Danışan atölyesi',
         giris: 'Hermes yalnız hesap yapmaz; bir danışmanlık pratiğinin defterini de tutar.',
         items: [
@@ -150,7 +133,7 @@ export const HERMES_SITE = {
         id: 'platform', baslik: 'Platform & gizlilik',
         giris: 'Program bugün Windows’ta; lisansın ise platforma değil sana bağlı.',
         items: [
-          { ad: 'Çevrimdışı çekirdek', desc: 'Efemeris gömülü; internet yalnız lisans, güncelleme ve AI için.' },
+          { ad: 'Çevrimdışı çekirdek', desc: 'Efemeris gömülü; internet yalnız lisans ve güncelleme için.' },
           { ad: 'Veri cihazda', desc: 'Danışan verilerin bilgisayarından çıkmaz; bulut zorunluluğu yok.' },
           { ad: 'Görsel temalar', desc: 'Gündüz ve gece çalışmaya uygun tema aileleri — bu sitenin koyu modu da programdaki “Meridyen Rasathanesi” temasıdır.' },
           { ad: 'Yol haritası', desc: 'Web sürümü (satın alanlara, üye girişiyle) ve Android çalışması planda; tek lisans hepsinde geçerli olacak.' }
@@ -224,13 +207,12 @@ export const HERMES_SITE = {
   sss: {
     hero: { kicker: 'SSS', title: 'Sık sorulanlar', p: 'Cevabını bulamazsan iletişim formundan yaz; en geç iki iş günü içinde dönüş yapılır.' },
     items: [
-      { q: 'Hermes nedir?', a: 'Hermes, profesyonel kullanım için geliştirilmiş Türkçe masaüstü astroloji programıdır: doğum haritası, transit, ilerletme, dönem teknikleri, tutulmalar, sinastri, horary, elektif tarama, rektifikasyon, astrokartografi, Uranyen dial, AI analiz asistanı ve danışan yönetimi tek uygulamada.' },
+      { q: 'Hermes nedir?', a: 'Hermes, profesyonel kullanım için geliştirilmiş Türkçe masaüstü astroloji programıdır: doğum haritası, transit, ilerletme, dönem teknikleri, tutulmalar, sinastri, horary, elektif tarama, rektifikasyon, astrokartografi, Uranyen dial ve danışan yönetimi tek uygulamada.' },
       { q: 'Kimler için?', a: 'Danışmanlık veren astrologlar, ciddi öğrenciler ve araştırmacılar için tasarlandı. Günlük burç yorumu uygulaması değildir.' },
       { q: 'Hesaplar ne kadar hassas?', a: 'Hesap motoru Swiss Ephemeris kullanır; gezegen konumları, evler, asteroidler ve sabit yıldızlar efemeris kaynağıyla birebir hesaplanır. Efemeris dosyaları programla birlikte gelir, hesap için internet gerekmez.' },
       { q: 'Lisans nasıl çalışıyor?', a: 'Tek seferlik satın alma; abonelik yok. Bir lisans aynı kişiye ait 2 cihaza kadar kullanılabilir, çıkan tüm güncellemeler dahildir.' },
       { q: 'Web sürümü olacak mı?', a: 'Evet, yol haritasında. Web sürümü tam sürüm olacak ve yalnız satın alanlar üye girişi + lisans doğrulamasıyla kullanabilecek. Ek ücret yok — aynı lisans.' },
-      { q: 'Verilerim nerede tutuluyor?', a: 'Cihazında. Danışan kayıtların ve haritaların bilgisayarından çıkmaz; bulut zorunluluğu yoktur. İnternet yalnız lisans doğrulama, güncelleme ve istersen AI analiz için kullanılır.' },
-      { q: 'AI analiz nasıl çalışıyor?', a: 'Analiz asistanı 11 analiz tipinde (natal, tahmin, horary, elektif, sinastri, medikal, finansal, mesleki, karmik, psikolojik, lokasyonel) ayrı metodolojilerle çalışır ve kaderci dil kurmayan bir üslup rehberine bağlıdır. AI kullanmak isteğe bağlıdır; internet gerektirir.' },
+      { q: 'Verilerim nerede tutuluyor?', a: 'Cihazında. Danışan kayıtların ve haritaların bilgisayarından çıkmaz; bulut zorunluluğu yoktur. İnternet yalnız lisans doğrulama ve güncelleme için kullanılır.' },
       { q: 'Hangi platformlarda çalışıyor?', a: 'Bugün Windows 10/11 (64-bit). macOS, Android ve web sürümleri yol haritasındadır; tek lisans hepsinde geçerli olacak.' },
       { q: 'Güncellemeler nasıl geliyor?', a: 'Program kendini otomatik günceller: yeni sürüm yayınlandığında açılışta indirir ve kurar; ücretsizdir.' },
       { q: 'Satın almadan deneyebilir miyim?', a: 'Şu an deneme sürümü yok; özellikleri Özellikler sayfasından ve blogdaki ekran görüntülü yazılardan inceleyebilirsin. Sorularını iletişim formundan sorabilirsin.' },
