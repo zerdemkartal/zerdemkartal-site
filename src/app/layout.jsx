@@ -3,6 +3,8 @@
 // import'u bazı dev/build durumlarında yüklenmeyip tüm --h-* değişkenlerini düşürdü (kartlar
 // kayboldu, tema düğmesi bozuldu) → inline <style> ilk HTML'de garanti render olur.
 // Açık mod = zerdemkartal aydınlık paleti · Koyu mod = "Meridyen Rasathanesi".
+import EditLayer from '@/components/EditLayer';
+
 export const metadata = {
   title: 'Hermes',
   icons: {
@@ -102,6 +104,11 @@ const THEME_CSS = `
   /* Metin okunabilirliği için merkezî perde (animasyonla aynı hizada, üstte) */
   .hero-veil { position:absolute; inset:0; background:radial-gradient(circle at 50% 33%, var(--h-veil1) 0%, var(--h-veil2) 32%, transparent 64%); }
   @media (max-width:720px) { .hero-lottie-svg { width:120vw; height:120vw; } .hero-emblem { width:42vw; } }
+
+  /* Yerinde düzenleme (EditLayer, /yonetim girişi sonrası) — düzenlenebilir alan vurgusu */
+  [data-he].he-on { outline:1.5px dashed var(--h-accent); outline-offset:3px; border-radius:3px; cursor:text; }
+  [data-he].he-on:hover { background:var(--h-sel); }
+  [data-he].he-on:focus { outline:2px solid var(--h-accent-text); outline-offset:3px; }
 `;
 
 // İlk boya ÖNCESİ tema tespiti (FOUC yok): localStorage 'h_tema' → prefers-color-scheme.
@@ -117,6 +124,7 @@ export default function RootLayout({ children }) {
         <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..600&family=Hanken+Grotesk:ital,wght@0,400..700;1,400&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet" />
         <style dangerouslySetInnerHTML={{ __html: THEME_CSS }} />
         {children}
+        <EditLayer />
       </body>
     </html>
   );

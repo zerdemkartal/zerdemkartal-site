@@ -36,17 +36,17 @@ export default async function Home() {
       <section className="hero" style={{ ...sectionStyle, paddingTop: 84, textAlign: 'center' }}>
         <HeroLottie />
         <div className="hero-inner">
-          <div style={kickerStyle}>{hero.kicker}</div>
-          <h1 style={{ ...h1Style, fontSize: 'clamp(44px, 6.4vw, 76px)' }}>{hero.title}</h1>
-          <p style={{ ...pStyle, fontSize: 18, maxWidth: 700, marginLeft: 'auto', marginRight: 'auto' }}>{hero.p}</p>
+          <div style={kickerStyle} data-he data-path="home.hero.kicker">{hero.kicker}</div>
+          <h1 style={{ ...h1Style, fontSize: 'clamp(44px, 6.4vw, 76px)' }} data-he data-path="home.hero.title">{hero.title}</h1>
+          <p style={{ ...pStyle, fontSize: 18, maxWidth: 700, marginLeft: 'auto', marginRight: 'auto' }} data-he data-path="home.hero.p">{hero.p}</p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 28, alignItems: 'center', justifyContent: 'center' }}>
-            <a href={hero.btn1Href} style={btnPrimary}>{hero.btn1}</a>
-            <a href={hero.btn2Href} style={btnGhost}>{hero.btn2}</a>
+            <a href={hero.btn1Href} style={btnPrimary} data-he data-path="home.hero.btn1">{hero.btn1}</a>
+            <a href={hero.btn2Href} style={btnGhost} data-he data-path="home.hero.btn2">{hero.btn2}</a>
           </div>
           {(hero.stats || []).length > 0 && (
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 22, justifyContent: 'center' }}>
               {hero.stats.map((s, i) => (
-                <span key={i} style={{ background: T.cream, border: `1px solid ${T.border}`, borderRadius: 999, padding: '7px 16px', fontSize: 13.5, color: T.ink2 }}>{s}</span>
+                <span key={i} style={{ background: T.cream, border: `1px solid ${T.border}`, borderRadius: 999, padding: '7px 16px', fontSize: 13.5, color: T.ink2 }} data-he data-path={`home.hero.stats.${i}`}>{s}</span>
               ))}
             </div>
           )}
@@ -56,16 +56,16 @@ export default async function Home() {
       {/* MODÜLLER */}
       <section style={sectionStyle}>
         <div style={{ textAlign: 'center', maxWidth: 760, margin: '0 auto' }}>
-          <div style={kickerStyle}>{moduller.kicker}</div>
-          <h2 style={h2Style}>{moduller.title}</h2>
-          <p style={{ ...pStyle, marginLeft: 'auto', marginRight: 'auto' }}>{moduller.p}</p>
+          <div style={kickerStyle} data-he data-path="home.moduller.kicker">{moduller.kicker}</div>
+          <h2 style={h2Style} data-he data-path="home.moduller.title">{moduller.title}</h2>
+          <p style={{ ...pStyle, marginLeft: 'auto', marginRight: 'auto' }} data-he data-path="home.moduller.p">{moduller.p}</p>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 18, marginTop: 30 }}>
           {(moduller.cards || []).map((f, i) => (
             <div key={i} className="zk-hover-card" style={cardStyle}>
               <div aria-hidden="true" style={{ width: 42, height: 42, borderRadius: 12, background: T.accentBg, display: 'grid', placeItems: 'center', fontSize: 20 }}>{f.glyph}</div>
-              <div style={{ fontFamily: T.serif, fontSize: 20, marginTop: 14 }}>{f.title}</div>
-              <p style={{ ...pStyle, fontSize: 14.5, marginTop: 8 }}>{f.desc}</p>
+              <div style={{ fontFamily: T.serif, fontSize: 20, marginTop: 14 }} data-he data-path={`home.moduller.cards.${i}.title`}>{f.title}</div>
+              <p style={{ ...pStyle, fontSize: 14.5, marginTop: 8 }} data-he data-path={`home.moduller.cards.${i}.desc`}>{f.desc}</p>
             </div>
           ))}
         </div>
@@ -75,33 +75,33 @@ export default async function Home() {
       {/* AI ANALİZ */}
       <section style={sectionStyle}>
         <div style={{ background: T.cream, border: `1px solid ${T.border}`, borderRadius: 28, padding: '44px 40px' }}>
-          <div style={{ ...kickerStyle, color: T.accentText }}>{ai.kicker}</div>
-          <h2 style={h2Style}>{ai.title}</h2>
-          <p style={pStyle}>{ai.p}</p>
+          <div style={{ ...kickerStyle, color: T.accentText }} data-he data-path="home.ai.kicker">{ai.kicker}</div>
+          <h2 style={h2Style} data-he data-path="home.ai.title">{ai.title}</h2>
+          <p style={pStyle} data-he data-path="home.ai.p">{ai.p}</p>
           <ul style={{ ...pStyle, fontSize: 15, paddingLeft: 20 }}>
-            {(ai.rows || []).map((r, i) => <li key={i}>{r}</li>)}
+            {(ai.rows || []).map((r, i) => <li key={i} data-he data-path={`home.ai.rows.${i}`}>{r}</li>)}
           </ul>
         </div>
       </section>
 
       {/* 3 ADIM */}
       <section style={sectionStyle}>
-        <h2 style={{ ...h2Style, textAlign: 'center' }}>{akis.title}</h2>
+        <h2 style={{ ...h2Style, textAlign: 'center' }} data-he data-path="home.akis.title">{akis.title}</h2>
         <ol style={{ ...pStyle, maxWidth: 720, paddingLeft: 22, display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {(akis.items || []).map((s, i) => <li key={i}><strong>{s.title}</strong> — {s.desc}</li>)}
+          {(akis.items || []).map((s, i) => <li key={i}><strong data-he data-path={`home.akis.items.${i}.title`}>{s.title}</strong> — <span data-he data-path={`home.akis.items.${i}.desc`}>{s.desc}</span></li>)}
         </ol>
       </section>
 
       {/* GİZLİLİK */}
       <section style={sectionStyle}>
         <div style={{ textAlign: 'center', maxWidth: 760, margin: '0 auto' }}>
-          <div style={kickerStyle}>{gizlilik.kicker}</div>
-          <h2 style={h2Style}>{gizlilik.title}</h2>
-          <p style={{ ...pStyle, marginLeft: 'auto', marginRight: 'auto' }}>{gizlilik.p}</p>
+          <div style={kickerStyle} data-he data-path="home.gizlilik.kicker">{gizlilik.kicker}</div>
+          <h2 style={h2Style} data-he data-path="home.gizlilik.title">{gizlilik.title}</h2>
+          <p style={{ ...pStyle, marginLeft: 'auto', marginRight: 'auto' }} data-he data-path="home.gizlilik.p">{gizlilik.p}</p>
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 18, justifyContent: 'center' }}>
           {(gizlilik.rows || []).map((r, i) => (
-            <span key={i} style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 999, padding: '9px 18px', fontSize: 14, color: T.ink2 }}>{r}</span>
+            <span key={i} style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 999, padding: '9px 18px', fontSize: 14, color: T.ink2 }} data-he data-path={`home.gizlilik.rows.${i}`}>{r}</span>
           ))}
         </div>
       </section>
@@ -110,11 +110,11 @@ export default async function Home() {
       <section style={sectionStyle}>
         <div style={{ background: T.dark, color: 'var(--h-dark-text)', borderRadius: 28, padding: '54px 48px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 24 }}>
           <div style={{ maxWidth: 560 }}>
-            <div style={{ ...kickerStyle, color: 'var(--h-dark-muted)' }}>{fiyatBand.kicker}</div>
-            <h2 style={{ ...h2Style, color: 'var(--h-dark-wordmark)' }}>{fiyatBand.title}</h2>
-            <p style={{ ...pStyle, color: 'var(--h-dark-text2)' }}>{fiyatBand.p}</p>
+            <div style={{ ...kickerStyle, color: 'var(--h-dark-muted)' }} data-he data-path="home.fiyatBand.kicker">{fiyatBand.kicker}</div>
+            <h2 style={{ ...h2Style, color: 'var(--h-dark-wordmark)' }} data-he data-path="home.fiyatBand.title">{fiyatBand.title}</h2>
+            <p style={{ ...pStyle, color: 'var(--h-dark-text2)' }} data-he data-path="home.fiyatBand.p">{fiyatBand.p}</p>
           </div>
-          <a href="/fiyat" style={{ background: 'var(--h-dark-wordmark)', color: T.dark, borderRadius: 999, padding: '15px 30px', textDecoration: 'none', fontWeight: 700 }}>{fiyatBand.btn}</a>
+          <a href="/fiyat" style={{ background: 'var(--h-dark-wordmark)', color: T.dark, borderRadius: 999, padding: '15px 30px', textDecoration: 'none', fontWeight: 700 }} data-he data-path="home.fiyatBand.btn">{fiyatBand.btn}</a>
         </div>
       </section>
 
