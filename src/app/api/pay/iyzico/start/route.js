@@ -53,6 +53,6 @@ export async function POST(request) {
     return Response.json({ orderId: order.id, token: r.token, paymentPageUrl: r.paymentPageUrl });
   } catch (e) {
     console.error('[iyzico] initialize hata', e);
-    return Response.json({ error: 'ödeme sağlayıcı hatası' }, { status: 502 });
+    return Response.json({ error: 'ödeme sağlayıcı hatası: ' + (e?.message || 'bilinmeyen') }, { status: 502 });
   }
 }

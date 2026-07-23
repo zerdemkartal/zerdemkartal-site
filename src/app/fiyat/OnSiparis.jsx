@@ -14,6 +14,7 @@ export default function OnSiparis({ label: cta = 'Ön sipariş ver', price = 300
   const [open, setOpen] = useState(false);
   const [f, setF] = useState({ name: '', email: '', kvkk: false });
   const [state, setState] = useState('form'); // form | sending | done | error
+  const [errMsg, setErrMsg] = useState('');
 
   useEffect(() => {
     if (!open) return;
@@ -27,7 +28,7 @@ export default function OnSiparis({ label: cta = 'Ön sipariş ver', price = 300
   async function submit(e) {
     e.preventDefault();
     if (!f.name.trim() || !f.email.trim() || !f.kvkk || state === 'sending') return;
-    setState('sending');
+    setState('sending'); setErrMsg('');
     const payload = { name: f.name.trim(), email: f.email.trim(), product: 'Hermes', price: Number(price) || 3000 };
     try {
       // 1) iyzico ödeme sayfasını başlatmayı dene
@@ -37,18 +38,22 @@ export default function OnSiparis({ label: cta = 'Ön sipariş ver', price = 300
       if (r.ok) {
         const d = await r.json().catch(() => null);
         if (d && d.paymentPageUrl) { window.location.href = d.paymentPageUrl; return; } // iyzico'ya yönlendir
-        setState('error'); return;
+        setErrMsg('Ödeme sayfası adresi alınamadı.'); setState('error'); return;
       }
       // 2) iyzico henüz yapılandırılmadıysa (503) → dürüst ön sipariş kaydı
       if (r.status === 503) {
         const r2 = await fetch('/api/orders', {
           method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
         });
+        if (!r2.ok) setErrMsg('Sipariş kaydı oluşturulamadı.');
         setState(r2.ok ? 'done' : 'error');
         return;
       }
+      // 3) diğer hatalar → iyzico/sunucu mesajını göster
+      const d = await r.json().catch(() => null);
+      setErrMsg((d && d.error) ? String(d.error) : ('Sunucu hatası (' + r.status + ')'));
       setState('error');
-    } catch { setState('error'); }
+    } catch (err) { setErrMsg('Bağlantı hatası: ' + (err?.message || '')); setState('error'); }
   }
 
   function close() { setOpen(false); setTimeout(() => { setState('form'); setF({ name: '', email: '', kvkk: false }); }, 200); }
@@ -71,7 +76,7 @@ export default function OnSiparis({ label: cta = 'Ön sipariş ver', price = 300
             ) : state === 'error' ? (
               <div>
                 <div style={{ fontFamily: "'Newsreader', serif", fontSize: 24, color: 'var(--h-ink)' }}>Bir şey ters gitti</div>
-                <p style={{ fontSize: 15, lineHeight: 1.7, color: 'var(--h-ink2)', marginTop: 12 }}>Ön sipariş kaydedilemedi. Tekrar dene ya da iletişim formundan yaz.</p>
+                <p style={{ fontSize: 15, lineHeight: 1.7, color: 'var(--h-ink2)', marginTop: 12 }}>{errMsg || 'İşlem tamamlanamadı. Tekrar dene ya da iletişim formundan yaz.'}</p>
                 <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
                   <button type="button" onClick={() => setState('form')} style={btnPri}>Tekrar dene</button>
                   <a href="/iletisim" style={{ alignSelf: 'center', color: 'var(--h-accent-text)' }}>İletişim</a>

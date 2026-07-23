@@ -4,8 +4,11 @@
 // Akış: CheckoutForm (iyzico'nun barındırdığı ödeme sayfası) → initialize ile paymentPageUrl al →
 //       kullanıcı orada öder → iyzico callbackUrl'e token POST'lar → retrieve ile sonucu doğrula.
 // KURULUM: `npm i iyzipay` (package.json'a eklendi). Alanlar iyzico dökümanına göre doğrulanmalı.
-import Iyzipay from 'iyzipay';
+import IyzipayPkg from 'iyzipay';
 import { SITE } from './site';
+
+// iyzipay CommonJS paketi — Next.js ESM interop'unda bazen { default } içine sarılır.
+const Iyzipay = IyzipayPkg?.default || IyzipayPkg;
 
 const API_KEY = process.env.IYZICO_API_KEY || '';
 const SECRET = process.env.IYZICO_SECRET || '';
