@@ -3,7 +3,7 @@
 export const SITE = (process.env.SITE_URL || 'https://hermesastroloji.com').replace(/\/$/, '');
 export const OG_IMAGE = SITE + '/assets/og-image.png';
 export const LOGO = SITE + '/assets/hermes-mark.svg';
-export const WHATSAPP_PHONE = '905454564275';
+export const WHATSAPP_PHONE = '905528880520';
 export const whatsappUrl = (message) => `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(message)}`;
 export const WHATSAPP_INFO_URL = whatsappUrl('Merhaba! Hermes programı hakkında bilgi almak istiyorum.');
 export const WHATSAPP_PURCHASE_URL = whatsappUrl('Merhaba! Hermes programını satın almak istiyorum. Lisans seçenekleri ve ödeme adımları hakkında bilgi alabilir miyim?');
