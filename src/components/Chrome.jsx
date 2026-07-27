@@ -6,6 +6,10 @@
 //   bu yüzden T kullanan her sayfa otomatik iki temada da çalışır.
 import ThemeToggle from './ThemeToggle';
 import MobileNav from './MobileNav';
+// Faz 3 (27 Tem 2026) — yapışkan/akıllı nav sarmalayıcısı + ⌘K komut paleti.
+// Nav markup'ı DEĞİŞMEDİ; SmartNav yalnız dıştan sarar (sunucu çocukları prop olarak alır).
+import SmartNav from './SmartNav';
+import CommandPalette from './CommandPalette';
 
 export const T = {
   ink: 'var(--h-ink)', ink2: 'var(--h-ink2)', paper: 'var(--h-bg)', cream: 'var(--h-cream)',
@@ -36,6 +40,7 @@ export function Nav({ active }) {
   return (
    <>
     <a href="#h-main" className="h-skip">İçeriğe geç</a>
+    <SmartNav>
     <nav aria-label="Ana gezinme" style={{ position: 'relative', zIndex: 20, maxWidth: 1240, margin: '26px auto 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--h-navbg)', backdropFilter: 'blur(18px)', WebkitBackdropFilter: 'blur(18px)', borderRadius: 20, padding: '14px 12px 14px 18px', boxShadow: '0 1px 2px var(--h-shadow), 0 10px 30px var(--h-shadow)' }}>
       <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none', color: T.ink }}>
         <img src="/assets/hermes-mark.svg" alt="Hermes kadüse logosu" style={{ width: 40, height: 38, display: 'block' }} />
@@ -50,10 +55,12 @@ export function Nav({ active }) {
           ))}
           <a href="/uye" style={{ marginLeft: 2, background: T.dark, color: 'var(--h-dark-text)', borderRadius: 999, padding: '9px 16px', fontSize: 14, textDecoration: 'none' }}>Üye girişi</a>
         </div>
+        <CommandPalette />
         <ThemeToggle />
         <MobileNav active={active} />
       </div>
     </nav>
+    </SmartNav>
     <span id="h-main" tabIndex={-1} aria-hidden="true" />
    </>
   );
@@ -66,10 +73,7 @@ export function Footer() {
   return (
     <footer style={{ background: T.dark, color: 'var(--h-dark-text)', borderRadius: '44px 44px 0 0', padding: '96px 0 0', overflow: 'hidden', marginTop: 100 }}>
       <div style={{ maxWidth: 1160, margin: '0 auto', padding: '0 32px', display: 'grid', gridTemplateColumns: '1.2fr 0.5fr 0.6fr', gap: 60 }}>
-        <div>
-          <img src="/assets/hermes-mark.svg" alt="Hermes kadüse logosu" style={{ width: 74, height: 70, display: 'block' }} />
-          <p style={{ fontFamily: T.serif, fontStyle: 'italic', fontSize: 24, lineHeight: 1.5, color: 'var(--h-dark-text2)', maxWidth: 420, margin: '24px 0 0' }}>Hermes — gökyüzünü masaüstüne indiren astroloji programı. zerdemkartal atölyesinden.</p>
-        </div>
+        <div aria-hidden="true" />
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14, fontSize: 15.5 }}>
           <span style={colHead}>SAYFALAR</span>
           <a href="/ozellikler" style={fl}>Özellikler</a>
@@ -87,18 +91,23 @@ export function Footer() {
           <a href="https://youtube.com/@zerdemkartal" target="_blank" rel="me noopener" style={fl}>YouTube</a>
         </div>
       </div>
-      <div aria-hidden="true" style={{ textAlign: 'center', marginTop: 60, lineHeight: 0.78, whiteSpace: 'nowrap' }}>
-        <span style={{ fontFamily: T.serif, fontWeight: 420, fontSize: 'clamp(110px, 21vw, 300px)', letterSpacing: '-0.03em', color: 'var(--h-dark-wordmark)' }}>Hermes</span>
+      <div aria-hidden="true" style={{ textAlign: 'center', marginTop: 128, lineHeight: 0.82, whiteSpace: 'nowrap' }}>
+        <span style={{ position: 'relative', display: 'inline-block' }}>
+          <img src="/assets/hermes-mark.svg" alt="" style={{ position: 'absolute', left: '13%', bottom: '95%', transform: 'translate(-50%, -100%)', height: 132, width: 'auto', display: 'block' }} />
+          <span style={{ fontFamily: T.serif, fontWeight: 420, fontSize: 'clamp(110px, 21vw, 300px)', letterSpacing: '-0.03em', color: 'var(--h-dark-wordmark)' }}>Hermes</span>
+        </span>
       </div>
-      <div style={{ borderTop: '1px solid var(--h-dark-border)', marginTop: -14, padding: '20px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px 18px', fontSize: 13.5, color: 'var(--h-dark-muted)' }}>
-        <span>© 2026 zerdemkartal · Hermes Astroloji Programı</span>
-        <span style={{ display: 'inline-flex', gap: 16, flexWrap: 'wrap' }}>
+      <div style={{ borderTop: '1px solid var(--h-dark-border)', marginTop: 30, padding: '24px 32px 32px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14, textAlign: 'center' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '8px 22px', fontSize: 14 }}>
           <a href="/yasal/kvkk" style={legal}>KVKK</a>
           <a href="/yasal/gizlilik" style={legal}>Gizlilik &amp; Çerez</a>
           <a href="/yasal/mesafeli-satis" style={legal}>Mesafeli Satış</a>
           <a href="/yasal/iade" style={legal}>İptal &amp; İade</a>
-        </span>
-        <span>İstanbul&#39;dan, gökyüzü altında yapıldı ☿&#xFE0E;</span>
+        </div>
+        <div style={{ fontSize: 13, color: 'var(--h-dark-muted)', lineHeight: 1.7 }}>
+          © 2026 zerdemkartal · Hermes Astroloji Programı<br />
+          İstanbul&#39;dan, gökyüzü altında yapıldı ☿&#xFE0E;
+        </div>
       </div>
     </footer>
   );

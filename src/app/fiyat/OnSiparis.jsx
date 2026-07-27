@@ -10,7 +10,7 @@ const field = { width: '100%', border: '1px solid var(--h-border)', borderRadius
 const label = { display: 'flex', flexDirection: 'column', gap: 6, fontSize: 13.5, color: 'var(--h-muted)', marginTop: 12 };
 const btnPri = { background: 'var(--h-accent-text)', color: 'var(--h-accent-ink)', borderRadius: 999, padding: '13px 26px', fontWeight: 600, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 15 };
 
-export default function OnSiparis({ label: cta = 'Ön sipariş ver', price = 3000 }) {
+export default function OnSiparis({ label: cta = 'Ön sipariş ver', price = 5000 }) {
   const [open, setOpen] = useState(false);
   const [f, setF] = useState({ name: '', email: '', kvkk: false });
   const [state, setState] = useState('form'); // form | sending | done | error
@@ -29,7 +29,7 @@ export default function OnSiparis({ label: cta = 'Ön sipariş ver', price = 300
     e.preventDefault();
     if (!f.name.trim() || !f.email.trim() || !f.kvkk || state === 'sending') return;
     setState('sending'); setErrMsg('');
-    const payload = { name: f.name.trim(), email: f.email.trim(), product: 'Hermes', price: Number(price) || 3000 };
+    const payload = { name: f.name.trim(), email: f.email.trim(), product: 'Hermes', price: Number(price) || 5000 };
     try {
       // 1) iyzico ödeme sayfasını başlatmayı dene
       const r = await fetch('/api/pay/iyzico/start', {

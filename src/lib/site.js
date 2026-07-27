@@ -18,7 +18,7 @@ export const WEBSITE = {
 
 /** Ürünün tek gerçek JSON-LD düğümü — her sayfa aynı @id'yi kullanır (GEO: tutarlı varlık).
  *  featureList çağıran sayfadan gelir (içerik modelinden). Uydurma puan/yorum YOK. */
-export function appNode({ description, featureList = [], price = '3000' } = {}) {
+export function appNode({ description, featureList = [], price = '5000' } = {}) {
   return {
     '@type': 'SoftwareApplication', '@id': SITE + '/#hermes', name: 'Hermes',
     alternateName: 'Hermes Astroloji Programı',

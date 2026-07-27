@@ -9,7 +9,7 @@ const OrderIn = z.object({
   name: z.string().min(1).max(120),
   email: z.string().email(),
   product: z.string().max(80).default('Hermes'),
-  price: z.number().int().nonnegative().default(3000),
+  price: z.number().int().nonnegative().default(5000),
   payProvider: z.string().max(40).optional(),
   payRef: z.string().max(200).optional()
 });

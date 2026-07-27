@@ -6,6 +6,7 @@ import { SITE, ORG, WEBSITE, appNode, pageMeta } from '@/lib/site';
 import { JsonLd } from '@/components/JsonLd';
 import { Nav, Footer, T, kickerStyle, h1Style, h2Style, pStyle, sectionStyle, cardStyle, btnPrimary } from '@/components/Chrome';
 import { getLatestRelease } from '@/lib/releases';
+import Shot from '@/components/Shot';
 
 export const revalidate = 300;
 const PATH = '/indir';
@@ -33,7 +34,7 @@ function buildJsonLd(c) {
 
 export default async function Indir() {
   const c = await getHermes();
-  const { hero, surum, adimlar, sistem } = c.indir;
+  const { hero, gorsel, surum, adimlar, sistem } = c.indir;
   const rel = await getLatestRelease(); // GitHub'da yayın yoksa null → statik surum bilgisi
 
   return (
@@ -51,6 +52,9 @@ export default async function Indir() {
           <a href="/fiyat" style={btnPrimary}>Ön sipariş ver</a>
           <span style={{ background: T.cream, border: `1px solid ${T.border}`, borderRadius: 999, padding: '9px 18px', fontSize: 13.5, color: T.ink2 }}>{surum.baslik}: {rel?.version || surum.ver}</span>
         </div>
+        {gorsel && gorsel.src ? (
+          <Shot src={gorsel.src} cap={gorsel.cap} alt="Hermes açılış ekranı — ekran görüntüsü" priority style={{ maxWidth: 960, margin: '34px auto 0' }} />
+        ) : null}
       </section>
 
       <section style={sectionStyle}>

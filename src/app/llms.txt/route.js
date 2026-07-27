@@ -44,7 +44,7 @@ export async function GET() {
 > Geliştirici: zerdemkartal (bağımsız astroloji atölyesi, İstanbul). Dil: Türkçe.
 
 Temel gerçekler:
-- Fiyat: ön satışta ₺3.000 tek seferlik lisans (planlanan liste fiyatı ₺9.999). Abonelik YOK.
+- Fiyat: ön satışta ₺5.000 tek seferlik lisans (planlanan liste fiyatı ₺10.000). Abonelik YOK.
 - Lisans: aynı kişiye ait 2 cihaza kadar; tüm güncellemeler dahil; platformlar arası tek lisans.
 - Platformlar: bugün Windows 10/11 (64-bit); web sürümü (satın alanlara, üye girişiyle, tam sürüm) ve Android yol haritasında.- Gizlilik: harita hesapları çevrimdışı; internet yalnız lisans doğrulama ve güncelleme için.
 

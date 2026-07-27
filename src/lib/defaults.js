@@ -17,8 +17,8 @@ export const HERMES_SITE = {
       description: 'Hermes’in tüm modülleri: Swiss Ephemeris hassasiyetinde harita motoru, zamanlama teknikleri, sinastri, horary, elektif tarama, rektifikasyon, astrokartografi ve Uranyen dial.'
     },
     fiyat: {
-      title: 'Fiyat — Hermes | Tek seferlik lisans, her platform',
-      description: 'Hermes ön satış: ₺3.000 tek seferlik lisans (liste ₺9.999). Abonelik yok, ömür boyu güncelleme. Lisansın masaüstünde ve yol haritasındaki web/Android sürümlerinde geçerli.'
+      title: 'Fiyat — Hermes | Tek seferlik lisans, abonelik yok',
+      description: 'Hermes ön satış: ₺5.000 tek seferlik lisans (liste ₺10.000). Abonelik yok, ömür boyu güncelleme. Lisansın masaüstünde ve yol haritasındaki web/Android sürümlerinde geçerli.'
     },
     indir: {
       title: 'İndir — Hermes Astroloji Programı (Windows)',
@@ -35,9 +35,14 @@ export const HERMES_SITE = {
       kicker: 'HERMES ASTROLOJİ PROGRAMI',
       title: 'Gökyüzü, masaüstünde.',
       p: 'Hermes; doğum haritasından horary’ye, rektifikasyondan astrokartografiye profesyonel bir astroloji atölyesini tek sakin ekranda toplar. Hesaplar Swiss Ephemeris hassasiyetinde, yorum dili Türkçe, verilerin ise yalnız senin cihazında.',
-      btn1: 'Özellikleri gör', btn1Href: '/ozellikler',
-      btn2: 'Ön satış — ₺3.000', btn2Href: '/fiyat',
-      stats: ['Windows 10/11', 'Tek seferlik lisans', 'Çevrimdışı çalışır']
+      btn1: 'Programı keşfet', btn1Href: '/ozellikler',
+      btn2: 'Ön satışa katıl — ₺5.000', btn2Href: '/fiyat',
+      stats: ['Windows 10/11', 'Tek seferlik lisans', 'Çevrimdışı çalışır'],
+      doner: [
+        'Kendi astroloji kütüphaneniz programın içinde, her an el altında olsun ister misiniz?',
+        'Doğum haritasından horary’ye, tüm teknikler tek sakin ekranda buluşsun ister misiniz?',
+        'Danışan verileriniz buluta değil, yalnız sizin cihazınızda kalsın ister misiniz?'
+      ]
     },
     moduller: {
       kicker: 'NELER VAR',
@@ -61,6 +66,18 @@ export const HERMES_SITE = {
         { title: 'Atölyeni büyüt', desc: 'Danışanlarını, notlarını ve araştırmalarını tek yerde biriktir; her şey cihazında kalır.' }
       ]
     },
+    ekranlar: {
+      kicker: 'GERÇEK ÜRÜN EKRANLARI',
+      title: 'Hermes gerçekten böyle çalışıyor',
+      p: 'Kadrandan astrografiye, aşağıdaki görüntülerin tamamı çalışan Hermes uygulamasından alındı.',
+      shots: [
+        { src: '/assets/ekranlar/ana-1.png', cap: 'Yeni nesil 90° Uranyen kadran', alt: 'Hermes yeni nesil 90 derece Uranyen kadran ekranı' },
+        { src: '/assets/ekranlar/ana-2.png', cap: 'İleri teknikler · Harmonik harita', alt: 'Hermes ileri teknikler harmonik harita ekranı' },
+        { src: '/assets/ekranlar/ana-3.png', cap: 'Üç halkalı karşılaştırmalı harita', alt: 'Hermes üç halkalı karşılaştırmalı harita ekranı' },
+        { src: '/assets/ekranlar/ana-4.png', cap: 'Astrokartografi çalışma alanı', alt: 'Hermes astrokartografi dünya haritası ve konum inceleme ekranı' },
+        { src: '/assets/ekranlar/ana-5.png', cap: 'Local Space çalışma alanı', alt: 'Hermes Local Space harita ve yön inceleme ekranı' }
+      ]
+    },
     gizlilik: {
       kicker: 'GİZLİLİK',
       title: 'Verilerin senin cihazında',
@@ -69,7 +86,7 @@ export const HERMES_SITE = {
     },
     fiyatBand: {
       kicker: 'ÖN SATIŞ',
-      title: 'Erken alana ₺3.000, yayında ₺9.999.',
+      title: 'Erken alana ₺5.000, yayında ₺10.000.',
       p: 'Tek seferlik lisans; abonelik yok. Çıkan tüm güncellemeler ve yol haritasındaki web/Android erişimi lisansına dahil.',
       btn: 'Fiyat ayrıntıları'
     }
@@ -85,6 +102,7 @@ export const HERMES_SITE = {
       {
         id: 'motor', baslik: 'Harita motoru',
         giris: 'Hermes’in kalbi, Swiss Ephemeris tabanlı hesap motorudur; tüm modüller aynı hassas çekirdeği kullanır.',
+        gorsel: { src: '/assets/ekranlar/modul-motor.png', cap: 'Yeni nesil 90° harita motoru' },
         items: [
           { ad: 'Doğum haritası', desc: 'Gezegenler, evler, açılar; ev sistemleri ve ayanamsa seçenekleriyle. Derece hassasiyeti efemeris kaynağıyla birebir.' },
           { ad: 'Zodyak çalışma alanı', desc: 'Burçlar, yöneticilikler ve asaletler üzerinde yoğun veri ekranı; öğrenme ve başvuru için.' },
@@ -94,6 +112,7 @@ export const HERMES_SITE = {
       {
         id: 'zamanlama', baslik: 'Zamanlama & öngörü',
         giris: 'Tahmin çalışması tek modüle sıkışmaz; teknikler yan yana kurulur ve aynı danışan üzerinde birleşir.',
+        gorsel: { src: '/assets/ekranlar/modul-zamanlama.png', cap: 'Transit katmanı ve gezegen bilgi kartı' },
         items: [
           { ad: 'Transitler', desc: 'Gökyüzü trafiğini natal haritanın üzerine bindirir; dönem dönem izlersin.' },
           { ad: 'İlerletmeler', desc: 'Sekonder ilerletme ve yön teknikleriyle iç zamanlama.' },
@@ -104,6 +123,7 @@ export const HERMES_SITE = {
       {
         id: 'iliski-soru', baslik: 'İlişki & soru',
         giris: 'İki ayrı disiplin, iki ayrı modül: haritalar arası ilişki ve anın sorusu.',
+        gorsel: { src: '/assets/ekranlar/modul-iliski-soru.png', cap: 'Üç halkalı karşılaştırma kadranı' },
         items: [
           { ad: 'Sinastri', desc: 'İki haritanın karşılıklı açıları ve ev temasları; ilişki dinamiğini iki taraftan okur.' },
           { ad: 'Horary (Soru Astrolojisi)', desc: 'Soru anına harita kurar; klasik horary değerlendirme düzeniyle çalışır.' }
@@ -112,6 +132,7 @@ export const HERMES_SITE = {
       {
         id: 'ileri', baslik: 'İleri teknikler',
         giris: 'Çoğu programda eklenti olan araçlar Hermes’te yerleşiktir.',
+        gorsel: { src: '/assets/ekranlar/modul-ileri.png', cap: 'Dynamic Charts · Harmonik çalışma alanı' },
         items: [
           { ad: 'Rektifikasyon', desc: 'Yaşam olaylarından geriye doğru doğum saati düzeltme; aday saatleri puanlayarak daraltır.' },
           { ad: 'Elektif (seçim taraması)', desc: 'Bir işe başlamak için tarih aralığını tarar, kriterlerine uyan anları listeler.' },
@@ -121,6 +142,7 @@ export const HERMES_SITE = {
       },      {
         id: 'atolye', baslik: 'Danışan atölyesi',
         giris: 'Hermes yalnız hesap yapmaz; bir danışmanlık pratiğinin defterini de tutar.',
+        gorsel: { src: '/assets/ekranlar/modul-atolye.png', cap: 'Analiz detay merkezi' },
         items: [
           { ad: 'Danışan yönetimi', desc: 'Kayıtlar, kategoriler, toplu işlemler; danışan başına harita, not, olay ve analiz geçmişi.' },
           { ad: 'Raporlar', desc: 'Çalışmalarını derli toplu rapor hâline getirir.' },
@@ -132,6 +154,7 @@ export const HERMES_SITE = {
       {
         id: 'platform', baslik: 'Platform & gizlilik',
         giris: 'Program bugün Windows’ta; lisansın ise platforma değil sana bağlı.',
+        gorsel: { src: '/assets/ekranlar/modul-platform.png', cap: 'Koyu temada astrokartografi çalışma alanı' },
         items: [
           { ad: 'Çevrimdışı çekirdek', desc: 'Efemeris gömülü; internet yalnız lisans ve güncelleme için.' },
           { ad: 'Veri cihazda', desc: 'Danışan verilerin bilgisayarından çıkmaz; bulut zorunluluğu yok.' },
@@ -145,12 +168,12 @@ export const HERMES_SITE = {
   fiyat: {
     hero: {
       kicker: 'FİYAT',
-      title: 'Tek lisans, her platform.',
-      p: 'Hermes abonelik satmaz. Bir kez alırsın; program, güncellemeleri ve yol haritasındaki platformlar (web, Android) o lisansla senin olur.'
+      title: 'Tek lisans. Abonelik yok.',
+      p: 'Hermes’i bir kez alırsın; Windows uygulaması ve güncellemeleri bu lisansa dahildir. Web ve Android sürümleri yol haritasında aynı hesapla devam edecek.'
     },
     kutu: {
       kicker: 'ÖN SATIŞA ÖZEL',
-      price: '₺3.000', oldPrice: '₺9.999',
+      price: '₺5.000', oldPrice: '₺10.000',
       rows: [
         '☿︎ Tüm modüller — sınırsız harita ve danışan',
         '☿︎ Windows 10/11 (64-bit) kurulumu',
@@ -172,7 +195,7 @@ export const HERMES_SITE = {
     },
     sss: [
       { q: 'Abonelik mi, tek seferlik mi?', a: 'Tek seferlik. Hermes’i bir kez satın alırsın; abonelik ve gizli ücret yoktur.' },
-      { q: 'Ön satış ne demek?', a: 'Program aktif geliştirmede; erken alanlar ₺3.000 özel fiyattan edinir. Yayın fiyatı ₺9.999 olarak planlanmıştır.' },
+      { q: 'Ön satış ne demek?', a: 'Program aktif geliştirmede; erken alanlar ₺5.000 özel fiyattan edinir. Yayın fiyatı ₺10.000 olarak planlanmıştır.' },
       { q: 'Güncellemeler ücretli mi?', a: 'Hayır. Çıkan tüm sürümler ve güncellemeler lisansına dahildir.' },
       { q: 'İade var mı?', a: 'Mesafeli satış koşulları geçerlidir; ayrıntı için İptal & İade sayfasına bak.' }
     ]
@@ -184,6 +207,7 @@ export const HERMES_SITE = {
       title: 'Hermes’i kur',
       p: 'Hermes şu an Windows 10/11 (64-bit) için dağıtılıyor. Satın alım sonrası kurulum bağlantısı ve lisans anahtarın e-postana gönderilir; program açılışta lisansını doğrular.'
     },
+    gorsel: { src: '/assets/ekranlar/indir-onizleme.png', cap: 'Hermes açılış ekranı' },
     surum: {
       baslik: 'Güncel sürüm',
       ver: '1.4.x',

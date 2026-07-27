@@ -11,7 +11,7 @@ const In = z.object({
   name: z.string().min(1).max(120).optional(),
   email: z.string().email().optional(),
   product: z.string().max(80).default('Hermes'),
-  price: z.number().int().nonnegative().default(3000)
+  price: z.number().int().nonnegative().default(5000)
 });
 
 export async function POST(request) {

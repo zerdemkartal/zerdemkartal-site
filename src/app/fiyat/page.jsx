@@ -4,8 +4,10 @@
 import { getHermes } from '@/lib/hermesContent';
 import { SITE, ORG, WEBSITE, appNode, pageMeta, priceNum } from '@/lib/site';
 import { JsonLd } from '@/components/JsonLd';
-import { Nav, Footer, T, kickerStyle, h1Style, h2Style, pStyle, sectionStyle, btnPrimary } from '@/components/Chrome';
+import { Nav, Footer, T, kickerStyle, h1Style, h2Style, pStyle, sectionStyle } from '@/components/Chrome';
 import OnSiparis from './OnSiparis';
+// Faz 2 (27 Tem 2026) — fiyat kutusunda imleç parıltısı.
+import Spotlight from '@/components/Spotlight';
 
 export const revalidate = 300;
 const PATH = '/fiyat';
@@ -24,7 +26,7 @@ function buildJsonLd(c) {
       { '@type': 'ListItem', position: 1, name: 'Ana Sayfa', item: SITE + '/' },
       { '@type': 'ListItem', position: 2, name: 'Fiyat', item: SITE + PATH }
     ] },
-    appNode({ description: seo.description, price: priceNum(c.fiyat.kutu.price) || '3000' }),
+    appNode({ description: seo.description, price: priceNum(c.fiyat.kutu.price) || '5000' }),
     { '@type': 'FAQPage', mainEntity: (c.fiyat.sss || []).map((x) => ({ '@type': 'Question', name: x.q, acceptedAnswer: { '@type': 'Answer', text: x.a } })) }
   ] };
 }
@@ -38,31 +40,37 @@ export default async function Fiyat() {
       <JsonLd data={buildJsonLd(c)} />
       <Nav active={PATH} />
 
-      <section style={{ ...sectionStyle, paddingTop: 64 }}>
-        <div style={{ textAlign: 'center', maxWidth: 820, margin: '0 auto' }}>
+      <section className="h-price-hero">
+        <div className="h-price-copy">
           <div style={kickerStyle} data-he data-path="fiyat.hero.kicker">{hero.kicker}</div>
           <h1 style={h1Style} data-he data-path="fiyat.hero.title">{hero.title}</h1>
-          <p style={{ ...pStyle, marginLeft: 'auto', marginRight: 'auto' }} data-he data-path="fiyat.hero.p">{hero.p}</p>
+          <p style={pStyle} data-he data-path="fiyat.hero.p">{hero.p}</p>
+          <div className="h-price-assurance" aria-label="Lisans özeti">
+            <span>Abonelik yok</span>
+            <span>2 cihaza kadar</span>
+            <span>Güncellemeler dahil</span>
+          </div>
         </div>
-      </section>
 
-      <section style={{ ...sectionStyle, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 26, alignItems: 'start', maxWidth: 1160 }}>
-        {/* FİYAT KUTUSU */}
-        <div style={{ background: T.card, border: `1.5px solid ${T.purple}`, borderRadius: 22, padding: '34px 34px 38px' }}>
+        {/* FİYAT KUTUSU — Faz 2: imleç parıltısı (satın alma kartı öne çıksın) */}
+        <Spotlight id="on-satis" className="h-price-card" style={{ background: T.card, border: `1.5px solid ${T.purple}` }} tilt={3}>
           <div style={{ ...kickerStyle, color: T.accentText }} data-he data-path="fiyat.kutu.kicker">{kutu.kicker}</div>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 14, marginTop: 12 }}>
             <span style={{ fontFamily: T.serif, fontSize: 46 }} data-he data-path="fiyat.kutu.price">{kutu.price}</span>
             {kutu.oldPrice && <s style={{ color: T.muted, fontSize: 20 }} data-he data-path="fiyat.kutu.oldPrice">{kutu.oldPrice}</s>}
           </div>
+          <OnSiparis label={kutu.btn} price={Number(priceNum(kutu.price)) || 5000} />
+          <div className="h-payment-note">Güvenli ödeme sayfası · iyzico</div>
           <ul style={{ ...pStyle, fontSize: 14.5, paddingLeft: 20 }}>
             {(kutu.rows || []).map((r, i) => <li key={i} style={{ listStyle: 'none', marginLeft: -20 }} data-he data-path={`fiyat.kutu.rows.${i}`}>{r}</li>)}
           </ul>
           <div style={{ color: T.muted, fontSize: 13.5, marginTop: 14 }} data-he data-path="fiyat.kutu.alt">{kutu.alt}</div>
-          <OnSiparis label={kutu.btn} price={Number(priceNum(kutu.price)) || 3000} />
-        </div>
+        </Spotlight>
+      </section>
 
+      <section style={{ ...sectionStyle, maxWidth: 920 }}>
         {/* TEK LİSANS HER PLATFORM */}
-        <div style={{ background: T.cream, border: `1px solid ${T.border}`, borderRadius: 22, padding: '34px 34px 38px' }}>
+        <div className="h-license-card" style={{ background: T.cream, border: `1px solid ${T.border}` }}>
           <h2 style={{ ...h2Style, fontSize: 26, margin: 0 }} data-he data-path="fiyat.tekLisans.title">{tekLisans.title}</h2>
           <p style={{ ...pStyle, fontSize: 15 }} data-he data-path="fiyat.tekLisans.p">{tekLisans.p}</p>
           <ul style={{ ...pStyle, fontSize: 14.5, paddingLeft: 20 }}>
