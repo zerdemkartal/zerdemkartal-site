@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/db';
 import { requireAdmin } from '@/lib/auth';
+import { licensePriceFor, normalizeDeviceLimit } from '@/lib/licensePricing';
 import { z } from 'zod';
 
 // SİPARİŞ = satın alma / hak sahipliği (entitlement). LİSANS BURADA ÜRETİLMEZ.
@@ -9,7 +10,7 @@ const OrderIn = z.object({
   name: z.string().min(1).max(120),
   email: z.string().email(),
   product: z.string().max(80).default('Hermes'),
-  price: z.number().int().nonnegative().default(5000),
+  deviceLimit: z.union([z.literal(1), z.literal(2)]).default(1),
   payProvider: z.string().max(40).optional(),
   payRef: z.string().max(200).optional()
 });
@@ -20,7 +21,15 @@ export async function POST(request) {
   const body = await request.json().catch(() => null);
   const p = OrderIn.safeParse(body);
   if (!p.success) return Response.json({ error: 'geçersiz gövde' }, { status: 400 });
-  const row = await prisma.order.create({ data: { ...p.data, status: 'pending' } });
+  const deviceLimit = normalizeDeviceLimit(p.data.deviceLimit);
+  const row = await prisma.order.create({
+    data: {
+      ...p.data,
+      deviceLimit,
+      price: licensePriceFor(deviceLimit),
+      status: 'pending'
+    }
+  });
   return Response.json({ id: row.id, status: row.status }, { status: 201 });
 }
 

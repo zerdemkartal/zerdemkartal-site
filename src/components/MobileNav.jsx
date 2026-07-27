@@ -7,7 +7,6 @@ const LINKS = [
   ['/ozellikler', 'Özellikler'],
   ['/fiyat', 'Fiyat'],
   ['/indir', 'İndir'],
-  ['/blog', 'Blog'],
   ['/sss', 'SSS']
 ];
 
@@ -47,7 +46,7 @@ export default function MobileNav({ active }) {
             {LINKS.map(([href, label]) => (
               <a key={href} href={href} className={href === active ? 'on' : ''} onClick={() => setOpen(false)}>{label}</a>
             ))}
-            <a href="/uye" data-cta onClick={() => setOpen(false)}>Üye girişi</a>
+            <a href="/cok-yakinda" data-cta onClick={() => setOpen(false)}>Üye girişi</a>
           </nav>
         </div>
       )}

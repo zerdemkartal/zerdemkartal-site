@@ -32,7 +32,6 @@ const LINKS = [
   ['/ozellikler', 'Özellikler'],
   ['/fiyat', 'Fiyat'],
   ['/indir', 'İndir'],
-  ['/blog', 'Blog'],
   ['/sss', 'SSS']
 ];
 
@@ -53,7 +52,7 @@ export function Nav({ active }) {
               ? { color: T.accentText, textDecoration: 'underline', textUnderlineOffset: 6 }
               : { color: 'inherit', textDecoration: 'none' }}>{label}</a>
           ))}
-          <a href="/uye" style={{ marginLeft: 2, background: T.dark, color: 'var(--h-dark-text)', borderRadius: 999, padding: '9px 16px', fontSize: 14, textDecoration: 'none' }}>Üye girişi</a>
+          <a href="/cok-yakinda" style={{ marginLeft: 2, background: T.dark, color: 'var(--h-dark-text)', borderRadius: 999, padding: '9px 16px', fontSize: 14, textDecoration: 'none' }}>Üye girişi</a>
         </div>
         <CommandPalette />
         <ThemeToggle />
@@ -79,7 +78,6 @@ export function Footer() {
           <a href="/ozellikler" style={fl}>Özellikler</a>
           <a href="/fiyat" style={fl}>Fiyat</a>
           <a href="/indir" style={fl}>İndir</a>
-          <a href="/blog" style={fl}>Blog</a>
           <a href="/sss" style={fl}>SSS</a>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14, fontSize: 15.5 }}>

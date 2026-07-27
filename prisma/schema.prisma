@@ -75,7 +75,7 @@ model Order {
   price       Int // TRY, tam sayı (ör. 3000)
   license     String?  @unique // ESKİ ZK-XXXX (opsiyonel; artık üretilmiyor — lisans çevrimdışı imzalanır)
   status      String   @default("pending") // pending | paid | delivered | cancelled
-  deviceLimit Int      @default(2) // "2 cihaza kadar" referans sınırı
+  deviceLimit Int      @default(1) // 1 cihaz standart; 2 cihaz seçeneği ayrı fiyatlandırılır
   payProvider String? // "iyzico" | "paytr" | "mock"
   payRef      String? // PSP referansı
   createdAt   DateTime @default(now())

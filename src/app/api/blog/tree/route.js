@@ -3,11 +3,11 @@ import { requireAdmin } from '@/lib/auth';
 import { buildTree, flattenTree } from '@/lib/blog';
 import { pingIndexNow } from '@/lib/indexnow';
 
-// GET /api/blog/tree — public: yayında olanlar; admin token'la ?drafts=1 → taslaklar dahil
+// GET /api/blog/tree — blog kamusal erişime kapalıyken yalnız admin okuyabilir.
 export async function GET(request) {
-  const wantDrafts = new URL(request.url).searchParams.get('drafts') === '1';
-  const isAdmin = wantDrafts && !requireAdmin(request); // requireAdmin null dönerse yetkili
-  const rows = await prisma.blogNode.findMany(isAdmin ? {} : { where: { OR: [{ status: 'published' }, { type: 'folder' }] } });
+  const err = requireAdmin(request);
+  if (err) return Response.json({ error: 'yazılar yayında değil' }, { status: 404 });
+  const rows = await prisma.blogNode.findMany();
   return Response.json(buildTree(rows));
 }
 

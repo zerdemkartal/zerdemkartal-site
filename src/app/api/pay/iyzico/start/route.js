@@ -5,13 +5,14 @@
 import { prisma } from '@/lib/db';
 import { z } from 'zod';
 import { checkoutFormInitialize, iyzicoConfigured } from '@/lib/iyzico';
+import { licensePriceFor, normalizeDeviceLimit } from '@/lib/licensePricing';
 
 const In = z.object({
   orderId: z.string().optional(),
   name: z.string().min(1).max(120).optional(),
   email: z.string().email().optional(),
   product: z.string().max(80).default('Hermes'),
-  price: z.number().int().nonnegative().default(5000)
+  deviceLimit: z.union([z.literal(1), z.literal(2)]).default(1)
 });
 
 export async function POST(request) {
@@ -30,12 +31,14 @@ export async function POST(request) {
     if (!p.data.name || !p.data.email) {
       return Response.json({ error: 'ad ve e-posta gerekli' }, { status: 400 });
     }
+    const deviceLimit = normalizeDeviceLimit(p.data.deviceLimit);
     order = await prisma.order.create({
       data: {
         name: p.data.name,
         email: p.data.email,
         product: p.data.product,
-        price: p.data.price,
+        price: licensePriceFor(deviceLimit),
+        deviceLimit,
         status: 'pending',
         payProvider: 'iyzico'
       }

@@ -1,6 +1,6 @@
 # zerdemkartal — Faz 2 Backend
 
-> Prototipin (localStorage) gerçek sunucu karşılığı. **Çalıştırılmaya hazır**: şema, seed, API uçları, auth, `zk-data.js` API adaptörü + **tüm public sayfaların SSR portu** (meta + JSON-LD + içerik sunucuda). Ödeme (Faz 2.5) bilinçli olarak dışarıda bırakıldı.
+> Prototipin (localStorage) gerçek sunucu karşılığı. **Çalıştırılmaya hazır**: şema, seed, API uçları, auth, `zk-data.js` API adaptörü + **tüm public sayfaların SSR portu** (meta + JSON-LD + içerik sunucuda). Blog ve üyelik arayüzü geçici olarak kamusal yayına kapalıdır; satın alma CTA’sı iyzico etkinleştirilene kadar WhatsApp’a gider.
 
 ## Kurulum
 
@@ -28,7 +28,7 @@ npm run dev                   # http://localhost:3000
 
 ## SSR rotaları (Faz 2.7 — tamamlandı)
 
-`/` · `/danismanliklar` (+ `/danismanliklar/analiz/[slug]` derin linkleri) · `/programlar` · `/programlar/astropen` · `/programlar/hermes` · `/astroloji-101` · `/blog` + `/blog/yazi/[id]` · `/dogum-haritasi` · `/hakkimda` · `/iletisim` (form → `POST /api/leads`) · `/yasal/[slug]` (4 metin, prototipten port) · `/uye` (gerçek auth: register/login/me; noindex)
+`/` · `/ozellikler` · `/fiyat` · `/indir` · `/sss` · `/hakkimda` · `/iletisim` (form → `POST /api/leads`) · `/yasal/[slug]` (4 metin) · `/cok-yakinda` (noindex). `/uye`, geçici olarak `/cok-yakinda` rotasına yönlenir. `/blog` ve `/blog/yazi/[id]` kodu/verisi korunur ancak kamusal isteklere 404 verir.
 
 - İçerik DB'den (`PageContent`), meşhur alanlar boşsa güvenli varsayılanlar; **generateMetadata + JSON-LD prototipteki `_buildJsonLd`'lerin birebir portu**, ISR `revalidate: 300`.
 - Görsel parite: sayfalar marka tipografi/renkleriyle semantik port'tır; piksel referansı `.dc.html` dosyalarıdır (her page.jsx başındaki not).
@@ -38,15 +38,14 @@ npm run dev                   # http://localhost:3000
 ## API sözleşmesi
 
 Public (okuma):
-- `GET /api/bootstrap` — tüm public içerik tek JSON'da (adaptör ilk yüklemede çeker)
+- `GET /api/bootstrap` — public içerik tek JSON'da; blog ağacı yalnız admin token’ıyla eklenir
 - `GET /api/content/:key` — `anasayfa | danismanlik | programlar | pd_astropen | pd_hermes | astroloji101 | harita | hakkimda`
-- `GET /api/blog/tree` · `GET /api/blog/pages/:id` · `GET /api/blog/showcase`
 - `POST /api/leads` — talep / ön sipariş / iletişim formu
 
 Admin (`Authorization: Bearer <token>`):
 - `POST /api/auth/login` → JWT
 - `PUT /api/content/:key`
-- `PUT /api/blog/tree` · `POST|PUT /api/blog/pages/:id` · `PUT /api/blog/showcase`
+- `GET|PUT /api/blog/tree` · `GET|POST|PUT /api/blog/pages/:id` · `GET|PUT /api/blog/showcase`
 - `GET|PUT /api/settings`
 - `GET /api/leads` · `PATCH /api/leads/:id` (status/not)
 - `GET /api/members`
@@ -56,7 +55,7 @@ Admin (`Authorization: Bearer <token>`):
 
 ## zk-data adaptörü (geçiş köprüsü)
 
-`public/zk-data.js`, prototipteki dosyanın API sürümüdür: açılışta `/api/bootstrap`'ı belleğe alır (sayfalar senkron `getItem` ile okumaya devam eder), her `setItem`'ı arkada ilgili uca yazar (admin token `sessionStorage.zk_admin_jwt`):
+`public/zk-data.js`, prototipteki dosyanın API sürümüdür: açılışta `/api/bootstrap`'ı mevcut admin token’ıyla çağırıp belleğe alır (sayfalar senkron `getItem` ile okumaya devam eder), her `setItem`'ı arkada ilgili uca yazar:
 
 - İçerik anahtarları → `PUT /api/content/:key`; blog/showcase/settings kendi uçlarına.
 - **Liste senkronu** (`zk_admin_talep`, `zk_siparis`): yeni kayıt → `POST`, durum/not değişikliği → `PATCH /:id` (id→alan-imzası gölge haritasıyla diff).
@@ -68,9 +67,9 @@ Bu köprü panel + mevcut sayfaları API'ye bağlar; **nihai hedef yine SSR port
 
 1. ~~Public sayfaları SSR'a port et~~ ✅ (tüm rotalar; görsel cila · .dc.html referansıyla)
 2. ~~`sitemap.xml` / `robots.txt` / `llms.txt` dinamik~~ ✅ + IndexNow ✅
-3. ~~Üye auth'u (bcrypt + JWT; Google id_token sunucuda)~~ ✅ (uçlar + `/uye` sayfası)
+3. Üye auth uçları korunuyor; Google/üyelik arayüzü hazır olduğunda `/uye` yönlendirmesi kaldırılacak.
 4. Doğum haritası çark/hesap motorunu `HaritaAraci.jsx`'e port et (kaynak: `Dogum Haritasi.dc.html`).
 5. Asset pipeline: `POST /api/assets` dosyayı `public/uploads/`a yazıyor — üretimde S3/R2'ye çevir (FAZLAR §2.5).
 6. Deploy: env'ler, HTTPS/CDN, yedekleme, staging (FAZLAR §2.8) — bu ortamda yapılamaz.
-7. **Faz 2.5 (ödeme) ATLANDI** (kullanıcı kararı) — iyzico/PayTR entegre edilince PD sayfalarındaki ön sipariş CTA'ları `POST /api/orders` akışına bağlanır.
+7. İyzico sipariş/ödeme kodu korunuyor fakat kamusal CTA şimdilik doğrudan WhatsApp satın alma görüşmesine gider; iyzico hazır olduğunda `OnSiparis` yeniden bağlanır.
 8. **Faz 3 (MCP) hazır**: `../mcp/` — gerçek API sözleşmesine bağlı 18 araç + Claude Desktop config (README'sinde).

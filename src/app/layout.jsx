@@ -4,6 +4,7 @@
 // kayboldu, tema düğmesi bozuldu) → inline <style> ilk HTML'de garanti render olur.
 // Açık mod = zerdemkartal aydınlık paleti · Koyu mod = "Meridyen Rasathanesi".
 import EditLayer from '@/components/EditLayer';
+import { WHATSAPP_INFO_URL } from '@/lib/site';
 
 export const metadata = {
   title: 'Hermes',
@@ -108,9 +109,11 @@ const THEME_CSS = `
   .h-sticky { display:grid; gap:30px; margin-top:26px; }
   .h-sticky-aside { text-align:left; }
   .h-sticky-aside > *:first-child { margin-top:0; }
+  .h-feature-card-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:18px; }
   @media (min-width:1024px) {
     .h-sticky { grid-template-columns:minmax(0,0.86fr) minmax(0,1.14fr); gap:56px; align-items:start; }
     .h-sticky-aside { position:sticky; top:96px; }
+    .h-feature-card-grid { align-self:end; padding-bottom:30px; }
   }
 
   /* Görünür odak halkası (WCAG 2.4.7) */
@@ -205,8 +208,8 @@ const THEME_CSS = `
   @keyframes h-fade { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:none; } }
 
   /* ANA SAYFA ÜRÜN VİTRİNİ — mesaj, CTA ve gerçek program ekranı ilk görünümde. */
-  .h-home-hero { position:relative; max-width:1240px; margin:0 auto; padding:68px 32px 34px;
-    display:grid; grid-template-columns:minmax(0,.9fr) minmax(500px,1.1fr); gap:62px; align-items:center; }
+  .h-home-hero { position:relative; max-width:1320px; margin:0 auto; padding:68px 32px 38px; overflow:clip;
+    display:grid; grid-template-columns:minmax(0,.82fr) minmax(590px,1.18fr); gap:46px; align-items:center; }
   .h-home-hero::before { content:''; position:absolute; width:520px; height:520px; right:1%; top:3%;
     border-radius:50%; pointer-events:none;
     background:radial-gradient(circle, var(--h-accentbg) 0%, transparent 68%); opacity:.55; filter:blur(12px); }
@@ -224,30 +227,52 @@ const THEME_CSS = `
   .h-hero-trust span { display:inline-flex; align-items:center; gap:8px; }
   .h-hero-trust span::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--h-accent); }
 
-  .h-hero-showcase { min-height:470px; display:grid; place-items:center; }
-  .h-hero-orbit { position:absolute; inset:2% 5% 0; border:1px solid var(--h-border);
+  .h-hero-showcase { min-width:0; min-height:550px; display:grid; place-items:center; padding-bottom:28px; }
+  .h-hero-orbit { position:absolute; inset:0 2% 5%; border:1px solid var(--h-border);
     border-radius:50%; transform:rotate(-12deg); opacity:.85; }
   .h-hero-orbit::before, .h-hero-orbit::after { content:''; position:absolute; border:1px solid var(--h-border);
     border-radius:50%; inset:9%; }
   .h-hero-orbit::after { inset:21%; }
-  .h-hero-window { position:relative; width:min(100%,650px); margin:0; padding:34px 10px 10px;
+  .h-hero-slider { position:relative; width:min(100%,760px); }
+  .h-hero-window { position:relative; width:100%; margin:0; padding:34px 10px 10px;
     background:var(--h-card); border:1px solid var(--h-border); border-radius:18px;
-    box-shadow:0 28px 80px var(--h-shadow); transform:rotate(1.2deg); overflow:hidden; }
-  .h-hero-window > img { display:block; width:100%; aspect-ratio:16/10; object-fit:cover;
-    border-radius:10px; background:var(--h-cream); }
+    box-shadow:0 28px 80px var(--h-shadow); overflow:hidden; }
+  .h-hero-viewport { overflow:hidden; border-radius:10px; background:var(--h-cream);
+    touch-action:pan-y; cursor:grab; }
+  .h-hero-viewport:active { cursor:grabbing; }
+  .h-hero-track { display:flex; transition:transform .28s ease; }
+  .h-hero-slide { flex:0 0 100%; min-width:0; margin:0; aspect-ratio:16/10; overflow:hidden; }
+  .h-hero-slide img { display:block; width:100%; height:100%; object-fit:cover;
+    background:var(--h-cream); user-select:none; -webkit-user-drag:none; }
+  .h-hero-slide.is-focus img { transform:scale(1.52); }
+  .h-hero-arrow { position:absolute; z-index:4; top:50%; transform:translateY(-50%);
+    width:44px; height:44px; border:1px solid var(--h-border); border-radius:50%;
+    background:var(--h-card); color:var(--h-ink); cursor:pointer; font-size:26px;
+    display:grid; place-items:center; box-shadow:0 8px 24px var(--h-shadow);
+    transition:background .2s ease, border-color .2s ease; }
+  .h-hero-arrow:hover { background:var(--h-accentbg); border-color:var(--h-accent); }
+  .h-hero-arrow:focus-visible, .h-hero-dots button:focus-visible { outline:2px solid var(--h-accent); outline-offset:3px; }
+  .h-hero-prev { left:-18px; }
+  .h-hero-next { right:-18px; }
+  .h-hero-dots { position:absolute; z-index:4; left:50%; bottom:0; transform:translateX(-50%);
+    display:flex; gap:9px; padding:8px 12px; border:1px solid var(--h-border);
+    border-radius:999px; background:var(--h-navbg); backdrop-filter:blur(12px); }
+  .h-hero-dots button { width:8px; height:8px; border:0; padding:0; border-radius:50%;
+    background:var(--h-border); cursor:pointer; transition:transform .2s ease, background .2s ease; }
+  .h-hero-dots button.is-active { background:var(--h-accent); transform:scale(1.35); }
   .h-hero-proof { position:absolute; z-index:3; min-width:176px; padding:13px 15px;
     border:1px solid var(--h-border); border-radius:13px; background:var(--h-navbg);
     backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
     box-shadow:0 12px 34px var(--h-shadow); }
   .h-hero-proof span { display:block; color:var(--h-muted); font-size:10px; font-weight:700; letter-spacing:.16em; }
   .h-hero-proof strong { display:block; margin-top:5px; font-family:'Newsreader',serif; font-size:17px; font-weight:500; }
-  .h-hero-proof-top { top:6px; right:-12px; }
-  .h-hero-proof-bottom { left:-14px; bottom:18px; }
+  .h-hero-proof-top { top:10px; right:-10px; max-width:260px; }
+  .h-hero-proof-bottom { left:-10px; bottom:56px; }
   @media (max-width:1023px) {
     .h-home-hero { grid-template-columns:1fr; gap:32px; padding-top:54px; text-align:center; }
     .h-hero-brandline, .h-hero-actions, .h-hero-trust { justify-content:center; }
     .h-hero-copy p { margin-left:auto; margin-right:auto; }
-    .h-hero-showcase { min-height:420px; }
+    .h-hero-showcase { min-height:480px; }
   }
   @media (max-width:640px) {
     .h-home-hero { padding:38px 20px 22px; gap:26px; }
@@ -258,9 +283,44 @@ const THEME_CSS = `
     .h-hero-actions { flex-direction:column; align-items:stretch; }
     .h-hero-actions a { text-align:center; }
     .h-hero-trust { gap:9px 14px; }
-    .h-hero-showcase { min-height:300px; }
-    .h-hero-window { padding:27px 7px 7px; transform:none; border-radius:14px; }
+    .h-hero-showcase { min-height:310px; padding-bottom:30px; }
+    .h-hero-window { padding:27px 7px 7px; border-radius:14px; }
+    .h-hero-slide.is-focus img { transform:scale(1.34); }
+    .h-hero-arrow { display:none; }
     .h-hero-proof { display:none; }
+  }
+  @media (prefers-reduced-motion:reduce) {
+    .h-hero-track { transition:none; }
+  }
+
+  /* Ana sayfa modül vitrini — gerçek ekranlar ve metin kartları ayrı ritimlerde.
+     Böylece büyük görseller kompakt kartların satır akışını bozmaz. */
+  .h-module-featured-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:18px; margin-top:30px; }
+  .h-module-featured-cell, .h-module-compact-cell { min-width:0; }
+  .h-module-compact-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:14px; margin-top:18px; }
+  .h-module-compact-cell.is-closing { grid-column:1/-1; }
+  .h-module-card { box-sizing:border-box; height:100%; overflow:hidden; }
+  .h-module-compact-cell .h-module-card { min-height:176px; }
+  .h-module-compact-cell.is-closing .h-module-card { min-height:0; display:grid;
+    grid-template-columns:minmax(220px,.7fr) minmax(0,1.3fr); align-items:center; gap:18px; }
+  .h-module-media { margin:-26px -26px 22px; aspect-ratio:16/8; overflow:hidden;
+    border-bottom:1px solid var(--h-border); background:var(--h-cream); }
+  .h-module-media img { display:block; width:100%; height:100%; object-fit:cover; object-position:center top; }
+  .h-module-card-head { display:flex; align-items:center; gap:14px; }
+  .h-module-glyph { flex:0 0 auto; width:42px; height:42px; border-radius:12px;
+    background:var(--h-accentbg); display:grid; place-items:center; font-size:20px; }
+  @media (max-width:960px) {
+    .h-module-featured-grid { grid-template-columns:1fr; }
+    .h-module-compact-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  }
+  @media (max-width:640px) {
+    .h-module-featured-grid, .h-module-compact-grid { grid-template-columns:1fr; }
+    .h-module-compact-cell.is-closing { grid-column:auto; }
+    .h-module-compact-cell.is-closing .h-module-card { display:block; min-height:176px; padding:26px !important; }
+    .h-module-compact-cell.is-closing .h-module-card p { margin-top:8px !important; }
+    .h-module-media { aspect-ratio:16/9; }
   }
 
   /* Hero — ortalanmış içerik + arkada canlı ZODYAK LOTTIE animasyonu (HeroLottie.jsx) + neon parıltı */
@@ -374,6 +434,10 @@ const THEME_CSS = `
   .h-price-assurance span { padding:8px 12px; border:1px solid var(--h-border); border-radius:999px;
     background:var(--h-cream); color:var(--h-ink2); font-size:13px; }
   .h-price-card { border-radius:22px; padding:34px 34px 30px; }
+  .h-device-pricing { display:flex; align-items:center; justify-content:space-between; gap:16px;
+    margin-top:16px; padding:13px 15px; border:1px solid var(--h-border); border-radius:13px;
+    background:var(--h-cream); color:var(--h-ink2); font-size:13.5px; }
+  .h-device-pricing strong { color:var(--h-ink); font-weight:650; }
   .h-payment-note { margin-top:13px; color:var(--h-muted); font-size:12.5px; }
   .h-license-card { border-radius:22px; padding:34px; display:grid;
     grid-template-columns:minmax(0,.8fr) minmax(300px,1.2fr); column-gap:48px; align-items:start; }
@@ -394,6 +458,7 @@ const THEME_CSS = `
     .h-route-actions { flex-direction:column; }
     .h-route-actions a { text-align:center; }
     .h-price-card, .h-license-card { padding:26px 22px; }
+    .h-device-pricing { align-items:flex-start; flex-direction:column; gap:5px; }
   }
 
   /* Yerinde düzenleme (EditLayer, /yonetim girişi sonrası) — düzenlenebilir alan vurgusu */
@@ -428,7 +493,7 @@ export default function RootLayout({ children }) {
         <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..600&family=Hanken+Grotesk:ital,wght@0,400..700;1,400&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet" />
         <style dangerouslySetInnerHTML={{ __html: THEME_CSS }} />
         {children}
-        <a className="h-wa" href="https://wa.me/905454564275?text=Merhaba!%20Hermes%20program%C4%B1%20hakk%C4%B1nda%20bilgi%20almak%20istiyorum." target="_blank" rel="noopener noreferrer" aria-label="WhatsApp'tan Hermes hakkında soru sor">
+        <a className="h-wa" href={WHATSAPP_INFO_URL} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp'tan Hermes hakkında soru sor">
           <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.876 1.213 3.074.149.198 2.096 3.2 5.077 4.487.71.306 1.263.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.885-9.885 9.885M20.52 3.449C18.24 1.245 15.24 0 12.045 0 5.463 0 .104 5.334.101 11.892c0 2.096.549 4.14 1.595 5.945L0 24l6.335-1.652a12.062 12.062 0 005.71 1.447h.005c6.585 0 11.946-5.335 11.949-11.893a11.821 11.821 0 00-3.484-8.413z"/></svg>
           <span>Soru sor</span>
         </a>

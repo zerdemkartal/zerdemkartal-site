@@ -4,11 +4,12 @@ import { z } from 'zod';
 import { mdToHtml } from '@/lib/md';
 import { pingIndexNow } from '@/lib/indexnow';
 
-// GET /api/blog/pages/:id — tek yazı (taslaksa yalnız admin görür)
+// GET /api/blog/pages/:id — blog kamusal erişime kapalıyken yalnız admin okuyabilir.
 export async function GET(request, { params }) {
+  const err = requireAdmin(request);
+  if (err) return Response.json({ error: 'yazı bulunamadı' }, { status: 404 });
   const row = await prisma.blogNode.findUnique({ where: { id: params.id } });
   if (!row || row.type !== 'page') return Response.json({ error: 'yazı bulunamadı' }, { status: 404 });
-  if (row.status === 'draft' && requireAdmin(request)) return Response.json({ error: 'yazı bulunamadı' }, { status: 404 });
   return Response.json(pub(row));
 }
 

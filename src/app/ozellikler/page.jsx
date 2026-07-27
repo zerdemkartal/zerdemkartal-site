@@ -101,7 +101,7 @@ export default async function Ozellikler() {
                 ) : null}
               </Reveal>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 18 }}>
+            <div className="h-feature-card-grid">
               {(g.items || []).map((x, i) => (
                 <Reveal key={i} className="h-r-fill" delay={i * 70}>
                   <Spotlight style={cardStyle} tilt={3.5}>

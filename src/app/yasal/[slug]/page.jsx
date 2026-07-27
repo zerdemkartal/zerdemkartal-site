@@ -118,7 +118,7 @@ const DOCS = {
           <li>Seansın zerdemkartal tarafından iptali hâlinde yeni tarih önerilir; dilersen ücretin tamamı iade edilir.</li>
         </ul>
         <h2 style={h3}>3. Ücretsiz içerikler</h2>
-        <p style={p}>AstroPen, Astroloji 101 ve blog içerikleri ücretsizdir; iade kapsamı dışındadır.</p>
+        <p style={p}>AstroPen, Astroloji 101 ve ücretsiz yayın içerikleri iade kapsamı dışındadır.</p>
         <h2 style={h3}>4. İade süreci</h2>
         <p style={p}>İade/iptal talebini sipariş e-postanla birlikte merhaba@zerdemkartal.com adresine ya da <a href="/iletisim" style={{ color: T.purple }}>iletişim formuna</a> yaz. Onaylanan iadeler, ödeme yaptığın karta en geç 14 gün içinde yansıtılır (bankana bağlı olarak ekstrene yansıması birkaç gün sürebilir).</p>
       </>

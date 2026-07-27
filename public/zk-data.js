@@ -3,7 +3,8 @@
    Prototipteki dosyayla AYNI yüzey (getItem/setItem/removeItem + get/set/keys/
    subscribe/REGISTRY) — sayfa kodu değişmeden çalışır. Fark sadece `backend`:
 
-   - Açılışta GET /api/bootstrap → tüm public içerik bellek cache'ine alınır;
+   - Açılışta GET /api/bootstrap → public içerik bellek cache'ine alınır;
+     blog verisi yalnız admin token'ıyla gelir;
      sayfalar senkron getItem ile cache'ten okur. Cache dolduğunda her anahtar
      için 'zk-data' event'i yayınlanır (subscribe olan view'lar tazelenir).
    - setItem → cache'e anında yazar + arkada ilgili API ucuna PUT/POST atar
@@ -41,7 +42,7 @@
   }
 
   // ---- açılış: bootstrap ----
-  fetch(API + '/api/bootstrap').then(function (r) { return r.json(); }).then(function (boot) {
+  fetch(API + '/api/bootstrap', { headers: authHeaders() }).then(function (r) { return r.json(); }).then(function (boot) {
     var keys = boot.keys || {};
     Object.keys(keys).forEach(function (k) {
       cache[k] = typeof keys[k] === 'string' ? keys[k] : JSON.stringify(keys[k]);

@@ -9,12 +9,17 @@ const modal = { background: 'var(--h-card)', border: '1px solid var(--h-border)'
 const field = { width: '100%', border: '1px solid var(--h-border)', borderRadius: 10, padding: '12px 14px', fontSize: 15, fontFamily: 'inherit', background: 'var(--h-bg)', color: 'var(--h-ink)' };
 const label = { display: 'flex', flexDirection: 'column', gap: 6, fontSize: 13.5, color: 'var(--h-muted)', marginTop: 12 };
 const btnPri = { background: 'var(--h-accent-text)', color: 'var(--h-accent-ink)', borderRadius: 999, padding: '13px 26px', fontWeight: 600, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 15 };
+const planGrid = { display: 'grid', gridTemplateColumns: 'repeat(2,minmax(0,1fr))', gap: 10, marginTop: 16 };
+const planButton = { minWidth: 0, padding: '13px 14px', borderRadius: 13, border: '1px solid var(--h-border)', background: 'var(--h-bg)', color: 'var(--h-ink2)', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left' };
 
-export default function OnSiparis({ label: cta = 'Ön sipariş ver', price = 5000 }) {
+const tryLabel = (value) => `₺${Number(value).toLocaleString('tr-TR')}`;
+
+export default function OnSiparis({ label: cta = 'Ön sipariş ver', price = 5000, secondPrice = 7500 }) {
   const [open, setOpen] = useState(false);
-  const [f, setF] = useState({ name: '', email: '', kvkk: false });
+  const [f, setF] = useState({ name: '', email: '', kvkk: false, deviceLimit: 1 });
   const [state, setState] = useState('form'); // form | sending | done | error
   const [errMsg, setErrMsg] = useState('');
+  const selectedPrice = f.deviceLimit === 2 ? Number(secondPrice) || 7500 : Number(price) || 5000;
 
   useEffect(() => {
     if (!open) return;
@@ -29,7 +34,12 @@ export default function OnSiparis({ label: cta = 'Ön sipariş ver', price = 500
     e.preventDefault();
     if (!f.name.trim() || !f.email.trim() || !f.kvkk || state === 'sending') return;
     setState('sending'); setErrMsg('');
-    const payload = { name: f.name.trim(), email: f.email.trim(), product: 'Hermes', price: Number(price) || 5000 };
+    const payload = {
+      name: f.name.trim(),
+      email: f.email.trim(),
+      product: `Hermes — ${f.deviceLimit} cihaz`,
+      deviceLimit: f.deviceLimit
+    };
     try {
       // 1) iyzico ödeme sayfasını başlatmayı dene
       const r = await fetch('/api/pay/iyzico/start', {
@@ -56,7 +66,13 @@ export default function OnSiparis({ label: cta = 'Ön sipariş ver', price = 500
     } catch (err) { setErrMsg('Bağlantı hatası: ' + (err?.message || '')); setState('error'); }
   }
 
-  function close() { setOpen(false); setTimeout(() => { setState('form'); setF({ name: '', email: '', kvkk: false }); }, 200); }
+  function close() {
+    setOpen(false);
+    setTimeout(() => {
+      setState('form');
+      setF({ name: '', email: '', kvkk: false, deviceLimit: 1 });
+    }, 200);
+  }
 
   return (
     <>
@@ -70,6 +86,9 @@ export default function OnSiparis({ label: cta = 'Ön sipariş ver', price = 500
                 <div style={{ fontFamily: "'Newsreader', serif", fontSize: 26, color: 'var(--h-ink)' }}>Ön siparişin alındı ☿&#xFE0E;</div>
                 <p style={{ fontSize: 15, lineHeight: 1.7, color: 'var(--h-ink2)', marginTop: 12 }}>
                   Teşekkürler {f.name.trim()}. <b>{f.email.trim()}</b> adresine ödeme bağlantısı gönderilecek. Ödemen alınınca kurulum dosyası ve lisans etkinleştirme adımların e-postana iletilir.
+                </p>
+                <p style={{ fontSize: 14, color: 'var(--h-muted)', marginTop: 10 }}>
+                  Seçimin: <b>{f.deviceLimit} cihaz · {tryLabel(selectedPrice)}</b>
                 </p>
                 <button type="button" onClick={close} style={{ ...btnPri, marginTop: 22 }}>Kapat</button>
               </div>
@@ -86,6 +105,32 @@ export default function OnSiparis({ label: cta = 'Ön sipariş ver', price = 500
               <form onSubmit={submit}>
                 <div style={{ fontFamily: "'Newsreader', serif", fontSize: 24, color: 'var(--h-ink)' }}>Ön sipariş</div>
                 <p style={{ fontSize: 14, color: 'var(--h-muted)', marginTop: 6 }}>Hermes ön satış — bilgilerini gir, güvenli ödeme sayfasına (iyzico) yönlendirilirsin. Abonelik yok, tek seferlik lisans.</p>
+                <div role="group" aria-label="Cihaz sayısı" style={planGrid}>
+                  {[
+                    { limit: 1, title: '1 cihaz', amount: Number(price) || 5000 },
+                    { limit: 2, title: '2 cihaz', amount: Number(secondPrice) || 7500 }
+                  ].map((plan) => {
+                    const active = f.deviceLimit === plan.limit;
+                    return (
+                      <button
+                        key={plan.limit}
+                        type="button"
+                        aria-pressed={active}
+                        onClick={() => setF((s) => ({ ...s, deviceLimit: plan.limit }))}
+                        style={{
+                          ...planButton,
+                          borderColor: active ? 'var(--h-accent)' : 'var(--h-border)',
+                          background: active ? 'var(--h-accentbg)' : 'var(--h-bg)',
+                          color: active ? 'var(--h-ink)' : 'var(--h-ink2)'
+                        }}
+                      >
+                        <span style={{ display: 'block', fontSize: 13, fontWeight: 650 }}>{plan.title}</span>
+                        <span style={{ display: 'block', marginTop: 4, fontFamily: "'Newsreader', serif", fontSize: 21 }}>{tryLabel(plan.amount)}</span>
+                        {plan.limit === 2 ? <span style={{ display: 'block', marginTop: 3, fontSize: 11.5, color: 'var(--h-muted)' }}>toplam</span> : null}
+                      </button>
+                    );
+                  })}
+                </div>
                 <label style={label}>Ad Soyad
                   <input required value={f.name} onChange={set('name')} style={field} placeholder="Ad Soyad" />
                 </label>
@@ -98,7 +143,7 @@ export default function OnSiparis({ label: cta = 'Ön sipariş ver', price = 500
                 </label>
                 <div style={{ display: 'flex', gap: 10, marginTop: 20, alignItems: 'center' }}>
                   <button type="submit" disabled={state === 'sending' || !f.kvkk} style={{ ...btnPri, opacity: (state === 'sending' || !f.kvkk) ? 0.6 : 1 }}>
-                    {state === 'sending' ? 'Yönlendiriliyor…' : 'Ödemeye geç'}
+                    {state === 'sending' ? 'Yönlendiriliyor…' : `${tryLabel(selectedPrice)} · Ödemeye geç`}
                   </button>
                   <button type="button" onClick={close} style={{ background: 'none', border: 'none', color: 'var(--h-muted)', cursor: 'pointer', fontFamily: 'inherit', fontSize: 14 }}>Vazgeç</button>
                 </div>

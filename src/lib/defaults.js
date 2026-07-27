@@ -18,7 +18,7 @@ export const HERMES_SITE = {
     },
     fiyat: {
       title: 'Fiyat — Hermes | Tek seferlik lisans, abonelik yok',
-      description: 'Hermes ön satış: ₺5.000 tek seferlik lisans (liste ₺10.000). Abonelik yok, ömür boyu güncelleme. Lisansın masaüstünde ve yol haritasındaki web/Android sürümlerinde geçerli.'
+      description: 'Hermes ön satış: 1 cihaz için ₺5.000, 2 cihaz seçeneği toplam ₺7.500. Abonelik yok; güncellemeler ve yol haritasındaki web/Android erişimi dahil.'
     },
     indir: {
       title: 'İndir — Hermes Astroloji Programı (Windows)',
@@ -48,6 +48,22 @@ export const HERMES_SITE = {
       kicker: 'NELER VAR',
       title: 'Bir astroloğun masasındaki her şey',
       p: 'Hermes bir “burç uygulaması” değil; danışan defterinden araştırma arşivine, ciddi astroloji pratiğinin tamamı için tasarlandı.',
+      featured: [
+        {
+          glyph: '☉',
+          title: 'Gezegen kartları',
+          desc: 'Haritadaki bir gezegene dokun; asalet, ev, hız, mizaç, anahtar temalar ve açı tanıkları aynı katmanlı kartta açılsın.',
+          src: '/assets/ekranlar/modul-gezegen-kartlari.png',
+          alt: 'Hermes Güneş gezegen kartı ve doğum haritası çalışma alanı'
+        },
+        {
+          glyph: '☿︎',
+          title: 'Kütüphane & AA Harita Arşivi',
+          desc: 'Kendi notların, kaynakların ve doğrulanmış harita kayıtların aranabilir bir araştırma kütüphanesinde bir arada.',
+          src: '/assets/ekranlar/modul-kutuphane.png',
+          alt: 'Hermes astroloji kütüphanesi konu ağacı ve okuma alanı'
+        }
+      ],
       cards: [
         { glyph: '☉', title: 'Doğum haritası & Zodyak', desc: 'Swiss Ephemeris motoru; gezegenler, evler, açılar, asteroidler ve sabit yıldızlar — derece derece.' },
         { glyph: '☾', title: 'Zamanlama teknikleri', desc: 'Transitler, ilerletmeler, dönem teknikleri ve tutulmalar; öngörü çalışması tek akışta.' },
@@ -71,7 +87,9 @@ export const HERMES_SITE = {
       title: 'Hermes gerçekten böyle çalışıyor',
       p: 'Kadrandan astrografiye, aşağıdaki görüntülerin tamamı çalışan Hermes uygulamasından alındı.',
       shots: [
-        { src: '/assets/ekranlar/ana-1.png', cap: 'Yeni nesil 90° Uranyen kadran', alt: 'Hermes yeni nesil 90 derece Uranyen kadran ekranı' },
+        { src: '/assets/ekranlar/ana-1.png', cap: 'Yeni nesil 90° Uranyen kadran', alt: 'Hermes yeni nesil 90 derece Uranyen kadran ekranı', heroZoom: true },
+        { src: '/assets/ekranlar/modul-gezegen-kartlari.png', cap: 'Katmanlı gezegen kartları', alt: 'Hermes Güneş gezegen kartı ve doğum haritası çalışma alanı' },
+        { src: '/assets/ekranlar/modul-kutuphane.png', cap: 'Kütüphane & AA Harita Arşivi', alt: 'Hermes astroloji kütüphanesi konu ağacı ve okuma alanı' },
         { src: '/assets/ekranlar/ana-2.png', cap: 'İleri teknikler · Harmonik harita', alt: 'Hermes ileri teknikler harmonik harita ekranı' },
         { src: '/assets/ekranlar/ana-3.png', cap: 'Üç halkalı karşılaştırmalı harita', alt: 'Hermes üç halkalı karşılaştırmalı harita ekranı' },
         { src: '/assets/ekranlar/ana-4.png', cap: 'Astrokartografi çalışma alanı', alt: 'Hermes astrokartografi dünya haritası ve konum inceleme ekranı' },
@@ -87,7 +105,7 @@ export const HERMES_SITE = {
     fiyatBand: {
       kicker: 'ÖN SATIŞ',
       title: 'Erken alana ₺5.000, yayında ₺10.000.',
-      p: 'Tek seferlik lisans; abonelik yok. Çıkan tüm güncellemeler ve yol haritasındaki web/Android erişimi lisansına dahil.',
+      p: '₺5.000 ön satış lisansı 1 cihaz içindir; 2 cihaz seçeneği toplam ₺7.500. Abonelik yok; güncellemeler ve yol haritasındaki web/Android erişimi dahil.',
       btn: 'Fiyat ayrıntıları'
     }
   },
@@ -174,15 +192,16 @@ export const HERMES_SITE = {
     kutu: {
       kicker: 'ÖN SATIŞA ÖZEL',
       price: '₺5.000', oldPrice: '₺10.000',
+      secondPrice: '₺7.500',
       rows: [
         '☿︎ Tüm modüller — sınırsız harita ve danışan',
         '☿︎ Windows 10/11 (64-bit) kurulumu',
-        '☿︎ Aynı kişiye ait 2 cihaza kadar',
+        '☿︎ Tek cihaz lisansı',
         '☿︎ Çıkan tüm sürümler ve güncellemeler dahil',
         '☿︎ Web sürümü yayınlandığında üye girişinle erişim'
       ],
-      alt: 'Ön sipariş sonrası ödeme bağlantısı e-postana gönderilir; lisans anahtarın ödemeyle birlikte teslim edilir.',
-      btn: 'Ön sipariş ver'
+      alt: 'Satın alma talebini WhatsApp’tan ilet; cihaz seçimini, ödeme ve lisans teslim adımlarını birlikte netleştirelim.',
+      btn: 'WhatsApp’tan satın al'
     },
     tekLisans: {
       title: 'Lisans platforma değil, sana bağlı',
@@ -216,7 +235,7 @@ export const HERMES_SITE = {
     adimlar: {
       title: 'Kurulum',
       items: [
-        { title: 'Ön siparişini ver', desc: 'Fiyat sayfasından ön sipariş oluştur; ödeme bağlantısı e-postana gelir.' },
+        { title: 'Satın alma talebini ilet', desc: 'Fiyat sayfasındaki düğmeyle WhatsApp’tan yaz; cihaz seçimini ve ödeme adımlarını netleştirelim.' },
         { title: 'Kurulum dosyasını indir', desc: 'Ödeme sonrası e-postandaki bağlantıdan Windows kurulum dosyasını al.' },
         { title: 'Lisansınla aç', desc: 'İlk açılışta lisans anahtarını gir; Hermes doğrular ve atölyen açılır.' }
       ]
@@ -234,12 +253,12 @@ export const HERMES_SITE = {
       { q: 'Hermes nedir?', a: 'Hermes, profesyonel kullanım için geliştirilmiş Türkçe masaüstü astroloji programıdır: doğum haritası, transit, ilerletme, dönem teknikleri, tutulmalar, sinastri, horary, elektif tarama, rektifikasyon, astrokartografi, Uranyen dial ve danışan yönetimi tek uygulamada.' },
       { q: 'Kimler için?', a: 'Danışmanlık veren astrologlar, ciddi öğrenciler ve araştırmacılar için tasarlandı. Günlük burç yorumu uygulaması değildir.' },
       { q: 'Hesaplar ne kadar hassas?', a: 'Hesap motoru Swiss Ephemeris kullanır; gezegen konumları, evler, asteroidler ve sabit yıldızlar efemeris kaynağıyla birebir hesaplanır. Efemeris dosyaları programla birlikte gelir, hesap için internet gerekmez.' },
-      { q: 'Lisans nasıl çalışıyor?', a: 'Tek seferlik satın alma; abonelik yok. Bir lisans aynı kişiye ait 2 cihaza kadar kullanılabilir, çıkan tüm güncellemeler dahildir.' },
+      { q: 'Lisans nasıl çalışıyor?', a: 'Tek seferlik satın alma; abonelik yok. ₺5.000 ön satış lisansı tek cihaz içindir; iki cihaz seçeneği toplam ₺7.500’dür. Çıkan tüm güncellemeler dahildir.' },
       { q: 'Web sürümü olacak mı?', a: 'Evet, yol haritasında. Web sürümü tam sürüm olacak ve yalnız satın alanlar üye girişi + lisans doğrulamasıyla kullanabilecek. Ek ücret yok — aynı lisans.' },
       { q: 'Verilerim nerede tutuluyor?', a: 'Cihazında. Danışan kayıtların ve haritaların bilgisayarından çıkmaz; bulut zorunluluğu yoktur. İnternet yalnız lisans doğrulama ve güncelleme için kullanılır.' },
       { q: 'Hangi platformlarda çalışıyor?', a: 'Bugün Windows 10/11 (64-bit). macOS, Android ve web sürümleri yol haritasındadır; tek lisans hepsinde geçerli olacak.' },
       { q: 'Güncellemeler nasıl geliyor?', a: 'Program kendini otomatik günceller: yeni sürüm yayınlandığında açılışta indirir ve kurar; ücretsizdir.' },
-      { q: 'Satın almadan deneyebilir miyim?', a: 'Şu an deneme sürümü yok; özellikleri Özellikler sayfasından ve blogdaki ekran görüntülü yazılardan inceleyebilirsin. Sorularını iletişim formundan sorabilirsin.' },
+      { q: 'Satın almadan deneyebilir miyim?', a: 'Şu an deneme sürümü yok; gerçek program ekranlarını Ana Sayfa ve Özellikler sayfasından inceleyebilirsin. Sorularını iletişim formundan sorabilirsin.' },
       { q: 'Astroloji eğitimi veriyorum; işime yarar mı?', a: 'Evet — Öğretmen modülü sınıf ve ödeme takibi tutar; kütüphane ve AA harita arşivi ders materyali çalışmaya uygundur.' },
       { q: 'İade koşulları ne?', a: 'Mesafeli satış sözleşmesi ve iade koşulları Yasal sayfalarında yazar; dijital teslim edilen lisanslarda yasal çerçeve geçerlidir.' }
     ]

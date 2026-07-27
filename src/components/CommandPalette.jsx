@@ -2,13 +2,12 @@
 // KOMUT PALETİ (⌘K / Ctrl+K) — Faz 3 (27 Tem 2026). Bağımlılık YOK.
 //
 // Ne yapar: site içi hızlı gezinme + arama. Sabit rotalar her zaman hazır; içerik
-// (özellik grupları/maddeleri, SSS soruları, blog başlıkları) ilk açılışta bir kez
+// (özellik grupları/maddeleri ve SSS soruları) ilk açılışta bir kez
 // çekilir ve modül kapsamında önbelleğe alınır.
 //
 // Veri kaynakları (ikisi de PUBLIC GET):
 //   /api/content/hermes_site → DB satırı yoksa defaults.js modelini döner
-//   /api/blog/tree           → yalnız yayındaki yazılar
-// Her ikisi de başarısız olursa palet sabit rotalarla çalışmaya devam eder — arama
+// İçerik ucu başarısız olursa palet sabit rotalarla çalışmaya devam eder — arama
 // kutusu asla "boş/ölü" görünmez.
 //
 // Erişilebilirlik: role=dialog + aria-modal, açılışta odak arama kutusunda, Esc kapatır,
@@ -33,11 +32,10 @@ const SABIT = [
   { g: 'Sayfalar', t: 'Özellikler', h: '/ozellikler', k: 'modüller ne yapar' },
   { g: 'Sayfalar', t: 'Fiyat', h: '/fiyat', k: 'ücret lisans satın al ön sipariş' },
   { g: 'Sayfalar', t: 'İndir', h: '/indir', k: 'kurulum sürüm windows' },
-  { g: 'Sayfalar', t: 'Blog', h: '/blog', k: 'yazılar makale' },
   { g: 'Sayfalar', t: 'Sık Sorulan Sorular', h: '/sss', k: 'sss soru cevap' },
   { g: 'Sayfalar', t: 'İletişim', h: '/iletisim', k: 'mail yaz destek' },
   { g: 'Sayfalar', t: 'Geliştiricisi hakkında', h: '/hakkimda', k: 'zerdem kartal astrolog' },
-  { g: 'Sayfalar', t: 'Üye girişi', h: '/uye', k: 'hesap giriş kayıt' },
+  { g: 'Sayfalar', t: 'Üye girişi', h: '/cok-yakinda', k: 'hesap giriş kayıt google çok yakında' },
   { g: 'Yasal', t: 'KVKK', h: '/yasal/kvkk', k: 'kişisel veri' },
   { g: 'Yasal', t: 'Gizlilik & Çerez', h: '/yasal/gizlilik', k: 'çerez privacy' },
   { g: 'Yasal', t: 'Mesafeli Satış', h: '/yasal/mesafeli-satis', k: 'sözleşme' },
@@ -63,20 +61,6 @@ async function indeksYukle() {
       for (const s of c?.sss?.items || []) ek.push({ g: 'SSS', t: s.q, h: '/sss', k: s.a || '' });
     }
   } catch { /* içerik ucu yoksa sabit rotalarla devam */ }
-
-  try {
-    const r = await fetch('/api/blog/tree', { cache: 'force-cache' });
-    if (r.ok) {
-      const agac = await r.json();
-      const gez = (dugumler) => {
-        for (const n of dugumler || []) {
-          if (n.type === 'page') ek.push({ g: 'Blog', t: n.title, h: `/blog/yazi/${n.id}`, k: n.excerpt || '' });
-          if (n.children) gez(n.children);
-        }
-      };
-      gez(Array.isArray(agac) ? agac : agac?.nodes);
-    }
-  } catch { /* blog ucu yoksa sessizce geç */ }
 
   ONBELLEK = ek;
   return ek;
@@ -180,7 +164,7 @@ export default function CommandPalette() {
                 <circle cx="11" cy="11" r="7" /><path d="M20 20l-3.6-3.6" strokeLinecap="round" />
               </svg>
               <input ref={girdiRef} value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={onKutuKey}
-                placeholder="Sayfa, modül, soru ya da yazı ara…" aria-label="Arama"
+                placeholder="Sayfa, modül ya da soru ara…" aria-label="Arama"
                 aria-controls="h-cmd-liste" autoComplete="off" spellCheck="false" />
               <button type="button" onClick={kapat} aria-label="Kapat">esc</button>
             </div>

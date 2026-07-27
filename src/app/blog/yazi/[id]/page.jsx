@@ -17,13 +17,11 @@ async function load(id) {
 }
 
 export async function generateMetadata({ params }) {
-  const p = await load(params.id);
-  if (!p) return { title: 'Yazı bulunamadı' };
   return pageMeta({
-    title: p.seoTitle || `${p.title} | Hermes`,
-    description: p.seoDesc || p.excerpt || '',
-    path: `/blog/yazi/${p.id}`,
-    ogType: 'article'
+    title: 'Yazı yayında değil — Hermes',
+    description: 'Hermes blog yazıları şu anda kamusal erişime kapalı.',
+    path: `/blog/yazi/${params.id}`,
+    noindex: true
   });
 }
 
@@ -41,6 +39,7 @@ const ARTICLE_CSS = `
 `;
 
 export default async function Yazi({ params }) {
+  notFound();
   const p = await load(params.id);
   if (!p) notFound();
   const url = `${SITE}/blog/yazi/${p.id}`;

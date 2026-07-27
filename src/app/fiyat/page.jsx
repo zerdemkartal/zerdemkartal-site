@@ -1,11 +1,10 @@
 // FİYAT — tek lisans, her platform (H1). İçerik: 'hermes_site' → fiyat.
-// CTA şimdilik /iletisim (ön sipariş); ödeme H2'de POST /api/orders akışına bağlanır.
+// CTA geçici olarak WhatsApp'a gider; iyzico sipariş/ödeme kodu ileride etkinleştirilecektir.
 // JSON-LD: WebPage + Breadcrumb + SoftwareApplication(Offer) + FAQPage (fiyat SSS).
 import { getHermes } from '@/lib/hermesContent';
-import { SITE, ORG, WEBSITE, appNode, pageMeta, priceNum } from '@/lib/site';
+import { SITE, ORG, WEBSITE, WHATSAPP_PURCHASE_URL, appNode, pageMeta, priceNum } from '@/lib/site';
 import { JsonLd } from '@/components/JsonLd';
-import { Nav, Footer, T, kickerStyle, h1Style, h2Style, pStyle, sectionStyle } from '@/components/Chrome';
-import OnSiparis from './OnSiparis';
+import { Nav, Footer, T, btnPrimary, kickerStyle, h1Style, h2Style, pStyle, sectionStyle } from '@/components/Chrome';
 // Faz 2 (27 Tem 2026) — fiyat kutusunda imleç parıltısı.
 import Spotlight from '@/components/Spotlight';
 
@@ -47,7 +46,7 @@ export default async function Fiyat() {
           <p style={pStyle} data-he data-path="fiyat.hero.p">{hero.p}</p>
           <div className="h-price-assurance" aria-label="Lisans özeti">
             <span>Abonelik yok</span>
-            <span>2 cihaza kadar</span>
+            <span>1 cihaz lisansı</span>
             <span>Güncellemeler dahil</span>
           </div>
         </div>
@@ -59,12 +58,23 @@ export default async function Fiyat() {
             <span style={{ fontFamily: T.serif, fontSize: 46 }} data-he data-path="fiyat.kutu.price">{kutu.price}</span>
             {kutu.oldPrice && <s style={{ color: T.muted, fontSize: 20 }} data-he data-path="fiyat.kutu.oldPrice">{kutu.oldPrice}</s>}
           </div>
-          <OnSiparis label={kutu.btn} price={Number(priceNum(kutu.price)) || 5000} />
-          <div className="h-payment-note">Güvenli ödeme sayfası · iyzico</div>
+          <div className="h-device-pricing">
+            <strong>1 cihaz dahil</strong>
+            <span>2 cihaz seçeneği: <b data-he data-path="fiyat.kutu.secondPrice">{kutu.secondPrice || '₺7.500'}</b> toplam</span>
+          </div>
+          <a
+            href={WHATSAPP_PURCHASE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ ...btnPrimary, display: 'block', marginTop: 22, textAlign: 'center' }}
+          >
+            WhatsApp’tan satın al
+          </a>
+          <div className="h-payment-note">Satın alma görüşmesi WhatsApp üzerinden · iyzico yakında</div>
           <ul style={{ ...pStyle, fontSize: 14.5, paddingLeft: 20 }}>
             {(kutu.rows || []).map((r, i) => <li key={i} style={{ listStyle: 'none', marginLeft: -20 }} data-he data-path={`fiyat.kutu.rows.${i}`}>{r}</li>)}
           </ul>
-          <div style={{ color: T.muted, fontSize: 13.5, marginTop: 14 }} data-he data-path="fiyat.kutu.alt">{kutu.alt}</div>
+          <div style={{ color: T.muted, fontSize: 13.5, marginTop: 14 }}>Cihaz seçimini ve ödeme adımlarını WhatsApp görüşmesinde birlikte netleştiririz.</div>
         </Spotlight>
       </section>
 
