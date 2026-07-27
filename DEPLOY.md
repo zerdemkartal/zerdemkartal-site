@@ -77,8 +77,11 @@ git branch -M main && git push -u origin main
 1. vercel.com → GitHub ile giriş → **Add New… → Project** → repoyu seç.
 2. **Root Directory**: `faz2-backend` (repo tüm projeyse). Framework otomatik "Next.js" algılanır.
 3. **Environment Variables**: aşağıdaki tabloyu gir.
-4. **Build Command**'i şu yap: `prisma generate && next build`
-   (Şema değişince tabloları güncellemek için yerelde `npx prisma db push` çalıştır.)
+4. Build komutu depodaki `vercel.json` tarafından `npm run build` olarak
+   sabitlenmiştir. Vercel panelindeki eski Build Command değeri bu dosya tarafından
+   geçersiz kılınır. `postinstall` zaten `prisma generate` çalıştırır.
+   **`prisma db push` build komutuna eklenmez.** Şema değişikliği ayrı ve kontrollü
+   bir veritabanı işlemi olarak yürütülür.
 5. **Deploy** → `*.vercel.app` adresi verir. Aç, test et.
 
 ## Adım 5 — Alan adını bağla

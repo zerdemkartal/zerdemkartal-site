@@ -1,6 +1,10 @@
 import { prisma } from '@/lib/db';
 import { requireAdmin } from '@/lib/auth';
 
+// Ayarlar veritabanından çalışma anında okunur. Bu rota build sırasında statik
+// üretilirse geçici bir Neon erişim sorunu bütün site yayınını durdurur.
+export const dynamic = 'force-dynamic';
+
 // GET /api/settings — public okuma (accent public sayfalarda da gerekir)
 export async function GET() {
   const row = await prisma.setting.findUnique({ where: { id: 1 } });
