@@ -10,6 +10,7 @@ import MobileNav from './MobileNav';
 // Nav markup'ı DEĞİŞMEDİ; SmartNav yalnız dıştan sarar (sunucu çocukları prop olarak alır).
 import SmartNav from './SmartNav';
 import CommandPalette from './CommandPalette';
+import { INSTAGRAM_HANDLE, INSTAGRAM_URL } from '@/lib/site';
 
 export const T = {
   ink: 'var(--h-ink)', ink2: 'var(--h-ink2)', paper: 'var(--h-bg)', cream: 'var(--h-cream)',
@@ -85,7 +86,7 @@ export function Footer() {
           <a href="/iletisim" style={fl}>İletişim formu</a>
           <a href="mailto:merhaba@zerdemkartal.com" style={fl}>merhaba@zerdemkartal.com</a>
           <a href="/hakkimda" style={fl}>Geliştiricisi hakkında</a>
-          <a href="https://instagram.com/zerdemkartal" target="_blank" rel="me noopener" style={fl}>Instagram</a>
+          <a href={INSTAGRAM_URL} target="_blank" rel="me noopener noreferrer" style={fl}>Instagram · @{INSTAGRAM_HANDLE}</a>
           <a href="https://youtube.com/@zerdemkartal" target="_blank" rel="me noopener" style={fl}>YouTube</a>
         </div>
       </div>

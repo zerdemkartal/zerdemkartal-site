@@ -1,5 +1,5 @@
 // İLETİŞİM — SSR portu (piksel referansı: Iletisim.dc.html). Form istemci bileşeni → POST /api/leads.
-import { SITE, ORG, WEBSITE, pageMeta } from '@/lib/site';
+import { INSTAGRAM_HANDLE, INSTAGRAM_URL, SITE, ORG, WEBSITE, pageMeta } from '@/lib/site';
 import { JsonLd } from '@/components/JsonLd';
 import { Nav, Footer, T, kickerStyle, h1Style, pStyle, sectionStyle } from '@/components/Chrome';
 import IletisimForm from './IletisimForm';
@@ -43,9 +43,9 @@ export default function Iletisim() {
             <div style={{ ...kickerStyle, fontSize: 11.5 }}>E-POSTA</div>
             <div style={{ fontFamily: T.serif, fontSize: 19, marginTop: 8 }}>merhaba@zerdemkartal.com</div>
           </a>
-          <a href="https://instagram.com/zerdemkartal" target="_blank" rel="me noopener" style={card}>
+          <a href={INSTAGRAM_URL} target="_blank" rel="me noopener noreferrer" style={card}>
             <div style={{ ...kickerStyle, fontSize: 11.5 }}>INSTAGRAM</div>
-            <div style={{ fontFamily: T.serif, fontSize: 19, marginTop: 8 }}>@zerdemkartal</div>
+            <div style={{ fontFamily: T.serif, fontSize: 19, marginTop: 8 }}>@{INSTAGRAM_HANDLE}</div>
           </a>
           <a href="https://youtube.com/@zerdemkartal" target="_blank" rel="me noopener" style={card}>
             <div style={{ ...kickerStyle, fontSize: 11.5 }}>YOUTUBE</div>

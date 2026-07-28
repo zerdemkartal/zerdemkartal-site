@@ -7,12 +7,14 @@ export const WHATSAPP_PHONE = '905528880520';
 export const whatsappUrl = (message) => `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(message)}`;
 export const WHATSAPP_INFO_URL = whatsappUrl('Merhaba! Hermes programı hakkında bilgi almak istiyorum.');
 export const WHATSAPP_PURCHASE_URL = whatsappUrl('Merhaba! Hermes programını satın almak istiyorum. Lisans seçenekleri ve ödeme adımları hakkında bilgi alabilir miyim?');
+export const INSTAGRAM_HANDLE = 'hermesastrolojiprogrami';
+export const INSTAGRAM_URL = `https://www.instagram.com/${INSTAGRAM_HANDLE}/`;
 
 // Site seviyesi JSON-LD düğümleri. Yayıncı = zerdemkartal (kişi/atölye), ürün & site = Hermes.
 export const ORG = {
   '@type': 'Organization', '@id': SITE + '/#org', name: 'zerdemkartal', url: SITE + '/', logo: LOGO,
   description: 'Hermes astroloji programını geliştiren bağımsız astroloji atölyesi.',
-  sameAs: ['https://instagram.com/zerdemkartal', 'https://youtube.com/@zerdemkartal']
+  sameAs: [INSTAGRAM_URL, 'https://youtube.com/@zerdemkartal']
 };
 export const WEBSITE = {
   '@type': 'WebSite', '@id': SITE + '/#site', url: SITE + '/', name: 'Hermes',

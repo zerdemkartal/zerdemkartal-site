@@ -1,7 +1,7 @@
 // HAKKIMDA — SSR portu (piksel referansı: Hakkimizda.dc.html; içerik = PageContent 'hakkimda').
 // JSON-LD: prototipteki @graph (Organization/WebSite/AboutPage/BreadcrumbList) + Person.
 import { getContent } from '@/lib/content';
-import { SITE, ORG, WEBSITE, pageMeta } from '@/lib/site';
+import { INSTAGRAM_URL, SITE, ORG, WEBSITE, pageMeta } from '@/lib/site';
 import { JsonLd } from '@/components/JsonLd';
 import { Nav, Footer, T, kickerStyle, sectionStyle } from '@/components/Chrome';
 
@@ -26,7 +26,7 @@ export default async function Hakkimda() {
   const jsonld = { '@context': 'https://schema.org', '@graph': [
     ORG, WEBSITE,
     { '@type': 'AboutPage', '@id': URL_ + '#webpage', url: URL_, name: (c.seo && c.seo.title) || SEO_DEF.title, description: (c.seo && c.seo.description) || SEO_DEF.description, isPartOf: { '@id': SITE + '/#site' }, about: { '@id': SITE + '/#org' } },
-    { '@type': 'Person', '@id': SITE + '/#astrolog', name: 'zerdemkartal', jobTitle: 'Astrolog', worksFor: { '@id': SITE + '/#org' }, sameAs: ['https://instagram.com/zerdemkartal', 'https://youtube.com/@zerdemkartal'] },
+    { '@type': 'Person', '@id': SITE + '/#astrolog', name: 'zerdemkartal', jobTitle: 'Astrolog', worksFor: { '@id': SITE + '/#org' }, sameAs: [INSTAGRAM_URL, 'https://youtube.com/@zerdemkartal'] },
     { '@type': 'BreadcrumbList', itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Ana Sayfa', item: SITE + '/' },
       { '@type': 'ListItem', position: 2, name: 'Hakkımda', item: URL_ }
