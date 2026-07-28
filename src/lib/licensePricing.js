@@ -1,6 +1,6 @@
 export const LICENSE_DEVICE_PRICES = Object.freeze({
-  1: 5000,
-  2: 7500
+  1: 6000,
+  2: 8500
 });
 
 export function normalizeDeviceLimit(value) {

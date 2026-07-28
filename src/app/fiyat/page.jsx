@@ -25,7 +25,7 @@ function buildJsonLd(c) {
       { '@type': 'ListItem', position: 1, name: 'Ana Sayfa', item: SITE + '/' },
       { '@type': 'ListItem', position: 2, name: 'Fiyat', item: SITE + PATH }
     ] },
-    appNode({ description: seo.description, price: priceNum(c.fiyat.kutu.price) || '5000' }),
+    appNode({ description: seo.description, price: priceNum(c.fiyat.kutu.price) || '6000' }),
     { '@type': 'FAQPage', mainEntity: (c.fiyat.sss || []).map((x) => ({ '@type': 'Question', name: x.q, acceptedAnswer: { '@type': 'Answer', text: x.a } })) }
   ] };
 }
@@ -59,8 +59,10 @@ export default async function Fiyat() {
             {kutu.oldPrice && <s style={{ color: T.muted, fontSize: 20 }} data-he data-path="fiyat.kutu.oldPrice">{kutu.oldPrice}</s>}
           </div>
           <div className="h-device-pricing">
-            <strong>1 cihaz dahil</strong>
-            <span>2 cihaz seçeneği: <b data-he data-path="fiyat.kutu.secondPrice">{kutu.secondPrice || '₺7.500'}</b> toplam</span>
+            <strong>Program fiyatı: <span data-he data-path="fiyat.kutu.oldPrice">{kutu.oldPrice || '₺8.500'}</span></strong>
+            <span>İkinci cihaz lisansı: <b data-he data-path="fiyat.kutu.secondLicensePrice">+{kutu.secondLicensePrice || '₺2.500'}</b></span>
+            <span>İki cihaz toplam: <b data-he data-path="fiyat.kutu.secondPrice">{kutu.secondPrice || '₺8.500'}</b></span>
+            <span data-he data-path="fiyat.kutu.vatNote">{kutu.vatNote || 'Fiyatlara KDV dahildir.'}</span>
           </div>
           <a
             href={WHATSAPP_PURCHASE_URL}

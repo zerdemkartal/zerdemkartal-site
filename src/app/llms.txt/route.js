@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/db';
 import { HERMES_SITE } from '@/lib/defaults';
+import { migrateHermesPricing } from '@/lib/hermesPricing';
 
 // llms.txt — HERMES sitesi AI indeksi (GEO katmanının çekirdeği; H1 dönüşümü).
 // Gövde 'hermes_site' içerik modelinden ÜRETİLİR (MCP ile içerik değişince burası da değişir)
@@ -16,6 +17,7 @@ export async function GET() {
     if (row?.data) model = { ...HERMES_SITE, ...row.data };
     email = settings?.data?.email || email;
   } catch { /* DB yoksa varsayılanlarla devam */ }
+  model = migrateHermesPricing(model);
 
   const moduller = (model.ozellikler?.gruplar || [])
     .map((g) => `- ${g.baslik}: ` + (g.items || []).map((x) => x.ad).join(' · '))
@@ -34,8 +36,8 @@ export async function GET() {
 > Geliştirici: zerdemkartal (bağımsız astroloji atölyesi, İstanbul). Dil: Türkçe.
 
 Temel gerçekler:
-- Fiyat: ön satışta ₺5.000 tek seferlik lisans (planlanan liste fiyatı ₺10.000). Abonelik YOK.
-- Lisans: ₺5.000 ön satış bedeliyle 1 cihaz; 2 cihaz seçeneği toplam ₺7.500; tüm güncellemeler dahil.
+- Fiyat: ön satışta ₺6.000 tek seferlik lisans; program fiyatı ₺8.500. Fiyatlara KDV dahildir. Abonelik YOK.
+- Lisans: ₺6.000 ön satış bedeliyle 1 cihaz; ikinci cihaz lisansı +₺2.500, iki cihaz toplam ₺8.500; tüm güncellemeler dahil.
 - Satın alma: şu anda fiyat sayfasındaki düğme doğrudan Hermes WhatsApp hattına açılır; iyzico altyapısı daha sonra etkinleştirilecektir.
 - Platformlar: bugün Windows 10/11 (64-bit); web sürümü (satın alanlara, üye girişiyle, tam sürüm) ve Android yol haritasında.- Gizlilik: harita hesapları çevrimdışı; internet yalnız lisans doğrulama ve güncelleme için.
 

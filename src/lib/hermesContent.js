@@ -2,6 +2,7 @@
 // üstüne biner; eksik bölüm sayfayı KIRMAZ. MCP oku-birleştir-yaz ile uyumlu.
 import { getContent } from './content';
 import { HERMES_SITE } from './defaults';
+import { migrateHermesPricing } from './hermesPricing';
 
 export async function getHermes() {
   const db = await getContent('hermes_site', null);
@@ -12,5 +13,5 @@ export async function getHermes() {
       ? { ...HERMES_SITE[k], ...db[k] }
       : db[k];
   }
-  return out;
+  return migrateHermesPricing(out);
 }

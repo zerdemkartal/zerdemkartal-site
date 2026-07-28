@@ -18,7 +18,7 @@ export const HERMES_SITE = {
     },
     fiyat: {
       title: 'Fiyat — Hermes | Tek seferlik lisans, abonelik yok',
-      description: 'Hermes ön satış: 1 cihaz için ₺5.000, 2 cihaz seçeneği toplam ₺7.500. Abonelik yok; güncellemeler ve yol haritasındaki web/Android erişimi dahil.'
+      description: 'Hermes ön satış fiyatı ₺6.000; program fiyatı ₺8.500. İkinci cihaz lisansı +₺2.500, iki cihaz toplam ₺8.500. Fiyatlara KDV dahildir; abonelik yoktur.'
     },
     indir: {
       title: 'İndir — Hermes Astroloji Programı (Windows)',
@@ -36,7 +36,7 @@ export const HERMES_SITE = {
       title: 'Gökyüzü, masaüstünde.',
       p: 'Hermes; doğum haritasından horary’ye, rektifikasyondan astrokartografiye profesyonel bir astroloji atölyesini tek sakin ekranda toplar. Hesaplar Swiss Ephemeris hassasiyetinde, yorum dili Türkçe, verilerin ise yalnız senin cihazında.',
       btn1: 'Programı keşfet', btn1Href: '/ozellikler',
-      btn2: 'Ön satışa katıl — ₺5.000', btn2Href: '/fiyat',
+      btn2: 'Ön satışa katıl — ₺6.000', btn2Href: '/fiyat',
       stats: ['Windows 10/11', 'Tek seferlik lisans', 'Çevrimdışı çalışır'],
       doner: [
         'Kendi astroloji kütüphaneniz programın içinde, her an el altında olsun ister misiniz?',
@@ -104,8 +104,8 @@ export const HERMES_SITE = {
     },
     fiyatBand: {
       kicker: 'ÖN SATIŞ',
-      title: 'Erken alana ₺5.000, yayında ₺10.000.',
-      p: '₺5.000 ön satış lisansı 1 cihaz içindir; 2 cihaz seçeneği toplam ₺7.500. Abonelik yok; güncellemeler ve yol haritasındaki web/Android erişimi dahil.',
+      title: 'Ön satış ₺6.000, program fiyatı ₺8.500.',
+      p: 'Ön satış lisansı 1 cihaz için ₺6.000’dir. İkinci cihaz lisansı +₺2.500; iki cihaz toplam ₺8.500’dür. Fiyatlara KDV dahildir. Abonelik yok; güncellemeler ve yol haritasındaki web/Android erişimi dahildir.',
       btn: 'Fiyat ayrıntıları'
     }
   },
@@ -191,8 +191,10 @@ export const HERMES_SITE = {
     },
     kutu: {
       kicker: 'ÖN SATIŞA ÖZEL',
-      price: '₺5.000', oldPrice: '₺10.000',
-      secondPrice: '₺7.500',
+      price: '₺6.000', oldPrice: '₺8.500',
+      secondLicensePrice: '₺2.500',
+      secondPrice: '₺8.500',
+      vatNote: 'Fiyatlara KDV dahildir.',
       rows: [
         '☿︎ Tüm modüller — sınırsız harita ve danışan',
         '☿︎ Windows 10/11 (64-bit) kurulumu',
@@ -214,7 +216,7 @@ export const HERMES_SITE = {
     },
     sss: [
       { q: 'Abonelik mi, tek seferlik mi?', a: 'Tek seferlik. Hermes’i bir kez satın alırsın; abonelik ve gizli ücret yoktur.' },
-      { q: 'Ön satış ne demek?', a: 'Program aktif geliştirmede; erken alanlar ₺5.000 özel fiyattan edinir. Yayın fiyatı ₺10.000 olarak planlanmıştır.' },
+      { q: 'Ön satış ne demek?', a: 'Program aktif geliştirmededir; ön satış fiyatı ₺6.000, program fiyatı ₺8.500’dür. İkinci cihaz lisansı +₺2.500’dür. Fiyatlara KDV dahildir.' },
       { q: 'Güncellemeler ücretli mi?', a: 'Hayır. Çıkan tüm sürümler ve güncellemeler lisansına dahildir.' },
       { q: 'İade var mı?', a: 'Mesafeli satış koşulları geçerlidir; ayrıntı için İptal & İade sayfasına bak.' }
     ]
@@ -253,7 +255,7 @@ export const HERMES_SITE = {
       { q: 'Hermes nedir?', a: 'Hermes, profesyonel kullanım için geliştirilmiş Türkçe masaüstü astroloji programıdır: doğum haritası, transit, ilerletme, dönem teknikleri, tutulmalar, sinastri, horary, elektif tarama, rektifikasyon, astrokartografi, Uranyen dial ve danışan yönetimi tek uygulamada.' },
       { q: 'Kimler için?', a: 'Danışmanlık veren astrologlar, ciddi öğrenciler ve araştırmacılar için tasarlandı. Günlük burç yorumu uygulaması değildir.' },
       { q: 'Hesaplar ne kadar hassas?', a: 'Hesap motoru Swiss Ephemeris kullanır; gezegen konumları, evler, asteroidler ve sabit yıldızlar efemeris kaynağıyla birebir hesaplanır. Efemeris dosyaları programla birlikte gelir, hesap için internet gerekmez.' },
-      { q: 'Lisans nasıl çalışıyor?', a: 'Tek seferlik satın alma; abonelik yok. ₺5.000 ön satış lisansı tek cihaz içindir; iki cihaz seçeneği toplam ₺7.500’dür. Çıkan tüm güncellemeler dahildir.' },
+      { q: 'Lisans nasıl çalışıyor?', a: 'Tek seferlik satın alma; abonelik yok. Ön satış lisansı 1 cihaz için ₺6.000’dir. İkinci cihaz lisansı +₺2.500; iki cihaz toplam ₺8.500’dür. Fiyatlara KDV ve çıkan tüm güncellemeler dahildir.' },
       { q: 'Web sürümü olacak mı?', a: 'Evet, yol haritasında. Web sürümü tam sürüm olacak ve yalnız satın alanlar üye girişi + lisans doğrulamasıyla kullanabilecek. Ek ücret yok — aynı lisans.' },
       { q: 'Verilerim nerede tutuluyor?', a: 'Cihazında. Danışan kayıtların ve haritaların bilgisayarından çıkmaz; bulut zorunluluğu yoktur. İnternet yalnız lisans doğrulama ve güncelleme için kullanılır.' },
       { q: 'Hangi platformlarda çalışıyor?', a: 'Bugün Windows 10/11 (64-bit). macOS, Android ve web sürümleri yol haritasındadır; tek lisans hepsinde geçerli olacak.' },

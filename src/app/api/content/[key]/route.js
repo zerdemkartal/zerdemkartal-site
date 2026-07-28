@@ -2,6 +2,7 @@ import { prisma } from '@/lib/db';
 import { requireAdmin } from '@/lib/auth';
 import { pingIndexNow } from '@/lib/indexnow';
 import { HERMES_SITE } from '@/lib/defaults';
+import { migrateHermesPricing } from '@/lib/hermesPricing';
 
 // PageContent anahtar whitelist'i — H1 dönüşümü: site içeriği tek 'hermes_site' anahtarında.
 // Eski anahtarlar okunabilir kalır (arşiv/prototip verisi), ama site onları artık kullanmıyor.
@@ -14,7 +15,7 @@ const KEY_PATHS = { hermes_site: ['/', '/ozellikler', '/fiyat', '/indir', '/sss'
 export async function GET(_request, { params }) {
   if (!KEYS.has(params.key)) return Response.json({ error: 'bilinmeyen anahtar' }, { status: 404 });
   const row = await prisma.pageContent.findUnique({ where: { key: params.key } });
-  if (params.key === 'hermes_site') return Response.json(row?.data ?? HERMES_SITE);
+  if (params.key === 'hermes_site') return Response.json(migrateHermesPricing(row?.data ?? HERMES_SITE));
   return Response.json(row?.data ?? null); // null → sayfa varsayılanını kullanır
 }
 

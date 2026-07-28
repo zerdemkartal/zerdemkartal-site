@@ -14,12 +14,12 @@ const planButton = { minWidth: 0, padding: '13px 14px', borderRadius: 13, border
 
 const tryLabel = (value) => `₺${Number(value).toLocaleString('tr-TR')}`;
 
-export default function OnSiparis({ label: cta = 'Ön sipariş ver', price = 5000, secondPrice = 7500 }) {
+export default function OnSiparis({ label: cta = 'Ön sipariş ver', price = 6000, secondPrice = 8500 }) {
   const [open, setOpen] = useState(false);
   const [f, setF] = useState({ name: '', email: '', kvkk: false, deviceLimit: 1 });
   const [state, setState] = useState('form'); // form | sending | done | error
   const [errMsg, setErrMsg] = useState('');
-  const selectedPrice = f.deviceLimit === 2 ? Number(secondPrice) || 7500 : Number(price) || 5000;
+  const selectedPrice = f.deviceLimit === 2 ? Number(secondPrice) || 8500 : Number(price) || 6000;
 
   useEffect(() => {
     if (!open) return;
@@ -107,8 +107,8 @@ export default function OnSiparis({ label: cta = 'Ön sipariş ver', price = 500
                 <p style={{ fontSize: 14, color: 'var(--h-muted)', marginTop: 6 }}>Hermes ön satış — bilgilerini gir, güvenli ödeme sayfasına (iyzico) yönlendirilirsin. Abonelik yok, tek seferlik lisans.</p>
                 <div role="group" aria-label="Cihaz sayısı" style={planGrid}>
                   {[
-                    { limit: 1, title: '1 cihaz', amount: Number(price) || 5000 },
-                    { limit: 2, title: '2 cihaz', amount: Number(secondPrice) || 7500 }
+                    { limit: 1, title: '1 cihaz', amount: Number(price) || 6000 },
+                    { limit: 2, title: '2 cihaz (+₺2.500)', amount: Number(secondPrice) || 8500 }
                   ].map((plan) => {
                     const active = f.deviceLimit === plan.limit;
                     return (
@@ -131,6 +131,7 @@ export default function OnSiparis({ label: cta = 'Ön sipariş ver', price = 500
                     );
                   })}
                 </div>
+                <p style={{ fontSize: 12.5, color: 'var(--h-muted)', margin: '9px 0 0' }}>Fiyatlara KDV dahildir.</p>
                 <label style={label}>Ad Soyad
                   <input required value={f.name} onChange={set('name')} style={field} placeholder="Ad Soyad" />
                 </label>
