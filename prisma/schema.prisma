@@ -140,3 +140,51 @@ model Asset {
   size      Int
   createdAt DateTime @default(now())
 }
+
+// Kurumsal Posta Merkezi — taşıma Resend, kalıcı iş akışı Hermes yönetim panelidir.
+// folder: inbox | sent | archive | spam. "Gönderilen" ayrıca yanıt içeren konuşmaları da süzer.
+model MailThread {
+  id                String        @id @default(cuid())
+  subject           String
+  normalizedSubject String
+  participantName   String?
+  participantEmail  String?
+  mailbox           String
+  folder            String        @default("inbox")
+  unreadCount       Int           @default(0)
+  starred           Boolean       @default(false)
+  lastMessageAt     DateTime      @default(now())
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  messages          MailMessage[]
+
+  @@index([folder, lastMessageAt])
+  @@index([normalizedSubject, participantEmail])
+}
+
+model MailMessage {
+  id          String     @id @default(cuid())
+  thread      MailThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  threadId    String
+  resendId    String?    @unique
+  messageId   String?    @unique
+  direction   String // inbound | outbound
+  fromAddress String
+  fromName    String?
+  to          Json
+  cc          Json
+  bcc         Json
+  replyTo     Json
+  subject     String
+  text        String?    @db.Text
+  html        String?    @db.Text
+  headers     Json
+  attachments Json
+  status      String     @default("received") // received | sent | failed
+  sentBy      String?
+  createdAt   DateTime   @default(now())
+  readAt      DateTime?
+
+  @@index([threadId, createdAt])
+  @@index([direction, createdAt])
+}

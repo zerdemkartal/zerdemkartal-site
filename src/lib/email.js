@@ -10,8 +10,8 @@ export function emailConfigured() {
   return !!process.env.RESEND_API_KEY;
 }
 
-// Düşük seviye gönderim. { ok:boolean, skipped?, error? } döner — hata FIRLATMAZ.
-export async function sendMail({ to, subject, html, replyTo }) {
+// Düşük seviye gönderim. { ok:boolean, id?, skipped?, error? } döner — hata FIRLATMAZ.
+export async function sendMail({ to, subject, html, text, replyTo, from, headers, tags }) {
   const key = process.env.RESEND_API_KEY;
   if (!key) {
     console.warn('[email] RESEND_API_KEY yok — e-posta atlandı:', subject);
@@ -22,11 +22,14 @@ export async function sendMail({ to, subject, html, replyTo }) {
       method: 'POST',
       headers: { Authorization: 'Bearer ' + key, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        from: FROM,
+        from: from || FROM,
         to: Array.isArray(to) ? to : [to],
         subject,
         html,
-        ...(replyTo ? { reply_to: replyTo } : {})
+        ...(text ? { text } : {}),
+        ...(replyTo ? { reply_to: replyTo } : {}),
+        ...(headers && Object.keys(headers).length ? { headers } : {}),
+        ...(Array.isArray(tags) && tags.length ? { tags } : {})
       })
     });
     if (!res.ok) {
@@ -34,7 +37,8 @@ export async function sendMail({ to, subject, html, replyTo }) {
       console.error('[email] gönderilemedi', res.status, t);
       return { ok: false, error: t || String(res.status) };
     }
-    return { ok: true };
+    const data = await res.json().catch(() => ({}));
+    return { ok: true, id: data.id || null };
   } catch (e) {
     console.error('[email] hata', e);
     return { ok: false, error: String(e) };

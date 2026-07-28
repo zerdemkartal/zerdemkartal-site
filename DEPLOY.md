@@ -131,10 +131,40 @@ Claude Desktop'ı yeniden başlat → 🔨 menüsünde araçlar görünmeli → 
 | `ADMIN_EMAIL` | ✅ | İlk admin e-postası (seed yazar) |
 | `ADMIN_PASSWORD` | ✅ | İlk admin şifresi |
 | `SITE_URL` | ✅ | `https://alanadi` (canonical/OG) |
+| `RESEND_API_KEY` | Posta için ✅ | Resend API anahtarı; kurumsal gönderim ve gelen ileti gövdesini almak için |
+| `RESEND_WEBHOOK_SECRET` | Gelen posta için ✅ | Resend `email.received` webhook imza sırrı (`whsec_...`) |
+| `MAILBOX_ADDRESSES` | Posta için ✅ | Virgülle ayrılmış adresler: `merhaba@hermesastroloji.com,destek@...,siparis@...,lisans@...` |
+| `MAILBOX_FROM_NAME` | — | Gönderen görünen adı; varsayılan `Hermes Astroloji` |
+| `EMAIL_FROM` | İşlemsel posta için ✅ | Ödeme/lisans e-postalarının göndereni; ör. `Hermes <siparis@hermesastroloji.com>` |
 | `GOOGLE_CLIENT_ID` | — | Google girişi (boş bırakılabilir) |
 | `INDEXNOW_KEY` | — | IndexNow anahtarı (boşsa atlanır) |
 
 > `JWT_SECRET` ve `ADMIN_TOKEN` üretmek için (terminalde): `openssl rand -hex 32`
+
+---
+
+## Kurumsal Posta Merkezi — Resend bağlantısı
+
+Site kendi yönetim panelinde bir posta merkezi sunar: iletişim formu ve gelen
+kurumsal e-postalar Neon'da konuşma olarak saklanır; yanıtlar Resend üzerinden
+gönderilir. Bu yapı web tabanlıdır, IMAP/Outlook posta kutusu değildir.
+
+1. Resend → **Domains** altında `hermesastroloji.com` alan adını ekle.
+2. Resend'in verdiği gönderim kayıtlarını (SPF/DKIM) ve **Receiving** için verdiği
+   MX kayıtlarını alan adının DNS paneline aynen gir; değerleri tahmin etme.
+3. Resend → **Webhooks** içinde şu adresi ekle ve yalnız `email.received` olayını seç:
+   `https://hermesastroloji.com/api/mail/webhook/resend`
+4. Webhook ayrıntısındaki imza sırrını Vercel'e `RESEND_WEBHOOK_SECRET`, Resend API
+   anahtarını `RESEND_API_KEY` olarak ekle. Yukarıdaki `MAILBOX_*` değerlerini de gir.
+5. Vercel'de yeniden deploy et. Yönetim → **Kurumsal Posta** başlığında
+   “Gönderim ve alım bağlı” görünmelidir.
+6. Önce dış bir hesaptan `merhaba@hermesastroloji.com` adresine deneme iletisi
+   gönder; panelde görünmesini ve panel yanıtının aynı konuşmaya dönmesini doğrula.
+   Bu kabul geçmeden sitedeki eski iletişim adresini yeni adrese çevirme.
+
+Mevcut Neon veritabanı eski tarihte migration tablosu olmadan kurulduğu için bu
+projenin şema değişiklikleri kontrollü olarak `npx prisma db push` ile uygulanır;
+build komutuna eklenmez.
 
 ---
 

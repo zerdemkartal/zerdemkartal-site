@@ -9,7 +9,8 @@ export function requireAdmin(request) {
   if (!token) return unauthorized();
   if (process.env.ADMIN_TOKEN && token === process.env.ADMIN_TOKEN) return null; // MCP yolu
   try {
-    jwt.verify(token, process.env.JWT_SECRET);
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    if (payload.role !== 'admin' || !payload.sub) return unauthorized();
     return null;
   } catch {
     return unauthorized();
