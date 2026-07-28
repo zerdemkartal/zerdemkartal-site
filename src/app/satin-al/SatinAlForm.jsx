@@ -32,7 +32,12 @@ export default function SatinAlForm() {
 
   async function gonder(event) {
     event.preventDefault();
-    if (!form.kvkk || durum === 'sending') return;
+    if (durum === 'sending') return;
+    if (!form.kvkk) {
+      setDurum('error');
+      setHata('Talebi göndermek için KVKK Aydınlatma Metni onay kutusunu işaretleyin.');
+      return;
+    }
     setDurum('sending');
     setHata('');
     try {
@@ -156,7 +161,15 @@ export default function SatinAlForm() {
           </label>
 
           <label className={styles.kvkk}>
-            <input required type="checkbox" checked={form.kvkk} onChange={alan('kvkk')} />
+            <input type="checkbox" checked={form.kvkk}
+              aria-required="true" aria-invalid={durum === 'error' && !form.kvkk}
+              onChange={(event) => {
+                alan('kvkk')(event);
+                if (event.target.checked && durum === 'error') {
+                  setDurum('idle');
+                  setHata('');
+                }
+              }} />
             <span>Kişisel verilerimin <a href="/yasal/kvkk" target="_blank">KVKK Aydınlatma Metni</a> kapsamında işlenmesini kabul ediyorum.</span>
           </label>
 
@@ -164,7 +177,7 @@ export default function SatinAlForm() {
 
           <div className={styles.alt}>
             <div><span>Talep toplamı</span><strong>{para(plan.price)}</strong></div>
-            <button type="submit" disabled={!form.kvkk || durum === 'sending'}>
+            <button type="submit" disabled={durum === 'sending'}>
               {durum === 'sending' ? 'Gönderiliyor…' : 'Satın alma talebini gönder'}
             </button>
           </div>
