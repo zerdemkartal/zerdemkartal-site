@@ -1,10 +1,7 @@
 import { prisma } from './db';
 
 const VARSAYILAN_KUTULAR = [
-  'merhaba@hermesastroloji.com',
-  'destek@hermesastroloji.com',
-  'siparis@hermesastroloji.com',
-  'lisans@hermesastroloji.com'
+  'info@hermesastroloji.com'
 ];
 
 const EPOSTA = /^[^\s@]+@[^\s@]+\.[^\s@]+$/i;

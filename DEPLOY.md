@@ -133,7 +133,7 @@ Claude Desktop'ı yeniden başlat → 🔨 menüsünde araçlar görünmeli → 
 | `SITE_URL` | ✅ | `https://alanadi` (canonical/OG) |
 | `RESEND_API_KEY` | Posta için ✅ | Resend API anahtarı; kurumsal gönderim ve gelen ileti gövdesini almak için |
 | `RESEND_WEBHOOK_SECRET` | Gelen posta için ✅ | Resend `email.received` webhook imza sırrı (`whsec_...`) |
-| `MAILBOX_ADDRESSES` | Posta için ✅ | Virgülle ayrılmış adresler: `merhaba@hermesastroloji.com,destek@...,siparis@...,lisans@...` |
+| `MAILBOX_ADDRESSES` | Posta için ✅ | Posta Merkezi adresleri; ilk kurulumda `info@hermesastroloji.com` |
 | `MAILBOX_FROM_NAME` | — | Gönderen görünen adı; varsayılan `Hermes Astroloji` |
 | `EMAIL_FROM` | İşlemsel posta için ✅ | Ödeme/lisans e-postalarının göndereni; ör. `Hermes <siparis@hermesastroloji.com>` |
 | `GOOGLE_CLIENT_ID` | — | Google girişi (boş bırakılabilir) |
@@ -158,7 +158,7 @@ gönderilir. Bu yapı web tabanlıdır, IMAP/Outlook posta kutusu değildir.
    anahtarını `RESEND_API_KEY` olarak ekle. Yukarıdaki `MAILBOX_*` değerlerini de gir.
 5. Vercel'de yeniden deploy et. Yönetim → **Kurumsal Posta** başlığında
    “Gönderim ve alım bağlı” görünmelidir.
-6. Önce dış bir hesaptan `merhaba@hermesastroloji.com` adresine deneme iletisi
+6. Önce dış bir hesaptan `info@hermesastroloji.com` adresine deneme iletisi
    gönder; panelde görünmesini ve panel yanıtının aynı konuşmaya dönmesini doğrula.
    Bu kabul geçmeden sitedeki eski iletişim adresini yeni adrese çevirme.
 

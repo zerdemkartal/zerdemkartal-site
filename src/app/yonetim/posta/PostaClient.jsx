@@ -163,7 +163,7 @@ export default function PostaClient() {
             <span className={styles.kicker}>YÖNETİM · KURUMSAL POSTA</span>
             <h1>Posta Merkezi</h1>
             <p>
-              {counts.unread ? `${counts.unread} okunmamış ileti` : 'Gelen kutusu güncel'} · {mailboxes.length || 4} kurumsal adres
+              {counts.unread ? `${counts.unread} okunmamış ileti` : 'Gelen kutusu güncel'} · {mailboxes.length || 1} kurumsal adres
               <span className={transport.sending && transport.receiving ? styles.baglantiHazir : styles.baglantiBekliyor}>
                 {transport.sending && transport.receiving ? 'Gönderim ve alım bağlı' : 'Dış posta bağlantısı bekliyor'}
               </span>
