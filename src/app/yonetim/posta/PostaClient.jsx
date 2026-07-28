@@ -62,6 +62,17 @@ function satinAlmaBilgisi(detail) {
       deviceLimit: [1, 2].includes(deviceLimit) ? deviceLimit : null
     };
   }
+  const subject = String(detail?.subject || '');
+  if (/^satın alma talebi\b/i.test(subject)) {
+    const deviceMatch = subject.match(/(\d+)\s*cihaz/i);
+    const priceMatch = subject.match(/₺\s*([\d.]+)/);
+    const deviceLimit = Number(deviceMatch?.[1] || 0);
+    const price = Number(String(priceMatch?.[1] || '').replace(/\./g, ''));
+    return {
+      price: Number.isFinite(price) && price > 0 ? price : null,
+      deviceLimit: [1, 2].includes(deviceLimit) ? deviceLimit : null
+    };
+  }
   return null;
 }
 
@@ -211,6 +222,8 @@ export default function PostaClient() {
     try {
       const data = await api(`/api/mail/${id}`);
       setDetail(data);
+      const purchase = satinAlmaBilgisi(data);
+      setReply(purchase ? odemeTalebiMetni(data, purchase) : '');
       setThreads((list) => list.map((x) => x.id === id ? { ...x, unreadCount: 0 } : x));
       setCounts((x) => ({ ...x, unread: Math.max(0, Number(x.unread || 0) - oncekiOkunmamis) }));
     } catch (e) { setError(e.message); }
@@ -410,11 +423,14 @@ export default function PostaClient() {
                 </div>
                 <form className={styles.yanit} onSubmit={(e) => { e.preventDefault(); gonder({ threadId: detail.id, from: detail.mailbox, text: reply }); }}>
                   <div className={styles.yanitBas}>
-                    <label htmlFor="posta-yanit">E-postayla cevap ver</label>
+                    <label htmlFor="posta-yanit">
+                      E-postayla cevap ver
+                      {selectedPurchase ? <small>Kurumsal ödeme mesajı otomatik hazırlandı.</small> : null}
+                    </label>
                     {selectedPurchase ? (
                       <button type="button" className={styles.odemeHazirla}
                         onClick={() => setReply(odemeTalebiMetni(detail, selectedPurchase))}>
-                        Kurumsal ödeme talebini hazırla
+                        Ödeme mesajını yeniden hazırla
                       </button>
                     ) : null}
                   </div>

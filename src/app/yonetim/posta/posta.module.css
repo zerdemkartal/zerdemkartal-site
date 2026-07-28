@@ -64,6 +64,7 @@
 .yanit label,.yazim label{display:block;margin-bottom:13px;color:var(--h-muted);font-size:12px;font-weight:650}
 .yanitBas{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
 .yanitBas label{margin:0}
+.yanitBas label small{display:block;margin-top:4px;color:var(--h-accent-text);font-size:10.5px;font-weight:600}
 .odemeHazirla{min-height:34px;border:1px solid color-mix(in srgb,var(--h-gold) 54%,var(--h-border));border-radius:999px;padding:0 13px;background:color-mix(in srgb,var(--h-gold) 10%,var(--h-card));color:var(--h-ink);font:650 11px 'Hanken Grotesk',sans-serif;cursor:pointer}
 .odemeHazirla:hover{border-color:var(--h-gold);background:color-mix(in srgb,var(--h-gold) 17%,var(--h-card))}
 .yanit textarea,.yazim textarea,.yazim input,.yazim select{display:block;margin-top:7px;padding:12px 13px;resize:vertical}
