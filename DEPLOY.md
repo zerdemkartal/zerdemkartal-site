@@ -162,6 +162,25 @@ gönderilir. Bu yapı web tabanlıdır, IMAP/Outlook posta kutusu değildir.
    gönder; panelde görünmesini ve panel yanıtının aynı konuşmaya dönmesini doğrula.
    Bu kabul geçmeden sitedeki eski iletişim adresini yeni adrese çevirme.
 
+### Teslim edilebilirlik ve spam koruması
+
+1. Resend alan adı **Verified** olmadan gönderimi açma. Bu durum Resend'in verdiği
+   SPF ve DKIM kayıtlarının ikisinin de geçtiğini doğrular.
+2. İlk aşamada `_dmarc.hermesastroloji.com` için raporlama amaçlı `p=none`
+   politikası kullan; bütün gerçek gönderim kaynakları DMARC `pass` verdikten sonra
+   sırayla `p=quarantine`, ardından gerekiyorsa `p=reject` politikasına geç.
+   DMARC kaydındaki rapor adresi gerçekten posta alabilen bir adres olmalıdır.
+3. Yeni alan adını düşük hacimli gerçek işlem e-postalarıyla kademeli ısıt; ilk
+   günlerde toplu veya deneme amaçlı yüksek hacimli gönderim yapma.
+4. E-posta içindeki bağlantıları yalnız `hermesastroloji.com` alanında tut; açık ve
+   tıklama izlemeyi kapalı bırak, görsel sayısını düşük, metni kısa ve doğrudan tut.
+5. Resend **Emails/Suppressions** ekranında bounce, complaint ve suppressed
+   durumlarını izle; yazım hatalı veya kalıcı reddedilmiş adrese tekrar gönderme.
+6. Gmail ve Outlook testlerinde ileti başlıklarından `spf=pass`, `dkim=pass` ve
+   `dmarc=pass` üçlüsünü doğrula. Gelen kutusuna düşme hiçbir sağlayıcı tarafından
+   yüzde yüz garanti edilmez; kimlik doğrulama, düşük şikâyet ve gerçek etkileşim
+   alan adı itibarını birlikte oluşturur.
+
 ### Posta görevlisi girişi
 
 Posta görevlisi doğrudan `https://hermesastroloji.com/yonetim/posta` adresinden
@@ -189,7 +208,10 @@ e-posta, telefon ve 1/2 cihaz seçimi `POST /api/purchase-request` üzerinden he
 `Lead` kaydına hem Posta Merkezi’nde okunmamış bir konuşmaya yazılır. Telefon
 numarası konuşmanın güvenli metadata alanında E.164 biçiminde tutulur; Posta
 Merkezi bu kayıt için hazır mesajlı WhatsApp düğmesi gösterir. E-posta yanıtı
-konuşmadaki `participantEmail` adresine Resend üzerinden gönderilir.
+konuşmadaki `participantEmail` adresine Resend üzerinden gönderilir. Satış
+konuşması açıldığında cihaz/tutar metadata’sından kurumsal ödeme yanıtı otomatik
+olarak taslağa doldurulur; gönderim yine görevlinin son kontrolü ve açık
+**E-posta yanıtını gönder** eylemiyle yapılır.
 
 Mevcut Neon veritabanı eski tarihte migration tablosu olmadan kurulduğu için bu
 projenin şema değişiklikleri kontrollü olarak `npx prisma db push` ile uygulanır;
