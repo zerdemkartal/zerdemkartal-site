@@ -27,6 +27,7 @@ const THEME_CSS = `
     --h-sel:#E4DAF6; --h-shadow:rgba(43,29,18,0.06); --h-navbg:rgba(255,255,255,0.6);
     --h-veil1:rgba(251,250,247,0.86); --h-veil2:rgba(251,250,247,0.42);
     --h-neon1:rgba(142,77,103,0.45); --h-neon2:rgba(152,120,59,0.28);
+    --h-error:#B84A45; --h-whatsapp:#25D366; --h-whatsapp-dark:#128C4B;
   }
   /* KOYU = VARSAYILAN. 'html:not([data-theme])' JS kapalıyken de koyu açılmasını garanti eder;
      THEME_INIT normalde data-theme'i zaten koyu basar. Açık mod yalnız ziyaretçi düğmeye basınca. */
@@ -42,6 +43,7 @@ const THEME_CSS = `
     --h-sel:#30242D; --h-shadow:rgba(0,0,0,0.35); --h-navbg:rgba(16,20,27,0.66);
     --h-veil1:rgba(16,20,27,0.82); --h-veil2:rgba(16,20,27,0.42);
     --h-neon1:rgba(199,146,168,0.55); --h-neon2:rgba(190,163,107,0.30);
+    --h-error:#E18680; --h-whatsapp:#55D98A; --h-whatsapp-dark:#38B86E;
   }
   html { scroll-behavior:smooth; }
   body { background:var(--h-bg); color:var(--h-ink); transition:background .25s ease, color .25s ease; }

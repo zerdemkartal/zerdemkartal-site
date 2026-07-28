@@ -31,6 +31,22 @@ function ilkHarf(thread) {
   return String(thread.participantName || thread.participantEmail || '?').trim().charAt(0).toLocaleUpperCase('tr-TR');
 }
 
+function talepTelefon(detail) {
+  for (const message of detail?.messages || []) {
+    const headers = message?.headers && typeof message.headers === 'object' ? message.headers : {};
+    const digits = String(headers.whatsappPhone || '').replace(/\D/g, '');
+    if (digits.length >= 10 && digits.length <= 15) {
+      return { display: String(headers.phone || `+${digits}`), digits };
+    }
+  }
+  return null;
+}
+
+function whatsappTalepUrl(phone, name) {
+  const message = `Merhaba ${name || ''}, Hermes satın alma talebiniz hakkında yazıyorum.`.replace(/\s+/g, ' ').trim();
+  return `https://wa.me/${phone.digits}?text=${encodeURIComponent(message)}`;
+}
+
 export default function PostaClient() {
   const [token, setToken] = useState(null);
   const [credentials, setCredentials] = useState({ email: '', pass: '' });
@@ -185,6 +201,7 @@ export default function PostaClient() {
   }
 
   const aktifSayac = useMemo(() => Number(counts[folder] || 0), [counts, folder]);
+  const selectedPhone = useMemo(() => talepTelefon(detail), [detail]);
 
   if (token === null) return <main><Nav active="/yonetim" /><div className={styles.bekle}>Posta merkezi hazırlanıyor…</div></main>;
   if (!token) {
@@ -313,6 +330,13 @@ export default function PostaClient() {
                 <div className={styles.detayBas}>
                   <div><span>{detail.mailbox}</span><h2>{detail.subject}</h2><p>{detail.participantName || detail.participantEmail} · {detail.messages.length} ileti</p></div>
                   <div className={styles.detayEylem}>
+                    {selectedPhone ? (
+                      <a className={styles.whatsapp}
+                        href={whatsappTalepUrl(selectedPhone, detail.participantName)}
+                        target="_blank" rel="noopener noreferrer">
+                        WhatsApp · {selectedPhone.display}
+                      </a>
+                    ) : null}
                     <button type="button" title="Yıldızla" onClick={() => threadGuncelle({ starred: !detail.starred })}>{detail.starred ? '★' : '☆'}</button>
                     <button type="button" onClick={() => threadGuncelle({ folder: 'archive' })}>Arşivle</button>
                     <button type="button" onClick={() => threadGuncelle({ folder: 'spam' })}>Spam</button>
@@ -335,9 +359,9 @@ export default function PostaClient() {
                   })}
                 </div>
                 <form className={styles.yanit} onSubmit={(e) => { e.preventDefault(); gonder({ threadId: detail.id, from: detail.mailbox, text: reply }); }}>
-                  <label htmlFor="posta-yanit">Yanıtla</label>
+                  <label htmlFor="posta-yanit">E-postayla cevap ver</label>
                   <textarea id="posta-yanit" required rows={6} value={reply} onChange={(e) => setReply(e.target.value)} placeholder={`${detail.participantName || detail.participantEmail} için yanıtınızı yazın…`} />
-                  <div><span>{detail.mailbox} adresinden gönderilecek</span><button className={styles.birincil} disabled={sending}>{sending ? 'Gönderiliyor…' : 'Yanıtı gönder'}</button></div>
+                  <div><span>{detail.mailbox} adresinden {detail.participantEmail} adresine gönderilecek</span><button className={styles.birincil} disabled={sending}>{sending ? 'Gönderiliyor…' : 'E-posta yanıtını gönder'}</button></div>
                 </form>
               </>
             ) : (

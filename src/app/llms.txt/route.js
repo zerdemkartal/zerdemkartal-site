@@ -38,13 +38,14 @@ export async function GET() {
 Temel gerçekler:
 - Fiyat: ön satışta ₺6.000 tek seferlik lisans; program fiyatı ₺8.500. Fiyatlara KDV dahildir. Abonelik YOK.
 - Lisans: ₺6.000 ön satış bedeliyle 1 cihaz; ikinci cihaz lisansı +₺2.500, iki cihaz toplam ₺8.500; tüm güncellemeler dahil.
-- Satın alma: şu anda fiyat sayfasındaki düğme doğrudan Hermes WhatsApp hattına açılır; iyzico altyapısı daha sonra etkinleştirilecektir.
+- Satın alma: fiyat sayfasındaki Satın Al düğmesi ad, soyad, e-posta, telefon ve lisans seçiminin iletildiği güvenli talep sayfasını açar. Talep Hermes Posta Merkezi’ne düşer; ödeme ve lisans teslimi e-posta veya WhatsApp üzerinden netleştirilir.
 - Platformlar: bugün Windows 10/11 (64-bit); web sürümü (satın alanlara, üye girişiyle, tam sürüm) ve Android yol haritasında.- Gizlilik: harita hesapları çevrimdışı; internet yalnız lisans doğrulama ve güncelleme için.
 
 ## Sayfalar
 - [Ana sayfa](${SITE}/): Hermes tanıtımı.
 - [Özellikler](${SITE}/ozellikler): tüm modüllerin ayrıntılı dökümü.
 - [Fiyat](${SITE}/fiyat): tek seferlik lisans, ön satış koşulları.
+- [Satın Al](${SITE}/satin-al): lisans seçimi ve satın alma talep formu.
 - [İndir](${SITE}/indir): kurulum adımları ve sistem gereksinimleri.
 - [SSS](${SITE}/sss): sık sorulan sorular (aşağıda tam liste).
 - [İletişim](${SITE}/iletisim): iletişim formu — ${email}

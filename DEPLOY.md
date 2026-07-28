@@ -182,6 +182,15 @@ Remove-Item Env:MAIL_OPERATOR_EMAIL, Env:MAIL_OPERATOR_PASSWORD
 Neon veritabanına yalnız bcrypt parola özeti yazılır. Ana yönetim `ADMIN_TOKEN`
 değeri posta görevlisiyle paylaşılmaz.
 
+### Satın alma talebi akışı
+
+Fiyat sayfasındaki **Satın al** eylemi `/satin-al` rotasını açar. Ad, soyad,
+e-posta, telefon ve 1/2 cihaz seçimi `POST /api/purchase-request` üzerinden hem
+`Lead` kaydına hem Posta Merkezi’nde okunmamış bir konuşmaya yazılır. Telefon
+numarası konuşmanın güvenli metadata alanında E.164 biçiminde tutulur; Posta
+Merkezi bu kayıt için hazır mesajlı WhatsApp düğmesi gösterir. E-posta yanıtı
+konuşmadaki `participantEmail` adresine Resend üzerinden gönderilir.
+
 Mevcut Neon veritabanı eski tarihte migration tablosu olmadan kurulduğu için bu
 projenin şema değişiklikleri kontrollü olarak `npx prisma db push` ile uygulanır;
 build komutuna eklenmez.

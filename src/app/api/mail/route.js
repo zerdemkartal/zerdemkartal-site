@@ -23,7 +23,8 @@ export async function GET(request) {
       OR: [
         { subject: { contains: q, mode: 'insensitive' } },
         { participantName: { contains: q, mode: 'insensitive' } },
-        { participantEmail: { contains: q, mode: 'insensitive' } }
+        { participantEmail: { contains: q, mode: 'insensitive' } },
+        { messages: { some: { text: { contains: q, mode: 'insensitive' } } } }
       ]
     } : {})
   };

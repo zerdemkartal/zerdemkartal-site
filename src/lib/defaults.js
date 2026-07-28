@@ -202,8 +202,8 @@ export const HERMES_SITE = {
         '☿︎ Çıkan tüm sürümler ve güncellemeler dahil',
         '☿︎ Web sürümü yayınlandığında üye girişinle erişim'
       ],
-      alt: 'Satın alma talebini WhatsApp’tan ilet; cihaz seçimini, ödeme ve lisans teslim adımlarını birlikte netleştirelim.',
-      btn: 'WhatsApp’tan satın al'
+      alt: 'Satın alma sayfasında lisansını seç ve iletişim bilgilerini ilet; ödeme ve lisans teslim adımlarını birlikte netleştirelim.',
+      btn: 'Satın al'
     },
     tekLisans: {
       title: 'Lisans platforma değil, sana bağlı',
@@ -237,7 +237,7 @@ export const HERMES_SITE = {
     adimlar: {
       title: 'Kurulum',
       items: [
-        { title: 'Satın alma talebini ilet', desc: 'Fiyat sayfasındaki düğmeyle WhatsApp’tan yaz; cihaz seçimini ve ödeme adımlarını netleştirelim.' },
+        { title: 'Satın alma talebini ilet', desc: 'Fiyat sayfasındaki Satın Al düğmesinden lisansını seç ve iletişim bilgilerini güvenle ilet.' },
         { title: 'Kurulum dosyasını indir', desc: 'Ödeme sonrası e-postandaki bağlantıdan Windows kurulum dosyasını al.' },
         { title: 'Lisansınla aç', desc: 'İlk açılışta lisans anahtarını gir; Hermes doğrular ve atölyen açılır.' }
       ]

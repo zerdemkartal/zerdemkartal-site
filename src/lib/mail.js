@@ -1,4 +1,5 @@
 import { prisma } from './db';
+import { licensePriceFor, normalizeDeviceLimit } from './licensePricing';
 
 const VARSAYILAN_KUTULAR = [
   'info@hermesastroloji.com'
@@ -155,11 +156,17 @@ export async function ingestIncomingEmail(email) {
 }
 
 /** Site iletişim formunu Resend'den gelmiş bir iletiyle aynı kutuya taşır. */
-export async function ingestContactForm({ name, email, type, message }) {
+export async function ingestContactForm({ name, email, type, message, source = 'site-contact-form', metadata = {} }) {
   const subject = String(type || 'İletişim formu').slice(0, 500);
   const participantEmail = String(email || '').toLowerCase();
   const mailbox = mailboxAddresses()[0];
   const now = new Date();
+  const guvenliMetadata = metadata && typeof metadata === 'object' && !Array.isArray(metadata)
+    ? Object.fromEntries(Object.entries(metadata).slice(0, 20).map(([key, value]) => [
+        String(key).slice(0, 80),
+        typeof value === 'number' || typeof value === 'boolean' ? value : String(value ?? '').slice(0, 500)
+      ]))
+    : {};
   return prisma.$transaction(async (tx) => {
     const lead = await tx.lead.create({ data: { name, email: participantEmail, type: subject, message } });
     const thread = await tx.mailThread.create({
@@ -188,12 +195,45 @@ export async function ingestContactForm({ name, email, type, message }) {
         subject,
         text: message,
         html: null,
-        headers: { source: 'site-contact-form', leadId: lead.id },
+        headers: { ...guvenliMetadata, source: String(source).slice(0, 80), leadId: lead.id },
         attachments: [],
         status: 'received',
         createdAt: now
       }
     });
     return { lead, thread };
+  });
+}
+
+/** Satın alma formunu yanıtlanabilir e-posta konuşmasına dönüştürür. */
+export async function ingestPurchaseRequest({ firstName, lastName, email, phone, whatsappPhone, deviceLimit }) {
+  const limit = normalizeDeviceLimit(deviceLimit);
+  const price = licensePriceFor(limit);
+  const name = `${String(firstName).trim()} ${String(lastName).trim()}`.trim();
+  const subject = `Satın alma talebi · ${limit} cihaz · ₺${price.toLocaleString('tr-TR')}`;
+  const message = [
+    'Yeni Hermes satın alma talebi',
+    '',
+    `Ad soyad: ${name}`,
+    `E-posta: ${String(email).trim().toLowerCase()}`,
+    `Telefon: ${phone}`,
+    `Lisans: ${limit} cihaz`,
+    `Tutar: ₺${price.toLocaleString('tr-TR')} · KDV dahil`,
+    '',
+    'Bu talep hermesastroloji.com/satin-al formundan gönderildi.'
+  ].join('\n');
+  return ingestContactForm({
+    name,
+    email,
+    type: subject,
+    message,
+    source: 'purchase-request',
+    metadata: {
+      phone,
+      whatsappPhone,
+      deviceLimit: limit,
+      price,
+      vatIncluded: true
+    }
   });
 }

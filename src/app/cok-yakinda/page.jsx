@@ -1,5 +1,5 @@
 import { Nav, Footer, T, btnGhost, btnPrimary, h1Style, kickerStyle, pStyle, sectionStyle } from '@/components/Chrome';
-import { WHATSAPP_INFO_URL, pageMeta } from '@/lib/site';
+import { pageMeta } from '@/lib/site';
 
 const SEO = {
   title: 'Üye hesabı çok yakında — Hermes',
@@ -25,11 +25,11 @@ export default function CokYakinda() {
         <div style={{ margin: '42px auto 0', maxWidth: 620, padding: '30px 28px', border: `1px solid ${T.border}`, borderRadius: 22, background: T.card }}>
           <div style={{ fontFamily: T.serif, fontSize: 24, color: T.ink }}>Hazır olduğunda burada olacak</div>
           <p style={{ ...pStyle, fontSize: 15, margin: '10px auto 0' }}>
-            Şimdilik satın alma ve hesapla ilgili sorularını doğrudan WhatsApp üzerinden iletebilirsin.
+            Satın alma talebini güvenli formdan iletebilir; ödeme ve lisans adımlarını ekibimizle netleştirebilirsin.
           </p>
           <div style={{ display: 'flex', justifyContent: 'center', gap: 12, flexWrap: 'wrap', marginTop: 24 }}>
             <a href="/" style={btnGhost}>Ana sayfaya dön</a>
-            <a href={WHATSAPP_INFO_URL} target="_blank" rel="noopener noreferrer" style={btnPrimary}>WhatsApp’tan sor</a>
+            <a href="/satin-al" style={btnPrimary}>Satın al</a>
           </div>
         </div>
       </section>

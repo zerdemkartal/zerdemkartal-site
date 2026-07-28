@@ -8,6 +8,8 @@
 .baglantiHazir{border-color:color-mix(in srgb,#3f8f69 44%,var(--h-border));color:#327657;background:color-mix(in srgb,#71b991 10%,var(--h-card))}
 .baglantiBekliyor{border-color:color-mix(in srgb,#b7793d 42%,var(--h-border));color:#95602e;background:color-mix(in srgb,#d5a064 11%,var(--h-card))}
 .ustEylem,.detayEylem{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.whatsapp{min-height:40px;display:inline-flex;align-items:center;border:1px solid color-mix(in srgb,var(--h-whatsapp) 54%,var(--h-border));border-radius:999px;padding:0 14px;background:color-mix(in srgb,var(--h-whatsapp) 11%,var(--h-card));color:color-mix(in srgb,var(--h-whatsapp-dark) 84%,var(--h-ink));font:650 12px 'Hanken Grotesk',sans-serif;text-decoration:none}
+.whatsapp:hover{border-color:var(--h-whatsapp);background:color-mix(in srgb,var(--h-whatsapp) 17%,var(--h-card));color:var(--h-ink)}
 .birincil,.hafif,.detayEylem button,.detayBas>button{min-height:42px;border-radius:999px;padding:0 18px;font:650 14px 'Hanken Grotesk',sans-serif;cursor:pointer}
 .birincil{border:1px solid var(--h-accent);background:var(--h-accent-text);color:var(--h-accent-ink)}
 .hafif,.detayEylem button,.detayBas>button{border:1px solid var(--h-border);background:var(--h-card);color:var(--h-ink)}

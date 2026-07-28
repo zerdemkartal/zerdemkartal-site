@@ -31,6 +31,7 @@ const SABIT = [
   { g: 'Sayfalar', t: 'Ana Sayfa', h: '/', k: 'anasayfa hermes' },
   { g: 'Sayfalar', t: 'Özellikler', h: '/ozellikler', k: 'modüller ne yapar' },
   { g: 'Sayfalar', t: 'Fiyat', h: '/fiyat', k: 'ücret lisans satın al ön sipariş' },
+  { g: 'Sayfalar', t: 'Satın Al', h: '/satin-al', k: 'satın alma talebi lisans başvuru' },
   { g: 'Sayfalar', t: 'İndir', h: '/indir', k: 'kurulum sürüm windows' },
   { g: 'Sayfalar', t: 'Sık Sorulan Sorular', h: '/sss', k: 'sss soru cevap' },
   { g: 'Sayfalar', t: 'İletişim', h: '/iletisim', k: 'mail yaz destek' },

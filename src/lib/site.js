@@ -6,7 +6,6 @@ export const LOGO = SITE + '/assets/hermes-mark.svg';
 export const WHATSAPP_PHONE = '905528880520';
 export const whatsappUrl = (message) => `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(message)}`;
 export const WHATSAPP_INFO_URL = whatsappUrl('Merhaba! Hermes programı hakkında bilgi almak istiyorum.');
-export const WHATSAPP_PURCHASE_URL = whatsappUrl('Merhaba! Hermes programını satın almak istiyorum. Lisans seçenekleri ve ödeme adımları hakkında bilgi alabilir miyim?');
 export const INSTAGRAM_HANDLE = 'hermesastrolojiprogrami';
 export const INSTAGRAM_URL = `https://www.instagram.com/${INSTAGRAM_HANDLE}/`;
 
@@ -33,7 +32,7 @@ export function appNode({ description, featureList = [], price = '6000' } = {}) 
     publisher: { '@id': SITE + '/#org' }, url: SITE + '/',
     offers: {
       '@type': 'Offer', price, priceCurrency: 'TRY',
-      availability: 'https://schema.org/PreOrder', url: SITE + '/fiyat'
+      availability: 'https://schema.org/PreOrder', url: SITE + '/satin-al'
     }
   };
 }

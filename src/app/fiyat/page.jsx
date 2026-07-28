@@ -1,8 +1,8 @@
 // FİYAT — tek lisans, her platform (H1). İçerik: 'hermes_site' → fiyat.
-// CTA geçici olarak WhatsApp'a gider; iyzico sipariş/ödeme kodu ileride etkinleştirilecektir.
+// CTA ayrı Satın Al sayfasındaki güvenli talep formuna gider.
 // JSON-LD: WebPage + Breadcrumb + SoftwareApplication(Offer) + FAQPage (fiyat SSS).
 import { getHermes } from '@/lib/hermesContent';
-import { SITE, ORG, WEBSITE, WHATSAPP_PURCHASE_URL, appNode, pageMeta, priceNum } from '@/lib/site';
+import { SITE, ORG, WEBSITE, appNode, pageMeta, priceNum } from '@/lib/site';
 import { JsonLd } from '@/components/JsonLd';
 import { Nav, Footer, T, btnPrimary, kickerStyle, h1Style, h2Style, pStyle, sectionStyle } from '@/components/Chrome';
 // Faz 2 (27 Tem 2026) — fiyat kutusunda imleç parıltısı.
@@ -65,18 +65,16 @@ export default async function Fiyat() {
             <span data-he data-path="fiyat.kutu.vatNote">{kutu.vatNote || 'Fiyatlara KDV dahildir.'}</span>
           </div>
           <a
-            href={WHATSAPP_PURCHASE_URL}
-            target="_blank"
-            rel="noopener noreferrer"
+            href="/satin-al"
             style={{ ...btnPrimary, display: 'block', marginTop: 22, textAlign: 'center' }}
           >
-            WhatsApp’tan satın al
+            Satın al
           </a>
-          <div className="h-payment-note">Satın alma görüşmesi WhatsApp üzerinden · iyzico yakında</div>
+          <div className="h-payment-note">Bilgilerini güvenle ilet · ödeme bu adımda alınmaz</div>
           <ul style={{ ...pStyle, fontSize: 14.5, paddingLeft: 20 }}>
             {(kutu.rows || []).map((r, i) => <li key={i} style={{ listStyle: 'none', marginLeft: -20 }} data-he data-path={`fiyat.kutu.rows.${i}`}>{r}</li>)}
           </ul>
-          <div style={{ color: T.muted, fontSize: 13.5, marginTop: 14 }}>Cihaz seçimini ve ödeme adımlarını WhatsApp görüşmesinde birlikte netleştiririz.</div>
+          <div style={{ color: T.muted, fontSize: 13.5, marginTop: 14 }}>Talebin Posta Merkezi’ne düşer; ödeme ve lisans adımları için e-posta veya WhatsApp üzerinden sana ulaşırız.</div>
         </Spotlight>
       </section>
 
