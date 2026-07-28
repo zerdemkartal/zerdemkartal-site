@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/db';
-import { requireAdmin } from '@/lib/auth';
+import { requireMailAccess } from '@/lib/auth';
 import { z } from 'zod';
 
 export const dynamic = 'force-dynamic';
@@ -11,7 +11,7 @@ const PatchIn = z.object({
 }).refine((x) => Object.keys(x).length > 0);
 
 export async function GET(request, { params }) {
-  const err = requireAdmin(request); if (err) return err;
+  const err = requireMailAccess(request); if (err) return err;
   const thread = await prisma.mailThread.findUnique({
     where: { id: params.id },
     include: { messages: { orderBy: { createdAt: 'asc' } } }
@@ -34,7 +34,7 @@ export async function GET(request, { params }) {
 }
 
 export async function PATCH(request, { params }) {
-  const err = requireAdmin(request); if (err) return err;
+  const err = requireMailAccess(request); if (err) return err;
   const parsed = PatchIn.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return Response.json({ error: 'Geçersiz işlem.' }, { status: 400 });
   const data = {};

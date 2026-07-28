@@ -4,7 +4,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { Nav } from '@/components/Chrome';
 import styles from './posta.module.css';
 
-const TOKEN_KEY = 'h_admin_key';
+const ADMIN_TOKEN_KEY = 'h_admin_key';
+const MAIL_TOKEN_KEY = 'h_mail_key';
 const KLASORLER = [
   ['inbox', 'Gelen', 'inbox'],
   ['starred', 'Yıldızlı', 'starred'],
@@ -32,6 +33,8 @@ function ilkHarf(thread) {
 
 export default function PostaClient() {
   const [token, setToken] = useState(null);
+  const [credentials, setCredentials] = useState({ email: '', pass: '' });
+  const [loginBusy, setLoginBusy] = useState(false);
   const [folder, setFolder] = useState('inbox');
   const [query, setQuery] = useState('');
   const [search, setSearch] = useState('');
@@ -49,8 +52,46 @@ export default function PostaClient() {
   const [sending, setSending] = useState(false);
 
   useEffect(() => {
-    try { setToken(sessionStorage.getItem(TOKEN_KEY) || ''); } catch { setToken(''); }
+    try {
+      setToken(sessionStorage.getItem(MAIL_TOKEN_KEY) || sessionStorage.getItem(ADMIN_TOKEN_KEY) || '');
+    } catch {
+      setToken('');
+    }
   }, []);
+
+  async function postaGir(e) {
+    e.preventDefault();
+    if (loginBusy) return;
+    setLoginBusy(true); setError('');
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(credentials),
+        cache: 'no-store'
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !['admin', 'mail_operator'].includes(data.role)) {
+        throw new Error(data.error || 'E-posta veya şifre hatalı.');
+      }
+      sessionStorage.setItem(MAIL_TOKEN_KEY, data.token);
+      setToken(data.token);
+      setCredentials({ email: '', pass: '' });
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setLoginBusy(false);
+    }
+  }
+
+  function cikisYap() {
+    try {
+      sessionStorage.removeItem(MAIL_TOKEN_KEY);
+      sessionStorage.removeItem(ADMIN_TOKEN_KEY);
+    } catch {}
+    setToken('');
+    setThreads([]); setDetail(null); setSelected(null); setError('');
+  }
 
   async function api(path, options = {}) {
     const response = await fetch(path, {
@@ -85,7 +126,13 @@ export default function PostaClient() {
         setSelected(null); setDetail(null);
       }
     } catch (e) {
-      setError(e.status === 401 ? 'Yönetim oturumu geçersiz. Yeniden giriş yapın.' : e.message);
+      if (e.status === 401) {
+        try { sessionStorage.removeItem(MAIL_TOKEN_KEY); } catch {}
+        setToken('');
+        setError('Posta oturumu sona erdi. Yeniden giriş yapın.');
+      } else {
+        setError(e.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -142,13 +189,31 @@ export default function PostaClient() {
   if (token === null) return <main><Nav active="/yonetim" /><div className={styles.bekle}>Posta merkezi hazırlanıyor…</div></main>;
   if (!token) {
     return (
-      <main>
+      <main className={styles.sayfa}>
         <Nav active="/yonetim" />
         <section className={styles.giris}>
-          <span>YÖNETİM · POSTA</span>
-          <h1>Önce yönetim girişi gerekli</h1>
-          <p>Kurumsal mesajlar yalnız yetkili yönetim oturumunda görüntülenebilir.</p>
-          <a href="/yonetim">Yönetim girişine dön</a>
+          <span>HERMES · KURUMSAL POSTA</span>
+          <h1>Posta Merkezi’ne giriş</h1>
+          <p>Bu hesap yalnızca kurumsal iletileri okumak, yanıtlamak ve düzenlemek için yetkilidir.</p>
+          {error && <div className={styles.hata} role="alert">{error}</div>}
+          <form className={styles.girisForm} onSubmit={postaGir}>
+            <label>
+              E-posta
+              <input type="email" autoComplete="username" required
+                value={credentials.email}
+                onChange={(e) => setCredentials((x) => ({ ...x, email: e.target.value }))} />
+            </label>
+            <label>
+              Şifre
+              <input type="password" autoComplete="current-password" required
+                value={credentials.pass}
+                onChange={(e) => setCredentials((x) => ({ ...x, pass: e.target.value }))} />
+            </label>
+            <button type="submit" className={styles.birincil} disabled={loginBusy}>
+              {loginBusy ? 'Giriş yapılıyor…' : 'Posta merkezine gir'}
+            </button>
+          </form>
+          <small>Ana site yönetim anahtarı bu ekranda kullanılmaz.</small>
         </section>
       </main>
     );
@@ -172,6 +237,7 @@ export default function PostaClient() {
           <div className={styles.ustEylem}>
             <button type="button" className={styles.hafif} onClick={() => listeYukle()} disabled={loading}>Yenile</button>
             <button type="button" className={styles.birincil} onClick={() => { setCompose(true); setSelected(null); setDetail(null); }}>Yeni ileti</button>
+            <button type="button" className={styles.hafif} onClick={cikisYap}>Çıkış</button>
           </div>
         </header>
 

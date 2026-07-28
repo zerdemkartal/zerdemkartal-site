@@ -1,10 +1,10 @@
 import { prisma } from '@/lib/db';
-import { requireAdmin } from '@/lib/auth';
+import { requireMailAccess } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(request, { params }) {
-  const err = requireAdmin(request); if (err) return err;
+  const err = requireMailAccess(request); if (err) return err;
   const message = await prisma.mailMessage.findFirst({
     where: { id: params.id, direction: 'inbound' },
     select: { resendId: true, attachments: true }

@@ -76,7 +76,12 @@
 .giris span{font-size:11px;font-weight:750;letter-spacing:.18em}
 .giris h1{font:520 38px 'Newsreader',serif;color:var(--h-ink)}
 .giris p{line-height:1.7}
-.giris a{display:inline-block;margin-top:10px;border-radius:999px;background:var(--h-accent-text);color:var(--h-accent-ink);padding:12px 20px;text-decoration:none;font-weight:650}
+.giris>small{display:block;margin-top:18px;color:var(--h-muted);font-size:11px}
+.girisForm{display:grid;gap:14px;margin-top:24px;text-align:left}
+.girisForm label{color:var(--h-ink2);font-size:12px;font-weight:650}
+.girisForm input{display:block;width:100%;margin-top:7px;border:1px solid var(--h-border);border-radius:11px;background:var(--h-bg);color:var(--h-ink);padding:12px 13px;font:500 14px 'Hanken Grotesk',sans-serif;outline:none}
+.girisForm input:focus{border-color:var(--h-accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--h-accent) 15%,transparent)}
+.girisForm button{justify-self:start;border:0;margin-top:4px}
 
 @media(max-width:1050px){
   .grid{grid-template-columns:160px minmax(270px,360px) minmax(390px,1fr)}

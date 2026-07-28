@@ -162,6 +162,26 @@ gönderilir. Bu yapı web tabanlıdır, IMAP/Outlook posta kutusu değildir.
    gönder; panelde görünmesini ve panel yanıtının aynı konuşmaya dönmesini doğrula.
    Bu kabul geçmeden sitedeki eski iletişim adresini yeni adrese çevirme.
 
+### Posta görevlisi girişi
+
+Posta görevlisi doğrudan `https://hermesastroloji.com/yonetim/posta` adresinden
+e-posta ve şifreyle girer. Hesap `AdminUser.role = mail_operator` olarak saklanır;
+bu oturum yalnız `/api/mail/*` uçlarında geçerlidir. `/yonetim` anahtarı,
+içerik/sipariş/üye ve diğer yönetim API’leri bu role kapalıdır.
+
+Hesabı ilk kez oluşturmak veya şifresini sıfırlamak için parola hiçbir dosyaya
+yazılmadan yalnız komut süresince ortam değişkeni olarak verilir:
+
+```powershell
+$env:MAIL_OPERATOR_EMAIL='info@hermesastroloji.com'
+$env:MAIL_OPERATOR_PASSWORD='<en-az-14-karakter-yeni-sifre>'
+npm run mail:operator
+Remove-Item Env:MAIL_OPERATOR_EMAIL, Env:MAIL_OPERATOR_PASSWORD
+```
+
+Neon veritabanına yalnız bcrypt parola özeti yazılır. Ana yönetim `ADMIN_TOKEN`
+değeri posta görevlisiyle paylaşılmaz.
+
 Mevcut Neon veritabanı eski tarihte migration tablosu olmadan kurulduğu için bu
 projenin şema değişiklikleri kontrollü olarak `npx prisma db push` ile uygulanır;
 build komutuna eklenmez.

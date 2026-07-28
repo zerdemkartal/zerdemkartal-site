@@ -4,8 +4,7 @@ import jwt from 'jsonwebtoken';
  *  Kullanım (route handler):
  *    const err = requireAdmin(request); if (err) return err; */
 export function requireAdmin(request) {
-  const h = request.headers.get('authorization') || '';
-  const token = h.startsWith('Bearer ') ? h.slice(7) : null;
+  const token = bearerToken(request);
   if (!token) return unauthorized();
   if (process.env.ADMIN_TOKEN && token === process.env.ADMIN_TOKEN) return null; // MCP yolu
   try {
@@ -19,6 +18,25 @@ export function requireAdmin(request) {
 
 export function signAdminJwt(email) {
   return jwt.sign({ sub: email, role: 'admin' }, process.env.JWT_SECRET, { expiresIn: '12h' });
+}
+
+/** Posta Merkezi erişimi: ana yönetici veya yalnız posta yetkili kullanıcı.
+ *  mail_operator token'ı diğer yönetim API'lerinde requireAdmin tarafından reddedilir. */
+export function requireMailAccess(request) {
+  const token = bearerToken(request);
+  if (!token) return unauthorized();
+  if (process.env.ADMIN_TOKEN && token === process.env.ADMIN_TOKEN) return null;
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    if (!['admin', 'mail_operator'].includes(payload.role) || !payload.sub) return unauthorized();
+    return null;
+  } catch {
+    return unauthorized();
+  }
+}
+
+export function signMailOperatorJwt(email) {
+  return jwt.sign({ sub: email, role: 'mail_operator' }, process.env.JWT_SECRET, { expiresIn: '12h' });
 }
 
 // ---- Üye oturumu (site üyeliği; admin'den ayrı rol) ----
@@ -43,4 +61,9 @@ export function requireMemberEmail(request) {
 
 function unauthorized() {
   return Response.json({ error: 'unauthorized' }, { status: 401 });
+}
+
+function bearerToken(request) {
+  const h = request.headers.get('authorization') || '';
+  return h.startsWith('Bearer ') ? h.slice(7) : null;
 }

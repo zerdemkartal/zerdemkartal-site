@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/db';
-import { requireAdmin } from '@/lib/auth';
+import { requireMailAccess } from '@/lib/auth';
 import { mailboxAddresses } from '@/lib/mail';
 
 export const dynamic = 'force-dynamic';
@@ -13,7 +13,7 @@ function klasorKosulu(folder) {
 }
 
 export async function GET(request) {
-  const err = requireAdmin(request); if (err) return err;
+  const err = requireMailAccess(request); if (err) return err;
   const url = new URL(request.url);
   const folder = KLASORLER.has(url.searchParams.get('folder')) ? url.searchParams.get('folder') : 'inbox';
   const q = String(url.searchParams.get('q') || '').trim().slice(0, 120);

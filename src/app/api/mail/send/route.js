@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/db';
-import { requireAdmin } from '@/lib/auth';
+import { requireMailAccess } from '@/lib/auth';
 import { mailboxFrom, normalizeSubject, parseAddress } from '@/lib/mail';
 import { sendMail } from '@/lib/email';
 import { z } from 'zod';
@@ -27,7 +27,7 @@ function mailHtml(text) {
 }
 
 export async function POST(request) {
-  const err = requireAdmin(request); if (err) return err;
+  const err = requireMailAccess(request); if (err) return err;
   const parsed = SendIn.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return Response.json({ error: 'Alıcı, konu ve mesajı kontrol edin.' }, { status: 400 });
 
