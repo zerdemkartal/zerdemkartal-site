@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/db';
 import { HERMES_SITE } from '@/lib/defaults';
 import { migrateHermesPricing } from '@/lib/hermesPricing';
+import { CONTACT_EMAIL } from '@/lib/site';
 
 // llms.txt — HERMES sitesi AI indeksi (GEO katmanının çekirdeği; H1 dönüşümü).
 // Gövde 'hermes_site' içerik modelinden ÜRETİLİR (MCP ile içerik değişince burası da değişir)
@@ -8,14 +9,10 @@ import { migrateHermesPricing } from '@/lib/hermesPricing';
 const SITE = (process.env.SITE_URL || 'https://hermesastroloji.com').replace(/\/$/, '');
 
 export async function GET() {
-  let model = HERMES_SITE, email = 'merhaba@zerdemkartal.com';
+  let model = HERMES_SITE;
   try {
-    const [row, settings] = await Promise.all([
-      prisma.pageContent.findUnique({ where: { key: 'hermes_site' } }),
-      prisma.setting.findUnique({ where: { id: 1 } })
-    ]);
+    const row = await prisma.pageContent.findUnique({ where: { key: 'hermes_site' } });
     if (row?.data) model = { ...HERMES_SITE, ...row.data };
-    email = settings?.data?.email || email;
   } catch { /* DB yoksa varsayılanlarla devam */ }
   model = migrateHermesPricing(model);
 
@@ -48,7 +45,7 @@ Temel gerçekler:
 - [Satın Al](${SITE}/satin-al): lisans seçimi ve satın alma talep formu.
 - [İndir](${SITE}/indir): kurulum adımları ve sistem gereksinimleri.
 - [SSS](${SITE}/sss): sık sorulan sorular (aşağıda tam liste).
-- [İletişim](${SITE}/iletisim): iletişim formu — ${email}
+- [İletişim](${SITE}/iletisim): iletişim formu — ${CONTACT_EMAIL}
 - [Geliştirici hakkında](${SITE}/hakkimda)
 
 ## Modüller

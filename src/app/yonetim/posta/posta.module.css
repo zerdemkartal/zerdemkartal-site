@@ -62,8 +62,13 @@
 .ekler button{border:1px solid var(--h-border);border-radius:999px;background:var(--h-bg);color:var(--h-ink);padding:8px 11px;font-size:11px;cursor:pointer}
 .yanit,.yazim{margin:0 22px 22px;padding:18px;border:1px solid var(--h-border);border-radius:17px;background:var(--h-card)}
 .yanit label,.yazim label{display:block;margin-bottom:13px;color:var(--h-muted);font-size:12px;font-weight:650}
+.yanitBas{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.yanitBas label{margin:0}
+.odemeHazirla{min-height:34px;border:1px solid color-mix(in srgb,var(--h-gold) 54%,var(--h-border));border-radius:999px;padding:0 13px;background:color-mix(in srgb,var(--h-gold) 10%,var(--h-card));color:var(--h-ink);font:650 11px 'Hanken Grotesk',sans-serif;cursor:pointer}
+.odemeHazirla:hover{border-color:var(--h-gold);background:color-mix(in srgb,var(--h-gold) 17%,var(--h-card))}
 .yanit textarea,.yazim textarea,.yazim input,.yazim select{display:block;margin-top:7px;padding:12px 13px;resize:vertical}
 .yanit>div{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:12px}
+.yanit>.yanitBas{margin-top:0}
 .yanit>div span{color:var(--h-muted);font-size:11px}
 .yazim{margin-top:22px}
 .yazim>.birincil{float:right;margin-top:4px}
@@ -105,5 +110,6 @@
   .detay{max-height:none}
   .gelen,.giden{margin-inline:0}
   .detayBas,.yanit>div,.mesaj header{flex-direction:column}
+  .yanitBas{align-items:flex-start}
   .detayEylem{margin-top:4px}
 }

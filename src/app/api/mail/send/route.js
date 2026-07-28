@@ -26,6 +26,18 @@ function mailHtml(text) {
   </div></body></html>`;
 }
 
+function gonderimHatasi(sonuc) {
+  if (sonuc.skipped) return 'Resend henüz yapılandırılmadı.';
+  const raw = String(sonuc.error || '').toLowerCase();
+  if (raw.includes('domain') && (raw.includes('verify') || raw.includes('verified'))) {
+    return 'Gönderen alan adı Resend üzerinde henüz doğrulanmadı.';
+  }
+  if (raw.includes('api key') || raw.includes('unauthorized') || raw.includes('invalid_access')) {
+    return 'Resend bağlantı anahtarı geçersiz veya yetkisiz.';
+  }
+  return 'E-posta gönderilemedi. Resend bağlantısını ve gönderen alan adını kontrol edin.';
+}
+
 export async function POST(request) {
   const err = requireMailAccess(request); if (err) return err;
   const parsed = SendIn.safeParse(await request.json().catch(() => null));
@@ -64,7 +76,7 @@ export async function POST(request) {
     headers
   });
   if (!sonuc.ok) {
-    return Response.json({ error: sonuc.skipped ? 'Resend henüz yapılandırılmadı.' : 'E-posta gönderilemedi.' }, { status: 503 });
+    return Response.json({ error: gonderimHatasi(sonuc) }, { status: 503 });
   }
 
   const now = new Date();

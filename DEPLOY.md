@@ -135,7 +135,7 @@ Claude Desktop'ı yeniden başlat → 🔨 menüsünde araçlar görünmeli → 
 | `RESEND_WEBHOOK_SECRET` | Gelen posta için ✅ | Resend `email.received` webhook imza sırrı (`whsec_...`) |
 | `MAILBOX_ADDRESSES` | Posta için ✅ | Posta Merkezi adresleri; ilk kurulumda `info@hermesastroloji.com` |
 | `MAILBOX_FROM_NAME` | — | Gönderen görünen adı; varsayılan `Hermes Astroloji` |
-| `EMAIL_FROM` | İşlemsel posta için ✅ | Ödeme/lisans e-postalarının göndereni; ör. `Hermes <siparis@hermesastroloji.com>` |
+| `EMAIL_FROM` | İşlemsel posta için ✅ | Ödeme/lisans e-postalarının göndereni; `Hermes Astroloji <info@hermesastroloji.com>` |
 | `GOOGLE_CLIENT_ID` | — | Google girişi (boş bırakılabilir) |
 | `INDEXNOW_KEY` | — | IndexNow anahtarı (boşsa atlanır) |
 

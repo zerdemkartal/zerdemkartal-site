@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import styles from './satin-al.module.css';
+import { CONTACT_EMAIL, WHATSAPP_DISPLAY } from '@/lib/site';
 
 const PLANLAR = {
   1: { label: '1 cihaz lisansı', price: 6000, note: 'Tek kullanıcı · tek cihaz' },
@@ -58,8 +59,8 @@ export default function SatinAlForm() {
         <h1>Hermes’e bir adım kaldı.</h1>
         <p>
           Teşekkürler {form.firstName}. Satın alma talebiniz Posta Merkezi’ne ulaştı.
-          Ekibimiz <strong>{form.email}</strong> veya <strong>{form.phone}</strong> üzerinden
-          ödeme ve lisans teslimi için sizinle iletişime geçecek.
+          Ödeme ve lisans teslimi için ekibimize <strong>{CONTACT_EMAIL}</strong> veya
+          WhatsApp üzerinden <strong>{WHATSAPP_DISPLAY}</strong> adreslerinden ulaşabilirsiniz.
         </p>
         <div className={styles.basariOzet}>
           <span>{plan.label}</span>

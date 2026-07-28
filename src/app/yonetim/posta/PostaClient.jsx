@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { Nav } from '@/components/Chrome';
+import { WHATSAPP_DISPLAY } from '@/lib/site';
 import styles from './posta.module.css';
 
 const ADMIN_TOKEN_KEY = 'h_admin_key';
@@ -13,6 +14,9 @@ const KLASORLER = [
   ['archive', 'Arşiv', 'archive'],
   ['spam', 'Spam', 'spam']
 ];
+const FIRMA_ADI = 'Key Teknoloji Danışmanlık Yazılım Hizmetleri';
+const HESAP_SAHIBI = 'Özgür Erdoğan';
+const IBAN = 'TR06 0015 7000 0000 0138 8902 36';
 
 function tarih(value, uzun = false) {
   if (!value) return '';
@@ -45,6 +49,51 @@ function talepTelefon(detail) {
 function whatsappTalepUrl(phone, name) {
   const message = `Merhaba ${name || ''}, Hermes satın alma talebiniz hakkında yazıyorum.`.replace(/\s+/g, ' ').trim();
   return `https://wa.me/${phone.digits}?text=${encodeURIComponent(message)}`;
+}
+
+function satinAlmaBilgisi(detail) {
+  for (const message of detail?.messages || []) {
+    const headers = message?.headers && typeof message.headers === 'object' ? message.headers : {};
+    if (headers.source !== 'purchase-request') continue;
+    const price = Number(headers.price || 0);
+    const deviceLimit = Number(headers.deviceLimit || 0);
+    return {
+      price: Number.isFinite(price) && price > 0 ? price : null,
+      deviceLimit: [1, 2].includes(deviceLimit) ? deviceLimit : null
+    };
+  }
+  return null;
+}
+
+function odemeTalebiMetni(detail, purchase) {
+  const name = String(detail?.participantName || '').trim();
+  const hitap = name ? `Merhaba ${name},` : 'Merhaba,';
+  const secim = purchase?.deviceLimit ? `${purchase.deviceLimit} cihaz lisansı` : 'Hermes lisansı';
+  const tutar = purchase?.price
+    ? `₺${purchase.price.toLocaleString('tr-TR')} (KDV dahildir)`
+    : 'Satın alma talebinizde belirtilen tutar';
+  return [
+    hitap,
+    '',
+    'Hermes Astroloji Programı satın alma talebiniz için teşekkür ederiz.',
+    '',
+    `Seçiminiz: ${secim}`,
+    `Ödenecek tutar: ${tutar}`,
+    '',
+    'Banka havalesi bilgileri',
+    `Firma: ${FIRMA_ADI}`,
+    `Hesap sahibi: ${HESAP_SAHIBI}`,
+    `IBAN: ${IBAN}`,
+    '',
+    'Ödeme açıklamasına adınızı ve soyadınızı yazmanızı rica ederiz.',
+    `Ödeme tamamlandıktan sonra bu e-postayı yanıtlayarak veya WhatsApp üzerinden ${WHATSAPP_DISPLAY} numarasına bilgi verebilirsiniz.`,
+    '',
+    'Kurulum sürecinde ihtiyaç duymanız hâlinde uzaktan bağlantı ile destek sağlıyoruz.',
+    '',
+    'Saygılarımızla,',
+    'Hermes Astroloji Programı',
+    FIRMA_ADI
+  ].join('\n');
 }
 
 export default function PostaClient() {
@@ -202,6 +251,7 @@ export default function PostaClient() {
 
   const aktifSayac = useMemo(() => Number(counts[folder] || 0), [counts, folder]);
   const selectedPhone = useMemo(() => talepTelefon(detail), [detail]);
+  const selectedPurchase = useMemo(() => satinAlmaBilgisi(detail), [detail]);
 
   if (token === null) return <main><Nav active="/yonetim" /><div className={styles.bekle}>Posta merkezi hazırlanıyor…</div></main>;
   if (!token) {
@@ -359,7 +409,15 @@ export default function PostaClient() {
                   })}
                 </div>
                 <form className={styles.yanit} onSubmit={(e) => { e.preventDefault(); gonder({ threadId: detail.id, from: detail.mailbox, text: reply }); }}>
-                  <label htmlFor="posta-yanit">E-postayla cevap ver</label>
+                  <div className={styles.yanitBas}>
+                    <label htmlFor="posta-yanit">E-postayla cevap ver</label>
+                    {selectedPurchase ? (
+                      <button type="button" className={styles.odemeHazirla}
+                        onClick={() => setReply(odemeTalebiMetni(detail, selectedPurchase))}>
+                        Kurumsal ödeme talebini hazırla
+                      </button>
+                    ) : null}
+                  </div>
                   <textarea id="posta-yanit" required rows={6} value={reply} onChange={(e) => setReply(e.target.value)} placeholder={`${detail.participantName || detail.participantEmail} için yanıtınızı yazın…`} />
                   <div><span>{detail.mailbox} adresinden {detail.participantEmail} adresine gönderilecek</span><button className={styles.birincil} disabled={sending}>{sending ? 'Gönderiliyor…' : 'E-posta yanıtını gönder'}</button></div>
                 </form>

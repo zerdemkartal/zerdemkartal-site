@@ -4,16 +4,20 @@ export const SITE = (process.env.SITE_URL || 'https://hermesastroloji.com').repl
 export const OG_IMAGE = SITE + '/assets/og-image.png';
 export const LOGO = SITE + '/assets/hermes-mark.svg';
 export const WHATSAPP_PHONE = '905528880520';
+export const WHATSAPP_DISPLAY = '+90 552 888 05 20';
 export const whatsappUrl = (message) => `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(message)}`;
 export const WHATSAPP_INFO_URL = whatsappUrl('Merhaba! Hermes programı hakkında bilgi almak istiyorum.');
+export const CONTACT_EMAIL = 'info@hermesastroloji.com';
 export const INSTAGRAM_HANDLE = 'hermesastrolojiprogrami';
 export const INSTAGRAM_URL = `https://www.instagram.com/${INSTAGRAM_HANDLE}/`;
+export const YOUTUBE_HANDLE = 'hermesastrolojiprogramı';
+export const YOUTUBE_URL = `https://www.youtube.com/@${YOUTUBE_HANDLE}`;
 
 // Site seviyesi JSON-LD düğümleri. Yayıncı = zerdemkartal (kişi/atölye), ürün & site = Hermes.
 export const ORG = {
   '@type': 'Organization', '@id': SITE + '/#org', name: 'zerdemkartal', url: SITE + '/', logo: LOGO,
   description: 'Hermes astroloji programını geliştiren bağımsız astroloji atölyesi.',
-  sameAs: [INSTAGRAM_URL, 'https://youtube.com/@zerdemkartal']
+  sameAs: [INSTAGRAM_URL, YOUTUBE_URL]
 };
 export const WEBSITE = {
   '@type': 'WebSite', '@id': SITE + '/#site', url: SITE + '/', name: 'Hermes',

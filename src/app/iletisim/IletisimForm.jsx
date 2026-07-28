@@ -2,6 +2,7 @@
 // İletişim formu — Iletisim.dc.html'deki akışın API sürümü: POST /api/leads
 // (prototipte zk_admin_talep'e push ediliyordu; kayıt şekli aynı: type='İletişim · <konu>').
 import { useState } from 'react';
+import { CONTACT_EMAIL } from '@/lib/site';
 
 const KONULAR = ['Hermes — satın alma / ön sipariş', 'Hermes — teknik soru', 'Lisans & fatura', 'İş birliği', 'Diğer'];
 
@@ -62,7 +63,7 @@ export default function IletisimForm() {
       <button type="submit" disabled={state === 'sending'} style={{ gridColumn: '1 / -1', background: '#1D130B', color: '#F5F1E6', border: 'none', borderRadius: 999, padding: '15px 30px', fontSize: 15.5, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', opacity: state === 'sending' ? 0.6 : 1 }}>
         {state === 'sending' ? 'Gönderiliyor…' : 'Gönder'}
       </button>
-      {state === 'error' && <p style={{ gridColumn: '1 / -1', color: '#B04A3A', fontSize: 14, margin: 0 }}>Gönderilemedi — lütfen tekrar dene ya da merhaba@zerdemkartal.com adresine yaz.</p>}
+      {state === 'error' && <p style={{ gridColumn: '1 / -1', color: '#B04A3A', fontSize: 14, margin: 0 }}>Gönderilemedi — lütfen tekrar dene ya da {CONTACT_EMAIL} adresine yaz.</p>}
     </form>
   );
 }

@@ -10,7 +10,15 @@ import MobileNav from './MobileNav';
 // Nav markup'ı DEĞİŞMEDİ; SmartNav yalnız dıştan sarar (sunucu çocukları prop olarak alır).
 import SmartNav from './SmartNav';
 import CommandPalette from './CommandPalette';
-import { INSTAGRAM_HANDLE, INSTAGRAM_URL } from '@/lib/site';
+import {
+  CONTACT_EMAIL,
+  INSTAGRAM_HANDLE,
+  INSTAGRAM_URL,
+  WHATSAPP_DISPLAY,
+  WHATSAPP_INFO_URL,
+  YOUTUBE_HANDLE,
+  YOUTUBE_URL
+} from '@/lib/site';
 
 export const T = {
   ink: 'var(--h-ink)', ink2: 'var(--h-ink2)', paper: 'var(--h-bg)', cream: 'var(--h-cream)',
@@ -68,6 +76,8 @@ export function Nav({ active }) {
 
 export function Footer() {
   const fl = { color: 'var(--h-dark-text)', textDecoration: 'none' };
+  const contactLink = { ...fl, display: 'flex', alignItems: 'center', gap: 9 };
+  const icon = { width: 24, height: 24, flex: '0 0 24px', display: 'grid', placeItems: 'center', border: '1px solid var(--h-dark-border)', borderRadius: 8, color: 'var(--h-dark-text2)', fontSize: 12, fontWeight: 700 };
   const legal = { color: 'var(--h-dark-muted)', textDecoration: 'none' };
   const colHead = { fontSize: 12, fontWeight: 700, letterSpacing: '0.2em', color: 'var(--h-dark-muted)' };
   return (
@@ -83,11 +93,12 @@ export function Footer() {
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14, fontSize: 15.5 }}>
           <span style={colHead}>İLETİŞİM</span>
-          <a href="/iletisim" style={fl}>İletişim formu</a>
-          <a href="mailto:merhaba@zerdemkartal.com" style={fl}>merhaba@zerdemkartal.com</a>
+          <a href="/iletisim" style={contactLink}><span aria-hidden="true" style={icon}>↗</span>İletişim formu</a>
+          <a href={`mailto:${CONTACT_EMAIL}`} style={contactLink}><span aria-hidden="true" style={icon}>✉</span>{CONTACT_EMAIL}</a>
+          <a href={WHATSAPP_INFO_URL} target="_blank" rel="noopener noreferrer" style={contactLink}><span aria-hidden="true" style={{ ...icon, color: '#55D98A' }}>☎</span>WhatsApp · {WHATSAPP_DISPLAY}</a>
           <a href="/hakkimda" style={fl}>Geliştiricisi hakkında</a>
-          <a href={INSTAGRAM_URL} target="_blank" rel="me noopener noreferrer" style={fl}>Instagram · @{INSTAGRAM_HANDLE}</a>
-          <a href="https://youtube.com/@zerdemkartal" target="_blank" rel="me noopener" style={fl}>YouTube</a>
+          <a href={INSTAGRAM_URL} target="_blank" rel="me noopener noreferrer" style={contactLink}><span aria-hidden="true" style={icon}>◎</span>Instagram · @{INSTAGRAM_HANDLE}</a>
+          <a href={YOUTUBE_URL} target="_blank" rel="me noopener noreferrer" style={contactLink}><span aria-hidden="true" style={icon}>▶</span>YouTube · @{YOUTUBE_HANDLE}</a>
         </div>
       </div>
       <div aria-hidden="true" style={{ textAlign: 'center', marginTop: 128, lineHeight: 0.82, whiteSpace: 'nowrap' }}>

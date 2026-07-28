@@ -1,6 +1,6 @@
 // İşlemsel e-posta — Resend HTTP API (ek paket gerekmez, fetch ile).
 // RESEND_API_KEY yoksa SESSİZ no-op: e-posta atlanır, log düşer, çağıran akış (ödeme/callback) ASLA kırılmaz.
-// Env: RESEND_API_KEY, EMAIL_FROM (örn. "Hermes <siparis@hermesastroloji.com>").
+// Env: RESEND_API_KEY, EMAIL_FROM (örn. "Hermes Astroloji <info@hermesastroloji.com>").
 // NOT: EMAIL_FROM domaini Resend'de doğrulanmış olmalı; değilse Resend gönderimi reddeder.
 import { SITE } from './site';
 

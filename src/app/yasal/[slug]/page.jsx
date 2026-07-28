@@ -22,7 +22,7 @@ const DOCS = {
         <h1 style={h2}>KVKK Aydınlatma Metni</h1>
         <div style={sub}>6698 sayılı Kişisel Verilerin Korunması Kanunu m.10 uyarınca · Yürürlük: 7 Temmuz 2026</div>
         <h2 style={h3}>1. Veri sorumlusu</h2>
-        <p style={p}>Bu sitede (hermesastroloji.com) toplanan kişisel verileriniz bakımından veri sorumlusu, <Bosluk>[unvan / ad soyad]</Bosluk>, <Bosluk>[adres]</Bosluk> (&quot;zerdemkartal&quot;) olup her türlü talebiniz için merhaba@zerdemkartal.com adresine yazabilirsiniz.</p>
+        <p style={p}>Bu sitede (hermesastroloji.com) toplanan kişisel verileriniz bakımından veri sorumlusu, <Bosluk>[unvan / ad soyad]</Bosluk>, <Bosluk>[adres]</Bosluk> (&quot;zerdemkartal&quot;) olup her türlü talebiniz için info@hermesastroloji.com adresine yazabilirsiniz.</p>
         <h2 style={h3}>2. Hangi verileri işliyoruz</h2>
         <ul style={ul}>
           <li><B>Kimlik ve iletişim:</B> ad soyad, e-posta adresi (üyelik, iletişim formu, talep ve ön sipariş formları).</li>
@@ -42,7 +42,7 @@ const DOCS = {
         <h2 style={h3}>5. Saklama süresi</h2>
         <p style={p}>Veriler, amaç için gerekli süre ve ilgili mevzuattaki zamanaşımı süreleri boyunca saklanır; süre dolduğunda silinir, yok edilir veya anonim hâle getirilir. Üyeliğinizi sildirdiğinizde hesap verileriniz, yasal saklama yükümlülükleri saklı kalmak üzere kaldırılır.</p>
         <h2 style={h3}>6. Haklarınız (KVKK m.11)</h2>
-        <p style={p}>Verinizin işlenip işlenmediğini öğrenme, bilgi talep etme, amaca uygun kullanılıp kullanılmadığını öğrenme, düzeltilmesini veya silinmesini isteme, otomatik sistemlerle analiz sonucu aleyhinize çıkan sonuçlara itiraz etme ve zarara uğramanız hâlinde tazminat talep etme hakkına sahipsiniz. Başvurunuzu merhaba@zerdemkartal.com adresine iletebilirsiniz; en geç 30 gün içinde yanıtlanır.</p>
+        <p style={p}>Verinizin işlenip işlenmediğini öğrenme, bilgi talep etme, amaca uygun kullanılıp kullanılmadığını öğrenme, düzeltilmesini veya silinmesini isteme, otomatik sistemlerle analiz sonucu aleyhinize çıkan sonuçlara itiraz etme ve zarara uğramanız hâlinde tazminat talep etme hakkına sahipsiniz. Başvurunuzu info@hermesastroloji.com adresine iletebilirsiniz; en geç 30 gün içinde yanıtlanır.</p>
       </>
     )
   },
@@ -67,7 +67,7 @@ const DOCS = {
         <h2 style={h3}>4. Güvenlik</h2>
         <p style={p}>Veriler şifreli bağlantı (HTTPS) üzerinden taşınır; erişim, işin gerektirdiği kişilerle sınırlıdır. İnternette hiçbir aktarım %100 güvenli değildir; bir ihlal fark edilirse etkilenen kullanıcılar makul sürede bilgilendirilir.</p>
         <h2 style={h3}>5. Değişiklikler</h2>
-        <p style={p}>Bu politika güncellenebilir; önemli değişiklikler bu sayfada yürürlük tarihiyle duyurulur. Sorularınız için: merhaba@zerdemkartal.com</p>
+        <p style={p}>Bu politika güncellenebilir; önemli değişiklikler bu sayfada yürürlük tarihiyle duyurulur. Sorularınız için: info@hermesastroloji.com</p>
       </>
     )
   },
@@ -79,7 +79,7 @@ const DOCS = {
         <h1 style={h2}>Mesafeli Satış Sözleşmesi</h1>
         <div style={sub}>6502 sayılı Tüketicinin Korunması Hakkında Kanun ve Mesafeli Sözleşmeler Yönetmeliği uyarınca · Yürürlük: 7 Temmuz 2026</div>
         <h2 style={h3}>1. Taraflar</h2>
-        <p style={p}><B>Satıcı:</B> <Bosluk>[unvan / ad soyad]</Bosluk> — <Bosluk>[adres]</Bosluk> — <Bosluk>[vergi dairesi / no]</Bosluk> — merhaba@zerdemkartal.com<br /><B>Alıcı:</B> sipariş formunda ad, soyad ve e-posta bilgilerini veren kişi.</p>
+        <p style={p}><B>Satıcı:</B> <Bosluk>[unvan / ad soyad]</Bosluk> — <Bosluk>[adres]</Bosluk> — <Bosluk>[vergi dairesi / no]</Bosluk> — info@hermesastroloji.com<br /><B>Alıcı:</B> sipariş formunda ad, soyad ve e-posta bilgilerini veren kişi.</p>
         <h2 style={h3}>2. Konu</h2>
         <p style={p}>Sözleşmenin konusu, hermesastroloji.com üzerinden satışa sunulan <B>dijital ürünlerin</B> (Hermes Astroloji Programı lisansı) ve <B>danışmanlık hizmetlerinin</B> (astroloji analiz seansları) satışı ve teslimine ilişkin tarafların hak ve yükümlülükleridir. AstroPen ücretsizdir ve bu sözleşmenin kapsamı dışındadır.</p>
         <h2 style={h3}>3. Ürün, fiyat ve ödeme</h2>
@@ -120,7 +120,7 @@ const DOCS = {
         <h2 style={h3}>3. Ücretsiz içerikler</h2>
         <p style={p}>AstroPen, Astroloji 101 ve ücretsiz yayın içerikleri iade kapsamı dışındadır.</p>
         <h2 style={h3}>4. İade süreci</h2>
-        <p style={p}>İade/iptal talebini sipariş e-postanla birlikte merhaba@zerdemkartal.com adresine ya da <a href="/iletisim" style={{ color: T.purple }}>iletişim formuna</a> yaz. Onaylanan iadeler, ödeme yaptığın karta en geç 14 gün içinde yansıtılır (bankana bağlı olarak ekstrene yansıması birkaç gün sürebilir).</p>
+        <p style={p}>İade/iptal talebini sipariş e-postanla birlikte info@hermesastroloji.com adresine ya da <a href="/iletisim" style={{ color: T.purple }}>iletişim formuna</a> yaz. Onaylanan iadeler, ödeme yaptığın karta en geç 14 gün içinde yansıtılır (bankana bağlı olarak ekstrene yansıması birkaç gün sürebilir).</p>
       </>
     )
   }

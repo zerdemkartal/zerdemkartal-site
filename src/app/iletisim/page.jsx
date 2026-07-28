@@ -1,5 +1,17 @@
 // İLETİŞİM — SSR portu (piksel referansı: Iletisim.dc.html). Form istemci bileşeni → POST /api/leads.
-import { INSTAGRAM_HANDLE, INSTAGRAM_URL, SITE, ORG, WEBSITE, pageMeta } from '@/lib/site';
+import {
+  CONTACT_EMAIL,
+  INSTAGRAM_HANDLE,
+  INSTAGRAM_URL,
+  SITE,
+  ORG,
+  WEBSITE,
+  WHATSAPP_DISPLAY,
+  WHATSAPP_INFO_URL,
+  YOUTUBE_HANDLE,
+  YOUTUBE_URL,
+  pageMeta
+} from '@/lib/site';
 import { JsonLd } from '@/components/JsonLd';
 import { Nav, Footer, T, kickerStyle, h1Style, pStyle, sectionStyle } from '@/components/Chrome';
 import IletisimForm from './IletisimForm';
@@ -39,17 +51,21 @@ export default function Iletisim() {
 
       <section style={{ ...sectionStyle, display: 'grid', gridTemplateColumns: 'minmax(260px, 380px) 1fr', gap: 40, alignItems: 'start' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-          <a href="mailto:merhaba@zerdemkartal.com" style={card}>
+          <a href={`mailto:${CONTACT_EMAIL}`} style={card}>
             <div style={{ ...kickerStyle, fontSize: 11.5 }}>E-POSTA</div>
-            <div style={{ fontFamily: T.serif, fontSize: 19, marginTop: 8 }}>merhaba@zerdemkartal.com</div>
+            <div style={{ fontFamily: T.serif, fontSize: 19, marginTop: 8 }}>{CONTACT_EMAIL}</div>
+          </a>
+          <a href={WHATSAPP_INFO_URL} target="_blank" rel="noopener noreferrer" style={card}>
+            <div style={{ ...kickerStyle, fontSize: 11.5 }}>WHATSAPP</div>
+            <div style={{ fontFamily: T.serif, fontSize: 19, marginTop: 8 }}>{WHATSAPP_DISPLAY}</div>
           </a>
           <a href={INSTAGRAM_URL} target="_blank" rel="me noopener noreferrer" style={card}>
             <div style={{ ...kickerStyle, fontSize: 11.5 }}>INSTAGRAM</div>
             <div style={{ fontFamily: T.serif, fontSize: 19, marginTop: 8 }}>@{INSTAGRAM_HANDLE}</div>
           </a>
-          <a href="https://youtube.com/@zerdemkartal" target="_blank" rel="me noopener" style={card}>
+          <a href={YOUTUBE_URL} target="_blank" rel="me noopener noreferrer" style={card}>
             <div style={{ ...kickerStyle, fontSize: 11.5 }}>YOUTUBE</div>
-            <div style={{ fontFamily: T.serif, fontSize: 19, marginTop: 8 }}>@zerdemkartal</div>
+            <div style={{ fontFamily: T.serif, fontSize: 19, marginTop: 8 }}>@{YOUTUBE_HANDLE}</div>
           </a>
         </div>
         <IletisimForm />
