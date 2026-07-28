@@ -75,48 +75,67 @@ export function Nav({ active }) {
 }
 
 export function Footer() {
-  const fl = { color: 'var(--h-dark-text)', textDecoration: 'none' };
-  const contactLink = { ...fl, display: 'flex', alignItems: 'center', gap: 9 };
-  const icon = { width: 24, height: 24, flex: '0 0 24px', display: 'grid', placeItems: 'center', border: '1px solid var(--h-dark-border)', borderRadius: 8, color: 'var(--h-dark-text2)', fontSize: 12, fontWeight: 700 };
-  const legal = { color: 'var(--h-dark-muted)', textDecoration: 'none' };
-  const colHead = { fontSize: 12, fontWeight: 700, letterSpacing: '0.2em', color: 'var(--h-dark-muted)' };
   return (
-    <footer style={{ background: T.dark, color: 'var(--h-dark-text)', borderRadius: '44px 44px 0 0', padding: '96px 0 0', overflow: 'hidden', marginTop: 100 }}>
-      <div style={{ maxWidth: 1160, margin: '0 auto', padding: '0 32px', display: 'grid', gridTemplateColumns: '1.2fr 0.5fr 0.6fr', gap: 60 }}>
-        <div aria-hidden="true" />
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 14, fontSize: 15.5 }}>
-          <span style={colHead}>SAYFALAR</span>
-          <a href="/ozellikler" style={fl}>Özellikler</a>
-          <a href="/fiyat" style={fl}>Fiyat</a>
-          <a href="/indir" style={fl}>İndir</a>
-          <a href="/sss" style={fl}>SSS</a>
+    <footer className="h-footer">
+      <div className="h-footer-main">
+        <div className="h-footer-brand">
+          <a href="/" className="h-footer-brandlink" aria-label="Hermes ana sayfa">
+            <img src="/assets/hermes-mark.svg" alt="" aria-hidden="true" />
+            <span>Hermes</span>
+          </a>
+          <p>Profesyonel astroloji çalışmalarını tek, sakin ve güvenilir bir çalışma alanında buluşturur.</p>
+          <span className="h-footer-note">Windows için profesyonel astroloji programı</span>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 14, fontSize: 15.5 }}>
-          <span style={colHead}>İLETİŞİM</span>
-          <a href="/iletisim" style={contactLink}><span aria-hidden="true" style={icon}>↗</span>İletişim formu</a>
-          <a href={`mailto:${CONTACT_EMAIL}`} style={contactLink}><span aria-hidden="true" style={icon}>✉</span>{CONTACT_EMAIL}</a>
-          <a href={WHATSAPP_INFO_URL} target="_blank" rel="noopener noreferrer" style={contactLink}><span aria-hidden="true" style={{ ...icon, color: '#55D98A' }}>☎</span>WhatsApp · {WHATSAPP_DISPLAY}</a>
-          <a href="/hakkimda" style={fl}>Geliştiricisi hakkında</a>
-          <a href={INSTAGRAM_URL} target="_blank" rel="me noopener noreferrer" style={contactLink}><span aria-hidden="true" style={icon}>◎</span>Instagram · @{INSTAGRAM_HANDLE}</a>
-          <a href={YOUTUBE_URL} target="_blank" rel="me noopener noreferrer" style={contactLink}><span aria-hidden="true" style={icon}>▶</span>YouTube · @{YOUTUBE_HANDLE}</a>
+
+        <nav className="h-footer-nav" aria-label="Alt menü">
+          <span className="h-footer-head">SAYFALAR</span>
+          <a href="/ozellikler">Özellikler</a>
+          <a href="/fiyat">Fiyat</a>
+          <a href="/indir">İndir</a>
+          <a href="/sss">Sık sorulan sorular</a>
+          <a href="/hakkimda">Geliştiricisi hakkında</a>
+        </nav>
+
+        <div className="h-footer-contact">
+          <span className="h-footer-head">İLETİŞİM</span>
+          <div className="h-footer-contact-list">
+            <a href="/iletisim">
+              <span className="h-footer-icon" aria-hidden="true">↗</span>
+              <span><small>Bize yazın</small>İletişim formu</span>
+            </a>
+            <a href={`mailto:${CONTACT_EMAIL}`}>
+              <span className="h-footer-icon" aria-hidden="true">@</span>
+              <span><small>E-posta</small>{CONTACT_EMAIL}</span>
+            </a>
+            <a href={WHATSAPP_INFO_URL} target="_blank" rel="noopener noreferrer">
+              <span className="h-footer-icon h-footer-icon-wa" aria-hidden="true">W</span>
+              <span><small>WhatsApp</small>{WHATSAPP_DISPLAY}</span>
+            </a>
+          </div>
+
+          <div className="h-footer-social">
+            <span className="h-footer-social-label">Bizi takip edin</span>
+            <a href={INSTAGRAM_URL} target="_blank" rel="me noopener noreferrer">
+              Instagram <span aria-hidden="true">↗</span>
+              <small>@{INSTAGRAM_HANDLE}</small>
+            </a>
+            <a href={YOUTUBE_URL} target="_blank" rel="me noopener noreferrer">
+              YouTube <span aria-hidden="true">↗</span>
+              <small>@{YOUTUBE_HANDLE}</small>
+            </a>
+          </div>
         </div>
       </div>
-      <div aria-hidden="true" style={{ textAlign: 'center', marginTop: 128, lineHeight: 0.82, whiteSpace: 'nowrap' }}>
-        <span style={{ position: 'relative', display: 'inline-block' }}>
-          <img src="/assets/hermes-mark.svg" alt="" style={{ position: 'absolute', left: '13%', bottom: '95%', transform: 'translate(-50%, -100%)', height: 132, width: 'auto', display: 'block' }} />
-          <span style={{ fontFamily: T.serif, fontWeight: 420, fontSize: 'clamp(110px, 21vw, 300px)', letterSpacing: '-0.03em', color: 'var(--h-dark-wordmark)' }}>Hermes</span>
-        </span>
-      </div>
-      <div style={{ borderTop: '1px solid var(--h-dark-border)', marginTop: 30, padding: '24px 32px 32px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14, textAlign: 'center' }}>
-        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '8px 22px', fontSize: 14 }}>
-          <a href="/yasal/kvkk" style={legal}>KVKK</a>
-          <a href="/yasal/gizlilik" style={legal}>Gizlilik &amp; Çerez</a>
-          <a href="/yasal/mesafeli-satis" style={legal}>Mesafeli Satış</a>
-          <a href="/yasal/iade" style={legal}>İptal &amp; İade</a>
+
+      <div className="h-footer-bottom">
+        <div className="h-footer-copy">
+          © 2026 zerdemkartal · Hermes Astroloji Programı
         </div>
-        <div style={{ fontSize: 13, color: 'var(--h-dark-muted)', lineHeight: 1.7 }}>
-          © 2026 zerdemkartal · Hermes Astroloji Programı<br />
-          İstanbul&#39;dan, gökyüzü altında yapıldı ☿&#xFE0E;
+        <div className="h-footer-legal">
+          <a href="/yasal/kvkk">KVKK</a>
+          <a href="/yasal/gizlilik">Gizlilik &amp; Çerez</a>
+          <a href="/yasal/mesafeli-satis">Mesafeli Satış</a>
+          <a href="/yasal/iade">İptal &amp; İade</a>
         </div>
       </div>
     </footer>
