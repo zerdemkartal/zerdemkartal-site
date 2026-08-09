@@ -1,6 +1,6 @@
 // PROGRAM DETAY ortak SSR şablonu — AstroPen & Hermes (piksel referansı: ProgramDetay-*.dc.html).
 // İki route da bu bileşeni kullanır; JSON-LD = prototip _buildJsonLd portu.
-// NOT: Satın alma modalı / ödeme akışı Faz 2.5'te (kullanıcı kararıyla ATLANDI) — CTA'lar ön sipariş
+// Satın alma CTA'ları gizlilik odaklı PayTR/EFT sayfasına gider.
 // için /iletisim'e gider; ödeme entegre edilince buton POST /api/orders akışına bağlanır.
 import { getContent } from '@/lib/content';
 import { SITE, ORG, pageMeta, priceNum } from '@/lib/site';
@@ -55,7 +55,7 @@ export function makeProgramPage({ key, path, name, seoDef, paid, def = {} }) {
           <p style={pStyle}>{hero.p || hero.paragraph}</p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 24, alignItems: 'center' }}>
             {paid
-              ? <a href="/iletisim" style={{ background: T.purple, color: '#F5F1E6', borderRadius: 999, padding: '14px 28px', textDecoration: 'none', fontWeight: 600 }}>Ön sipariş ver — {fi.price || '₺6.000'}</a>
+              ? <a href="/satin-al" style={{ background: T.purple, color: '#F5F1E6', borderRadius: 999, padding: '14px 28px', textDecoration: 'none', fontWeight: 600 }}>Satın al — {fi.price || '₺6.000'}</a>
               : (
                 <>
                   <a href="/iletisim" style={{ background: T.dark, color: '#F5F1E6', borderRadius: 999, padding: '14px 28px', textDecoration: 'none', fontWeight: 600 }}>Windows için indir</a>
@@ -129,7 +129,7 @@ export function makeProgramPage({ key, path, name, seoDef, paid, def = {} }) {
                 </ul>
               )}
               {fi.alt && <div style={{ color: T.muted, fontSize: 13.5, marginTop: 14 }}>{fi.alt}</div>}
-              <a href="/iletisim" style={{ display: 'inline-block', marginTop: 20, background: T.purple, color: '#F5F1E6', borderRadius: 999, padding: '13px 26px', textDecoration: 'none', fontWeight: 600 }}>Ön sipariş ver</a>
+              <a href="/satin-al" style={{ display: 'inline-block', marginTop: 20, background: T.purple, color: '#F5F1E6', borderRadius: 999, padding: '13px 26px', textDecoration: 'none', fontWeight: 600 }}>Satın al</a>
             </div>
           </section>
         )}
@@ -171,7 +171,7 @@ export function makeProgramPage({ key, path, name, seoDef, paid, def = {} }) {
               <h2 style={{ ...h2Style, color: '#F5F1E6', margin: 0 }}>{ct.title}</h2>
               <p style={{ ...pStyle, color: '#D8D2C2' }}>{ct.p || ct.paragraph}</p>
             </div>
-            <a href="/iletisim" style={{ background: '#F5F1E6', color: T.ink, borderRadius: 999, padding: '15px 30px', textDecoration: 'none', fontWeight: 700 }}>{paid ? 'Ön sipariş ver' : 'Ücretsiz indir'}</a>
+            <a href={paid ? '/satin-al' : '/indir'} style={{ background: '#F5F1E6', color: T.ink, borderRadius: 999, padding: '15px 30px', textDecoration: 'none', fontWeight: 700 }}>{paid ? 'Satın al' : 'Ücretsiz indir'}</a>
           </div>
         </section>
 

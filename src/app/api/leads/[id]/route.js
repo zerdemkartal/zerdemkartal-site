@@ -8,8 +8,9 @@ const PatchIn = z.object({
 });
 
 // PATCH /api/leads/:id — admin: durum + not
-export async function PATCH(request, { params }) {
-  const err = requireAdmin(request); if (err) return err;
+export async function PATCH(request, props) {
+  const params = await props.params;
+  const err = requireAdmin(request);if (err) return err;
   const body = await request.json().catch(() => null);
   const parsed = PatchIn.safeParse(body);
   if (!parsed.success) return Response.json({ error: 'geçersiz gövde' }, { status: 400 });

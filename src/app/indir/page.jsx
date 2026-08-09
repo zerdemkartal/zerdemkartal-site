@@ -1,19 +1,25 @@
 // İNDİR — kurulum + sistem gereksinimleri (H1). İçerik: 'hermes_site' → indir.
-// H3'te GitHub hermes-yayin releases beslemesi eklenecek (son sürüm + notlar otomatik).
+// Yayın kaynağı sunucu tarafında çözülür; ziyaretçiye yalnız markalı indirme yolu gösterilir.
 // JSON-LD: WebPage + Breadcrumb + SoftwareApplication + HowTo (kurulum adımları).
 import { getHermes } from '@/lib/hermesContent';
 import { SITE, ORG, WEBSITE, appNode, pageMeta } from '@/lib/site';
 import { JsonLd } from '@/components/JsonLd';
-import { Nav, Footer, T, kickerStyle, h1Style, h2Style, pStyle, sectionStyle, cardStyle, btnPrimary } from '@/components/Chrome';
+import { Nav, Footer, T, kickerStyle, h1Style, h2Style, pStyle, sectionStyle, cardStyle } from '@/components/Chrome';
 import { getLatestRelease } from '@/lib/releases';
 import Shot from '@/components/Shot';
+import DownloadAccess from '@/components/DownloadAccess';
 
-export const revalidate = 300;
+// Yayın kaydı Neon'dan okunur; derleme anında yeni migration henüz uygulanmamış olabilir.
+export const dynamic = 'force-dynamic';
 const PATH = '/indir';
 
 export async function generateMetadata() {
   const c = await getHermes();
-  return pageMeta({ ...c.seo.indir, path: PATH });
+  return {
+    ...pageMeta({ ...c.seo.indir, path: PATH }),
+    robots: { index: false, follow: false },
+    referrer: 'no-referrer'
+  };
 }
 
 function buildJsonLd(c) {
@@ -32,10 +38,11 @@ function buildJsonLd(c) {
   ] };
 }
 
-export default async function Indir() {
+export default async function Indir(props) {
+  const searchParams = await props.searchParams;
   const c = await getHermes();
   const { hero, gorsel, surum, adimlar, sistem } = c.indir;
-  const rel = await getLatestRelease(); // GitHub'da yayın yoksa null → statik surum bilgisi
+  const rel = await getLatestRelease();
 
   return (
     <main>
@@ -49,9 +56,13 @@ export default async function Indir() {
           <p style={{ ...pStyle, marginLeft: 'auto', marginRight: 'auto' }} data-he data-path="indir.hero.p">{hero.p}</p>
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 24, alignItems: 'center', justifyContent: 'center' }}>
-          <a href="/fiyat" style={btnPrimary}>Ön sipariş ver</a>
           <span style={{ background: T.cream, border: `1px solid ${T.border}`, borderRadius: 999, padding: '9px 18px', fontSize: 13.5, color: T.ink2 }}>{surum.baslik}: {rel?.version || surum.ver}</span>
         </div>
+        <DownloadAccess
+          version={rel?.version || surum.ver}
+          inviteToken={typeof searchParams?.d === 'string' ? searchParams.d : ''}
+          accessRequired={searchParams?.erisim === 'gerekli'}
+        />
         {gorsel && gorsel.src ? (
           <Shot src={gorsel.src} cap={gorsel.cap} alt="Hermes açılış ekranı — ekran görüntüsü" priority style={{ maxWidth: 960, margin: '34px auto 0' }} />
         ) : null}
@@ -66,7 +77,6 @@ export default async function Indir() {
         {rel && (
           <p style={{ ...pStyle, fontSize: 14, color: T.muted, marginTop: 8 }}>
             Son yayın: sürüm {rel.version}{rel.publishedAt ? ` · ${new Date(rel.publishedAt).toLocaleDateString('tr-TR')}` : ''}
-            {rel.htmlUrl ? <> · <a href={rel.htmlUrl} target="_blank" rel="noopener">Sürüm notları →</a></> : null}
           </p>
         )}
       </section>
@@ -83,7 +93,7 @@ export default async function Indir() {
           <div style={cardStyle}>
             <div style={{ fontWeight: 700, marginBottom: 10 }}>Yol haritası</div>
             <p style={{ ...pStyle, fontSize: 14.5, margin: 0 }} data-he data-path="indir.sistem.not">{sistem.not}</p>
-            <p style={{ marginTop: 14, fontSize: 14.5 }}><a href="/sss">Web sürümü hakkında SSS →</a></p>
+            <p style={{ marginTop: 14, fontSize: 14.5 }}><a href="/sss">Platformlar ve cihaz lisansı hakkında SSS →</a></p>
           </div>
         </div>
       </section>

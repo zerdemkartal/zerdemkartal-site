@@ -1,4 +1,4 @@
-// FİYAT — tek lisans, her platform (H1). İçerik: 'hermes_site' → fiyat.
+// FİYAT — tek seferlik, cihaz başına lisans (H1). İçerik: 'hermes_site' → fiyat.
 // CTA ayrı Satın Al sayfasındaki güvenli talep formuna gider.
 // JSON-LD: WebPage + Breadcrumb + SoftwareApplication(Offer) + FAQPage (fiyat SSS).
 import { getHermes } from '@/lib/hermesContent';
@@ -7,6 +7,7 @@ import { JsonLd } from '@/components/JsonLd';
 import { Nav, Footer, T, btnPrimary, kickerStyle, h1Style, h2Style, pStyle, sectionStyle } from '@/components/Chrome';
 // Faz 2 (27 Tem 2026) — fiyat kutusunda imleç parıltısı.
 import Spotlight from '@/components/Spotlight';
+import PaytrCardPrice from '@/components/PaytrCardPrice';
 
 export const revalidate = 300;
 const PATH = '/fiyat';
@@ -45,41 +46,40 @@ export default async function Fiyat() {
           <h1 style={h1Style} data-he data-path="fiyat.hero.title">{hero.title}</h1>
           <p style={pStyle} data-he data-path="fiyat.hero.p">{hero.p}</p>
           <div className="h-price-assurance" aria-label="Lisans özeti">
-            <span>Abonelik yok</span>
-            <span>1 cihaz lisansı</span>
+            <span>Program lisansı tek seferlik</span>
+            <span>Her cihaz ayrı lisans</span>
             <span>Güncellemeler dahil</span>
           </div>
         </div>
 
         {/* FİYAT KUTUSU — Faz 2: imleç parıltısı (satın alma kartı öne çıksın) */}
         <Spotlight id="on-satis" className="h-price-card" style={{ background: T.card, border: `1.5px solid ${T.purple}` }} tilt={3}>
-          <div style={{ ...kickerStyle, color: T.accentText }} data-he data-path="fiyat.kutu.kicker">{kutu.kicker}</div>
+          <div style={{ ...kickerStyle, color: T.accentText }}>EFT / HAVALE FİYATI</div>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 14, marginTop: 12 }}>
             <span style={{ fontFamily: T.serif, fontSize: 46 }} data-he data-path="fiyat.kutu.price">{kutu.price}</span>
-            {kutu.oldPrice && <s style={{ color: T.muted, fontSize: 20 }} data-he data-path="fiyat.kutu.oldPrice">{kutu.oldPrice}</s>}
           </div>
           <div className="h-device-pricing">
-            <strong>Program fiyatı: <span data-he data-path="fiyat.kutu.oldPrice">{kutu.oldPrice || '₺8.500'}</span></strong>
             <span>İkinci cihaz lisansı: <b data-he data-path="fiyat.kutu.secondLicensePrice">+{kutu.secondLicensePrice || '₺2.500'}</b></span>
             <span>İki cihaz toplam: <b data-he data-path="fiyat.kutu.secondPrice">{kutu.secondPrice || '₺8.500'}</b></span>
             <span data-he data-path="fiyat.kutu.vatNote">{kutu.vatNote || 'Fiyatlara KDV dahildir.'}</span>
           </div>
+          <div className="h-device-pricing"><PaytrCardPrice /></div>
           <a
             href="/satin-al"
             style={{ ...btnPrimary, display: 'block', marginTop: 22, textAlign: 'center' }}
           >
             Satın al
           </a>
-          <div className="h-payment-note">Bilgilerini güvenle ilet · ödeme bu adımda alınmaz</div>
+          <div className="h-payment-note">Kart ödemesi PayTR’nin güvenli sayfasında tamamlanır</div>
           <ul style={{ ...pStyle, fontSize: 14.5, paddingLeft: 20 }}>
             {(kutu.rows || []).map((r, i) => <li key={i} style={{ listStyle: 'none', marginLeft: -20 }} data-he data-path={`fiyat.kutu.rows.${i}`}>{r}</li>)}
           </ul>
-          <div style={{ color: T.muted, fontSize: 13.5, marginTop: 14 }}>Talebin Posta Merkezi’ne düşer; ödeme ve lisans adımları için e-posta veya WhatsApp üzerinden sana ulaşırız.</div>
+          <div style={{ color: T.muted, fontSize: 13.5, marginTop: 14 }}>Hermes ödeme ekranı ad, e-posta, telefon, fatura veya kart bilgisi toplamaz. Kart bilgileri Hermes sunucularından geçmez.</div>
         </Spotlight>
       </section>
 
       <section style={{ ...sectionStyle, maxWidth: 920 }}>
-        {/* TEK LİSANS HER PLATFORM */}
+        {/* PLATFORM VE CİHAZ PLANI */}
         <div className="h-license-card" style={{ background: T.cream, border: `1px solid ${T.border}` }}>
           <h2 style={{ ...h2Style, fontSize: 26, margin: 0 }} data-he data-path="fiyat.tekLisans.title">{tekLisans.title}</h2>
           <p style={{ ...pStyle, fontSize: 15 }} data-he data-path="fiyat.tekLisans.p">{tekLisans.p}</p>

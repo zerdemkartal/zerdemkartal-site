@@ -3,8 +3,9 @@ import { requireMailAccess } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(request, { params }) {
-  const err = requireMailAccess(request); if (err) return err;
+export async function GET(request, props) {
+  const params = await props.params;
+  const err = await requireMailAccess(request, prisma, 'posta.goruntule');if (err) return err;
   const message = await prisma.mailMessage.findFirst({
     where: { id: params.id, direction: 'inbound' },
     select: { resendId: true, attachments: true }

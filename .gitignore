@@ -28,5 +28,11 @@ yarn-error.log*
 Thumbs.db
 *.pem
 
+# yerel Codex çalışma metadatası
+.agents/
+skills-lock.json
+
 # vercel
 .vercel
+
+.env*

@@ -46,7 +46,7 @@ export default function MobileNav({ active }) {
             {LINKS.map(([href, label]) => (
               <a key={href} href={href} className={href === active ? 'on' : ''} onClick={() => setOpen(false)}>{label}</a>
             ))}
-            <a href="/cok-yakinda" data-cta onClick={() => setOpen(false)}>Üye girişi</a>
+            <a href="/satin-al" data-cta onClick={() => setOpen(false)}>Satın al</a>
           </nav>
         </div>
       )}

@@ -8,6 +8,13 @@ export const WHATSAPP_DISPLAY = '+90 552 888 05 20';
 export const whatsappUrl = (message) => `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(message)}`;
 export const WHATSAPP_INFO_URL = whatsappUrl('Merhaba! Hermes programı hakkında bilgi almak istiyorum.');
 export const CONTACT_EMAIL = 'info@hermesastroloji.com';
+export const COMPANY_OWNER = 'Özgür Erdoğan';
+export const COMPANY_TRADE_NAME = 'Key Teknoloji Danışmanlık Yazılım Hizmetleri';
+export const COMPANY_LEGAL_NAME = `${COMPANY_OWNER} ${COMPANY_TRADE_NAME}`;
+export const COMPANY_ADDRESS = 'Menteş Mah. 2584. Sokak No: 1/1 Yenişehir/Mersin';
+export const COMPANY_TAX_OFFICE = 'Mersin İstiklal Vergi Dairesi';
+export const COMPANY_TAX_NUMBER = '3500155432';
+export const COMPANY_TAX_NUMBER_DISPLAY = '350 015 5432';
 export const INSTAGRAM_HANDLE = 'hermesastrolojiprogrami';
 export const INSTAGRAM_URL = `https://www.instagram.com/${INSTAGRAM_HANDLE}/`;
 export const YOUTUBE_HANDLE = 'hermesastrolojiprogramı';
@@ -16,6 +23,12 @@ export const YOUTUBE_URL = `https://www.youtube.com/@${YOUTUBE_HANDLE}`;
 // Site seviyesi JSON-LD düğümleri. Yayıncı = zerdemkartal (kişi/atölye), ürün & site = Hermes.
 export const ORG = {
   '@type': 'Organization', '@id': SITE + '/#org', name: 'zerdemkartal', url: SITE + '/', logo: LOGO,
+  legalName: COMPANY_LEGAL_NAME, taxID: COMPANY_TAX_NUMBER,
+  email: CONTACT_EMAIL, telephone: WHATSAPP_DISPLAY,
+  address: {
+    '@type': 'PostalAddress', streetAddress: 'Menteş Mah. 2584. Sokak No: 1/1',
+    addressLocality: 'Yenişehir', addressRegion: 'Mersin', addressCountry: 'TR'
+  },
   description: 'Hermes astroloji programını geliştiren bağımsız astroloji atölyesi.',
   sameAs: [INSTAGRAM_URL, YOUTUBE_URL]
 };
@@ -36,7 +49,7 @@ export function appNode({ description, featureList = [], price = '6000' } = {}) 
     publisher: { '@id': SITE + '/#org' }, url: SITE + '/',
     offers: {
       '@type': 'Offer', price, priceCurrency: 'TRY',
-      availability: 'https://schema.org/PreOrder', url: SITE + '/satin-al'
+      availability: 'https://schema.org/InStock', url: SITE + '/satin-al'
     }
   };
 }

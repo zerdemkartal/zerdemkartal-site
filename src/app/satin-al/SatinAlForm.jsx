@@ -1,103 +1,112 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import styles from './satin-al.module.css';
-import { CONTACT_EMAIL, WHATSAPP_DISPLAY } from '@/lib/site';
+import { whatsappUrl } from '@/lib/site';
 
 const PLANLAR = {
-  1: { label: '1 cihaz lisansı', price: 6000, note: 'Tek kullanıcı · tek cihaz' },
-  2: { label: '2 cihaz lisansı', price: 8500, note: 'İkinci cihaz +₺2.500' }
+  1: { planId: 'hermes-1', label: '1 cihaz lisansı', eftPrice: 6000, note: 'Tek kullanıcı · tek cihaz' },
+  2: { planId: 'hermes-2', label: '2 cihaz lisansı', eftPrice: 8500, note: 'İkinci cihaz +₺2.500' }
 };
 
-const para = (value) => `₺${Number(value).toLocaleString('tr-TR')}`;
+const para = (value) => value == null
+  ? 'Hesaplanıyor…'
+  : new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY', minimumFractionDigits: 2 }).format(value);
 
 export default function SatinAlForm() {
-  const [form, setForm] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    deviceLimit: 1,
-    kvkk: false,
-    website: ''
-  });
+  const [deviceLimit, setDeviceLimit] = useState(1);
+  const [pricing, setPricing] = useState(null);
+  const [fiyatHatasi, setFiyatHatasi] = useState('');
+  const [sozlesme, setSozlesme] = useState(false);
+  const [dijitalTeslim, setDijitalTeslim] = useState(false);
   const [durum, setDurum] = useState('idle');
   const [hata, setHata] = useState('');
-  const plan = useMemo(() => PLANLAR[form.deviceLimit], [form.deviceLimit]);
 
-  const alan = (key) => (event) => {
-    const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
-    setForm((onceki) => ({ ...onceki, [key]: value }));
-  };
+  useEffect(() => {
+    let active = true;
+    fetch('/api/pay/paytr/pricing', { cache: 'no-store' })
+      .then(async (response) => {
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error('Kartlı ödeme fiyatı şu anda alınamıyor.');
+        if (active) setPricing(data);
+      })
+      .catch(() => {
+        if (active) setFiyatHatasi('Kartlı ödeme fiyatı şu anda alınamıyor; EFT/Havale seçeneği kullanılabilir.');
+      });
+    return () => { active = false; };
+  }, []);
 
-  async function gonder(event) {
-    event.preventDefault();
-    if (durum === 'sending') return;
-    if (!form.kvkk) {
-      setDurum('error');
-      setHata('Talebi göndermek için KVKK Aydınlatma Metni onay kutusunu işaretleyin.');
-      return;
-    }
+  const plan = PLANLAR[deviceLimit];
+  const cardPlan = useMemo(
+    () => pricing?.plans?.find((item) => item.planId === plan.planId),
+    [pricing, plan.planId]
+  );
+  const kosullarTamam = sozlesme && dijitalTeslim;
+  const cardReady = Boolean(pricing?.configured && cardPlan?.cardPrice);
+
+  function sec(device) {
+    setDeviceLimit(device);
+    setDurum('idle');
+    setHata('');
+  }
+
+  function kosullariKontrolEt() {
+    if (kosullarTamam) return true;
+    setDurum('error');
+    setHata('Devam etmek için ön bilgilendirme, mesafeli satış ve dijital teslim koşullarını onaylayın.');
+    return false;
+  }
+
+  function eftBaslat() {
+    if (!kosullariKontrolEt()) return;
+    const message = `Merhaba, Hermes ${deviceLimit} cihaz lisansını ${para(plan.eftPrice)} EFT/Havale fiyatıyla satın almak istiyorum. Ödeme bilgilerini paylaşabilir misiniz?`;
+    window.open(whatsappUrl(message), '_blank', 'noopener,noreferrer');
+  }
+
+  async function kartBaslat() {
+    if (durum === 'sending' || !cardReady || !kosullariKontrolEt()) return;
     setDurum('sending');
     setHata('');
     try {
-      const response = await fetch('/api/purchase-request', {
+      const response = await fetch('/api/pay/paytr/link', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          planId: plan.planId,
+          termsAccepted: true,
+          termsVersion: pricing.termsVersion
+        }),
         cache: 'no-store'
       });
       const data = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(data.error || 'Talebiniz gönderilemedi.');
-      setDurum('done');
+      if (!response.ok || !data.paymentPageUrl) throw new Error('Güvenli ödeme bağlantısı oluşturulamadı.');
+      window.location.assign(data.paymentPageUrl);
     } catch (error) {
-      setHata(error.message);
       setDurum('error');
+      setHata(error.message);
     }
-  }
-
-  if (durum === 'done') {
-    return (
-      <section className={styles.basari} aria-live="polite">
-        <div className={styles.basariHalka} aria-hidden="true"><span>✓</span></div>
-        <div className={styles.kicker}>TALEBİNİZ ALINDI</div>
-        <h1>Hermes’e bir adım kaldı.</h1>
-        <p>
-          Teşekkürler {form.firstName}. Satın alma talebiniz Posta Merkezi’ne ulaştı.
-          Ödeme ve lisans teslimi için ekibimize <strong>{CONTACT_EMAIL}</strong> veya
-          WhatsApp üzerinden <strong>{WHATSAPP_DISPLAY}</strong> adreslerinden ulaşabilirsiniz.
-        </p>
-        <div className={styles.basariOzet}>
-          <span>{plan.label}</span>
-          <strong>{para(plan.price)}</strong>
-          <small>KDV dahil · abonelik yok</small>
-        </div>
-        <a href="/" className={styles.ikincil}>Ana sayfaya dön</a>
-      </section>
-    );
   }
 
   return (
     <section className={styles.sayfa}>
-      <div className={styles.arka} aria-hidden="true">
-        <i /><i /><i />
-      </div>
+      <div className={styles.arka} aria-hidden="true"><i /><i /><i /></div>
 
       <header className={styles.giris}>
-        <div className={styles.kicker}>HERMES · ÖN SATIŞ</div>
-        <h1>Atölyen için lisansını seç.</h1>
-        <p>Bilgilerinizi iletin; ödeme bağlantısı ve lisans adımları e-posta veya WhatsApp üzerinden size ulaştırılsın.</p>
+        <div className={styles.kicker}>HERMES · GÜVENLİ ÖDEME</div>
+        <h1>Lisansını ve ödeme yöntemini seç.</h1>
+        <p>Hermes bu sayfada kişisel, fatura veya kart bilgisi istemez. Kartlı ödemede bu bilgiler yalnız PayTR’nin güvenli ödeme sayfasına girilir.</p>
         <div className={styles.adimlar} aria-label="Satın alma adımları">
           <span className={styles.aktif}>01 · Lisans</span>
-          <span>02 · Bilgiler</span>
-          <span>03 · Güvenli dönüş</span>
+          <span>02 · Ödeme yöntemi</span>
+          <span>03 · PayTR veya EFT</span>
+          <span>04 · Dijital teslim</span>
         </div>
       </header>
 
       <div className={styles.duzen}>
         <aside className={styles.ozet}>
-          <span className={styles.ozetEtiket}>SEÇİMİNİZ</span>
-          <div className={styles.fiyat} key={form.deviceLimit}>{para(plan.price)}</div>
+          <span className={styles.ozetEtiket}>SEÇİMİNİZ · EFT/HAVALE</span>
+          <div className={styles.fiyat} key={deviceLimit}>{para(plan.eftPrice)}</div>
           <h2>{plan.label}</h2>
           <p>{plan.note}</p>
           <ul>
@@ -107,82 +116,72 @@ export default function SatinAlForm() {
             <li>Windows 10/11 kurulumu</li>
           </ul>
           <div className={styles.guvence}>
-            <strong>Tek seferlik lisans</strong>
-            <span>Fiyatlara KDV dahildir. Abonelik veya gizli ücret yoktur.</span>
+            <strong>Tek seferlik cihaz lisansı</strong>
+            <span>Fiyatlara KDV dahildir. Her lisans yalnız seçtiğin bir cihazda geçerlidir; farklı cihaz ayrı lisans gerektirir.</span>
           </div>
         </aside>
 
-        <form className={styles.form} onSubmit={gonder}>
-          <div className={styles.formBas}>
-            <div>
-              <span>SATIN ALMA TALEBİ</span>
-              <h2>Size nasıl ulaşalım?</h2>
-            </div>
-            <small>Bu adımda ödeme alınmaz.</small>
+        <div className={styles.panel}>
+          <div className={styles.panelBas}>
+            <div><span>SATIN ALMA</span><h2>Ödeme yolunu seçin</h2></div>
+            <small>Uygulama katmanında kişisel veri tutulmaz</small>
           </div>
 
           <fieldset className={styles.planlar}>
             <legend>Lisans seçimi</legend>
             {Object.entries(PLANLAR).map(([key, secenek]) => {
               const limit = Number(key);
-              const aktif = form.deviceLimit === limit;
+              const aktif = deviceLimit === limit;
               return (
                 <button key={key} type="button" aria-pressed={aktif}
                   className={aktif ? styles.planAktif : styles.plan}
-                  onClick={() => setForm((onceki) => ({ ...onceki, deviceLimit: limit }))}>
+                  onClick={() => sec(limit)}>
                   <span><b>{secenek.label}</b><small>{secenek.note}</small></span>
-                  <strong>{para(secenek.price)}</strong>
+                  <strong>{para(secenek.eftPrice)}</strong>
                 </button>
               );
             })}
           </fieldset>
 
-          <div className={styles.alanlar}>
-            <label>İsim
-              <input required minLength={2} maxLength={60} autoComplete="given-name"
-                value={form.firstName} onChange={alan('firstName')} placeholder="İsminiz" />
-            </label>
-            <label>Soyisim
-              <input required minLength={2} maxLength={60} autoComplete="family-name"
-                value={form.lastName} onChange={alan('lastName')} placeholder="Soyisminiz" />
-            </label>
-            <label>E-posta
-              <input required type="email" autoComplete="email"
-                value={form.email} onChange={alan('email')} placeholder="ornek@eposta.com" />
-            </label>
-            <label>Telefon
-              <input required type="tel" autoComplete="tel" inputMode="tel"
-                value={form.phone} onChange={alan('phone')} placeholder="+90 5xx xxx xx xx" />
-            </label>
+          <div className={styles.odemeler}>
+            <article className={styles.odemeKart}>
+              <div className={styles.odemeBas}><span>EFT / HAVALE</span><em>En avantajlı</em></div>
+              <strong className={styles.odemeFiyat}>{para(plan.eftPrice)}</strong>
+              <p>Banka bilgilerini WhatsApp üzerinden alın. Bu temas, Hermes’in Vercel ödeme akışının dışında gerçekleşir.</p>
+              <button type="button" className={styles.ikincilButon} onClick={eftBaslat}>EFT/Havale bilgilerini iste</button>
+            </article>
+
+            <article className={`${styles.odemeKart} ${styles.kartli}`}>
+              <div className={styles.odemeBas}><span>KREDİ / BANKA KARTI</span><em>PayTR güvencesi</em></div>
+              <strong className={styles.odemeFiyat}>{cardReady ? para(cardPlan.cardPrice) : '—'}</strong>
+              <p>Tek çekim fiyatı PayTR’nin güncel mağaza oranından otomatik hesaplanır. Taksit seçildiğinde toplam tutar PayTR ekranında kartınıza göre değişebilir.</p>
+              <button type="button" onClick={kartBaslat} disabled={!cardReady || durum === 'sending'}>
+                {durum === 'sending' ? 'PayTR’ye yönlendiriliyor…' : cardReady ? 'PayTR ile güvenli öde' : 'Kartlı ödeme yapılandırılıyor'}
+              </button>
+            </article>
           </div>
 
-          <label className={styles.tuzak} aria-hidden="true">Web sitesi
-            <input tabIndex={-1} autoComplete="off" value={form.website} onChange={alan('website')} />
-          </label>
+          {fiyatHatasi && <div className={styles.bilgi} role="status">{fiyatHatasi}</div>}
 
-          <label className={styles.kvkk}>
-            <input type="checkbox" checked={form.kvkk}
-              aria-required="true" aria-invalid={durum === 'error' && !form.kvkk}
-              onChange={(event) => {
-                alan('kvkk')(event);
-                if (event.target.checked && durum === 'error') {
-                  setDurum('idle');
-                  setHata('');
-                }
-              }} />
-            <span>Kişisel verilerimin <a href="/yasal/kvkk" target="_blank">KVKK Aydınlatma Metni</a> kapsamında işlenmesini kabul ediyorum.</span>
-          </label>
+          <div className={styles.gizlilik}>
+            <span aria-hidden="true">⌁</span>
+            <p><strong>Veri minimizasyonu:</strong> Hermes/Vercel ödeme akışı yalnız seçilen planı, fiyatı ve anonim PayTR işlem referansını işler. Ad, e-posta, telefon, adres, TCKN/VKN ve kart verisi bu akışta alınmaz veya saklanmaz.</p>
+          </div>
+
+          <div className={styles.kosullar}>
+            <label>
+              <input type="checkbox" checked={sozlesme} onChange={(event) => setSozlesme(event.target.checked)} />
+              <span><a href="/yasal/on-bilgilendirme" target="_blank">Ön Bilgilendirme Formu</a>nu ve <a href="/yasal/mesafeli-satis" target="_blank">Mesafeli Satış Sözleşmesi</a>ni okudum, kabul ediyorum.</span>
+            </label>
+            <label>
+              <input type="checkbox" checked={dijitalTeslim} onChange={(event) => setDijitalTeslim(event.target.checked)} />
+              <span>Ödeme sonrası dijital teslimin başlamasını talep ediyorum; <a href="/yasal/teslimat" target="_blank">teslimat koşulları</a>nı ve lisans/indirme erişimi tesliminden sonra cayma hakkı istisnasını kabul ediyorum.</span>
+            </label>
+          </div>
 
           {durum === 'error' && <div className={styles.hata} role="alert">{hata}</div>}
-
-          <div className={styles.alt}>
-            <div><span>Talep toplamı</span><strong>{para(plan.price)}</strong></div>
-            <button type="submit" disabled={durum === 'sending'}>
-              {durum === 'sending' ? 'Gönderiliyor…' : 'Satın alma talebini gönder'}
-            </button>
-          </div>
-          <p className={styles.dipnot}>Talep gönderildikten sonra ödeme ve teslim ayrıntıları ekibimiz tarafından doğrulanır.</p>
-        </form>
+          <p className={styles.dipnot}>Kart ödemesi PayTR sayfasında tamamlanır. Kart bilgileri Hermes sunucularından geçmez.</p>
+        </div>
       </div>
     </section>
   );

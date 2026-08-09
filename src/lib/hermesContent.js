@@ -6,7 +6,7 @@ import { migrateHermesPricing } from './hermesPricing';
 
 export async function getHermes() {
   const db = await getContent('hermes_site', null);
-  if (!db || typeof db !== 'object') return HERMES_SITE;
+  if (!db || typeof db !== 'object') return migrateHermesPricing(HERMES_SITE);
   const out = { ...HERMES_SITE };
   for (const k of Object.keys(db)) {
     out[k] = (db[k] && typeof db[k] === 'object' && !Array.isArray(db[k]) && HERMES_SITE[k])

@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import { authorizeLicenseRequest } from './license/access.mjs';
 
 /** Bearer token doğrulama: panel JWT'si YA DA uzun ömürlü ADMIN_TOKEN (MCP).
  *  Kullanım (route handler):
@@ -22,14 +23,18 @@ export function signAdminJwt(email) {
 
 /** Posta Merkezi erişimi: ana yönetici veya yalnız posta yetkili kullanıcı.
  *  mail_operator token'ı diğer yönetim API'lerinde requireAdmin tarafından reddedilir. */
-export function requireMailAccess(request) {
+export async function requireMailAccess(request, database, action = 'posta.goruntule') {
   const token = bearerToken(request);
   if (!token) return unauthorized();
   if (process.env.ADMIN_TOKEN && token === process.env.ADMIN_TOKEN) return null;
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET);
-    if (!['admin', 'mail_operator'].includes(payload.role) || !payload.sub) return unauthorized();
-    return null;
+    if (['admin', 'mail_operator'].includes(payload.role) && payload.sub) return null;
+    if (payload.role === 'license_admin' && payload.sub && database) {
+      const access = await authorizeLicenseRequest({ request, action, database });
+      return access.ok ? null : unauthorized();
+    }
+    return unauthorized();
   } catch {
     return unauthorized();
   }

@@ -5,13 +5,17 @@ import { z } from 'zod';
 export const dynamic = 'force-dynamic';
 
 const PatchIn = z.object({
-  folder: z.enum(['inbox', 'archive', 'spam']).optional(),
+  folder: z.enum(['inbox', 'archive', 'spam', 'trash']).optional(),
   starred: z.boolean().optional(),
-  read: z.boolean().optional()
+  read: z.boolean().optional(),
+  blockSender: z.boolean().optional()
 }).refine((x) => Object.keys(x).length > 0);
 
-export async function GET(request, { params }) {
-  const err = requireMailAccess(request); if (err) return err;
+const DeleteIn = z.object({ confirm: z.literal('SİL') }).strict();
+
+export async function GET(request, props) {
+  const params = await props.params;
+  const err = await requireMailAccess(request, prisma, 'posta.goruntule');if (err) return err;
   const thread = await prisma.mailThread.findUnique({
     where: { id: params.id },
     include: { messages: { orderBy: { createdAt: 'asc' } } }
@@ -33,10 +37,23 @@ export async function GET(request, { params }) {
   return Response.json(thread);
 }
 
-export async function PATCH(request, { params }) {
-  const err = requireMailAccess(request); if (err) return err;
+export async function PATCH(request, props) {
+  const params = await props.params;
+  const err = await requireMailAccess(request, prisma, 'posta.duzenle');if (err) return err;
   const parsed = PatchIn.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return Response.json({ error: 'Geçersiz işlem.' }, { status: 400 });
+  const current = await prisma.mailThread.findUnique({ where: { id: params.id } });
+  if (!current) return Response.json({ error: 'Konuşma bulunamadı.' }, { status: 404 });
+  if (typeof parsed.data.blockSender === 'boolean' && current.participantEmail) {
+    const folder = parsed.data.blockSender ? 'spam' : 'inbox';
+    await prisma.mailThread.updateMany({
+      where: {
+        participantEmail: current.participantEmail,
+        ...(parsed.data.blockSender ? {} : { folder: 'spam' })
+      },
+      data: parsed.data.blockSender ? { folder, unreadCount: 0 } : { folder }
+    });
+  }
   const data = {};
   if (parsed.data.folder) data.folder = parsed.data.folder;
   if (typeof parsed.data.starred === 'boolean') data.starred = parsed.data.starred;
@@ -50,4 +67,18 @@ export async function PATCH(request, { params }) {
     });
   }
   return Response.json(thread);
+}
+
+export async function DELETE(request, props) {
+  const params = await props.params;
+  const err = await requireMailAccess(request, prisma, 'posta.duzenle'); if (err) return err;
+  const parsed = DeleteIn.safeParse(await request.json().catch(() => null));
+  if (!parsed.success) return Response.json({ error: 'Kalıcı silme onayı geçersiz.' }, { status: 400 });
+  const current = await prisma.mailThread.findUnique({ where: { id: params.id }, select: { id: true, folder: true } });
+  if (!current) return Response.json({ error: 'Konuşma bulunamadı.' }, { status: 404 });
+  if (current.folder !== 'trash') {
+    return Response.json({ error: 'Konuşma kalıcı silmeden önce Çöp klasörüne taşınmalıdır.' }, { status: 409 });
+  }
+  await prisma.mailThread.delete({ where: { id: current.id } });
+  return Response.json({ ok: true, deletedId: current.id });
 }

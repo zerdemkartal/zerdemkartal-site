@@ -30,15 +30,16 @@ function norm(s) {
 const SABIT = [
   { g: 'Sayfalar', t: 'Ana Sayfa', h: '/', k: 'anasayfa hermes' },
   { g: 'Sayfalar', t: 'Özellikler', h: '/ozellikler', k: 'modüller ne yapar' },
-  { g: 'Sayfalar', t: 'Fiyat', h: '/fiyat', k: 'ücret lisans satın al ön sipariş' },
-  { g: 'Sayfalar', t: 'Satın Al', h: '/satin-al', k: 'satın alma talebi lisans başvuru' },
+  { g: 'Sayfalar', t: 'Fiyat', h: '/fiyat', k: 'ücret lisans satın al eft paytr kart' },
+  { g: 'Sayfalar', t: 'Satın Al', h: '/satin-al', k: 'lisans eft havale paytr kart ödeme' },
   { g: 'Sayfalar', t: 'İndir', h: '/indir', k: 'kurulum sürüm windows' },
   { g: 'Sayfalar', t: 'Sık Sorulan Sorular', h: '/sss', k: 'sss soru cevap' },
   { g: 'Sayfalar', t: 'İletişim', h: '/iletisim', k: 'mail yaz destek' },
   { g: 'Sayfalar', t: 'Geliştiricisi hakkında', h: '/hakkimda', k: 'zerdem kartal astrolog' },
-  { g: 'Sayfalar', t: 'Üye girişi', h: '/cok-yakinda', k: 'hesap giriş kayıt google çok yakında' },
   { g: 'Yasal', t: 'KVKK', h: '/yasal/kvkk', k: 'kişisel veri' },
   { g: 'Yasal', t: 'Gizlilik & Çerez', h: '/yasal/gizlilik', k: 'çerez privacy' },
+  { g: 'Yasal', t: 'Ön Bilgilendirme', h: '/yasal/on-bilgilendirme', k: 'ödeme teslim cayma' },
+  { g: 'Yasal', t: 'Teslimat Koşulları', h: '/yasal/teslimat', k: 'dijital teslim kargo' },
   { g: 'Yasal', t: 'Mesafeli Satış', h: '/yasal/mesafeli-satis', k: 'sözleşme' },
   { g: 'Yasal', t: 'İptal & İade', h: '/yasal/iade', k: 'geri ödeme' }
 ];

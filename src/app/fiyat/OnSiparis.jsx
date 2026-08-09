@@ -104,7 +104,7 @@ export default function OnSiparis({ label: cta = 'Ön sipariş ver', price = 600
             ) : (
               <form onSubmit={submit}>
                 <div style={{ fontFamily: "'Newsreader', serif", fontSize: 24, color: 'var(--h-ink)' }}>Ön sipariş</div>
-                <p style={{ fontSize: 14, color: 'var(--h-muted)', marginTop: 6 }}>Hermes ön satış — bilgilerini gir, güvenli ödeme sayfasına (iyzico) yönlendirilirsin. Abonelik yok, tek seferlik lisans.</p>
+                <p style={{ fontSize: 14, color: 'var(--h-muted)', marginTop: 6 }}>Hermes program lisansı tek seferliktir ve seçilen cihaz sayısı için düzenlenir. Farklı cihaz ayrı lisans gerektirir.</p>
                 <div role="group" aria-label="Cihaz sayısı" style={planGrid}>
                   {[
                     { limit: 1, title: '1 cihaz', amount: Number(price) || 6000 },

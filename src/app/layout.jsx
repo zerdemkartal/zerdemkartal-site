@@ -437,6 +437,7 @@ const THEME_CSS = `
     background:var(--h-cream); color:var(--h-ink2); font-size:13px; }
   .h-price-card { border-radius:22px; padding:34px 34px 30px; }
   .h-device-pricing { display:flex; align-items:center; justify-content:space-between; gap:16px;
+    flex-wrap:wrap;
     margin-top:16px; padding:13px 15px; border:1px solid var(--h-border); border-radius:13px;
     background:var(--h-cream); color:var(--h-ink2); font-size:13.5px; }
   .h-device-pricing strong { color:var(--h-ink); font-weight:650; }
@@ -461,6 +462,11 @@ const THEME_CSS = `
     .h-route-actions a { text-align:center; }
     .h-price-card, .h-license-card { padding:26px 22px; }
     .h-device-pricing { align-items:flex-start; flex-direction:column; gap:5px; }
+  }
+
+  @media (max-width:760px) {
+    .h-legal-layout { grid-template-columns:1fr !important; gap:28px !important; }
+    .h-legal-layout > div:first-child { position:static !important; }
   }
 
   /* Ortak footer — marka, sayfalar ve iletişim aynı hizada; sosyal hesaplar ayrı ve okunur. */
@@ -513,6 +519,8 @@ const THEME_CSS = `
   .h-footer-bottom { width:min(1160px,100%); margin:64px auto 0; padding:24px 0 30px;
     border-top:1px solid var(--h-dark-border); display:flex; align-items:center;
     justify-content:space-between; gap:24px; color:var(--h-dark-muted); font-size:12.5px; }
+  .h-footer-copy { max-width:620px; display:flex; flex-direction:column; gap:6px; line-height:1.5; }
+  .h-footer-company { color:var(--h-dark-text2); overflow-wrap:anywhere; }
   .h-footer-legal { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:10px 22px; }
   .h-footer-legal a { color:var(--h-dark-muted); transition:color .2s ease; }
   .h-footer-legal a:hover { color:var(--h-dark-text2); }
@@ -541,6 +549,7 @@ const THEME_CSS = `
 
   /* Sosyal iletişim — Instagram + WhatsApp (sabit, sol alt; EditLayer sağ altta olduğu için çakışmaz) */
   .h-social-float { position:fixed; left:16px; bottom:16px; z-index:120; display:flex; align-items:center; gap:8px; }
+  body.h-posta-app .h-social-float { display:none; }
   .h-wa { display:inline-flex; align-items:center; gap:9px;
     background:#25D366; color:#fff; text-decoration:none; border-radius:999px; padding:11px 17px 11px 14px;
     font-family:'Hanken Grotesk', sans-serif; font-size:14.5px; font-weight:600; box-shadow:0 8px 24px rgba(0,0,0,0.20); }

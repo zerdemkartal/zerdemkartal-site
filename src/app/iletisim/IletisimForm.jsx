@@ -4,13 +4,14 @@
 import { useState } from 'react';
 import { CONTACT_EMAIL } from '@/lib/site';
 
-const KONULAR = ['Hermes — satın alma / ön sipariş', 'Hermes — teknik soru', 'Lisans & fatura', 'İş birliği', 'Diğer'];
+const KONULAR = ['Hermes — satın alma / ödeme', 'Hermes — teknik soru', 'Lisans & fatura', 'İş birliği', 'Diğer'];
 
 const field = { border: '1px solid var(--h-border)', borderRadius: 10, padding: '13px 15px', fontSize: 15, fontFamily: 'inherit', background: 'var(--h-card)', color: 'var(--h-ink)' };
 const label = { display: 'flex', flexDirection: 'column', gap: 6, fontSize: 13.5, color: 'var(--h-muted)' };
 
 export default function IletisimForm() {
-  const [f, setF] = useState({ name: '', email: '', konu: KONULAR[0], message: '', kvkk: false });
+  const [f, setF] = useState({ name: '', email: '', konu: KONULAR[0], message: '', website: '', kvkk: false });
+  const [formStartedAt] = useState(() => Date.now());
   const [state, setState] = useState('idle'); // idle | sending | done | error
 
   const set = (k) => (e) => setF((s) => ({ ...s, [k]: e.target.type === 'checkbox' ? e.target.checked : e.target.value }));
@@ -23,7 +24,14 @@ export default function IletisimForm() {
       const r = await fetch('/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: Date.now(), name: f.name.trim(), email: f.email.trim(), type: 'İletişim · ' + f.konu, message: f.message.trim(), date: new Date().toISOString().slice(0, 10) })
+        body: JSON.stringify({
+          name: f.name.trim(),
+          email: f.email.trim(),
+          type: 'İletişim · ' + f.konu,
+          message: f.message.trim(),
+          website: f.website,
+          formStartedAt
+        })
       });
       setState(r.ok ? 'done' : 'error');
     } catch {
@@ -56,14 +64,18 @@ export default function IletisimForm() {
       <label style={{ ...label, gridColumn: '1 / -1' }}>Mesajın
         <textarea required rows={6} value={f.message} onChange={set('message')} style={{ ...field, resize: 'vertical' }} placeholder="Merhaba…" />
       </label>
-      <label style={{ gridColumn: '1 / -1', display: 'flex', gap: 10, alignItems: 'flex-start', fontSize: 13.5, color: '#55524A', lineHeight: 1.6 }}>
-        <input required type="checkbox" checked={f.kvkk} onChange={set('kvkk')} style={{ width: 18, height: 18, marginTop: 2 }} />
-        <span>Kişisel verilerimin <a href="/yasal/kvkk" style={{ color: '#8E7CC3' }}>KVKK Aydınlatma Metni</a> kapsamında işlenmesini kabul ediyorum.</span>
+      <label aria-hidden="true" style={{ position: 'fixed', left: '-10000px', top: 'auto', width: 1, height: 1, overflow: 'hidden' }}>
+        Web sitesi
+        <input tabIndex={-1} autoComplete="off" value={f.website} onChange={set('website')} />
       </label>
-      <button type="submit" disabled={state === 'sending'} style={{ gridColumn: '1 / -1', background: '#1D130B', color: '#F5F1E6', border: 'none', borderRadius: 999, padding: '15px 30px', fontSize: 15.5, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', opacity: state === 'sending' ? 0.6 : 1 }}>
+      <label style={{ gridColumn: '1 / -1', display: 'flex', gap: 10, alignItems: 'flex-start', fontSize: 13.5, color: 'var(--h-muted)', lineHeight: 1.6 }}>
+        <input required type="checkbox" checked={f.kvkk} onChange={set('kvkk')} style={{ width: 18, height: 18, marginTop: 2 }} />
+        <span>Kişisel verilerimin <a href="/yasal/kvkk" style={{ color: 'var(--h-accent-text)' }}>KVKK Aydınlatma Metni</a> kapsamında işlenmesini kabul ediyorum.</span>
+      </label>
+      <button type="submit" disabled={state === 'sending'} style={{ gridColumn: '1 / -1', background: 'var(--h-dark)', color: 'var(--h-dark-text)', border: 'none', borderRadius: 999, padding: '15px 30px', fontSize: 15.5, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', opacity: state === 'sending' ? 0.6 : 1 }}>
         {state === 'sending' ? 'Gönderiliyor…' : 'Gönder'}
       </button>
-      {state === 'error' && <p style={{ gridColumn: '1 / -1', color: '#B04A3A', fontSize: 14, margin: 0 }}>Gönderilemedi — lütfen tekrar dene ya da {CONTACT_EMAIL} adresine yaz.</p>}
+      {state === 'error' && <p style={{ gridColumn: '1 / -1', color: 'var(--h-error)', fontSize: 14, margin: 0 }}>Gönderilemedi — lütfen tekrar dene ya da {CONTACT_EMAIL} adresine yaz.</p>}
     </form>
   );
 }

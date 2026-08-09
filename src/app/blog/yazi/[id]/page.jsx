@@ -16,7 +16,8 @@ async function load(id) {
   return libraryById(id); // DB'de yoksa kütüphaneden (fallback)
 }
 
-export async function generateMetadata({ params }) {
+export async function generateMetadata(props) {
+  const params = await props.params;
   return pageMeta({
     title: 'Yazı yayında değil — Hermes',
     description: 'Hermes blog yazıları şu anda kamusal erişime kapalı.',
@@ -38,7 +39,8 @@ const ARTICLE_CSS = `
   .zk-yazi .callout-body { flex: 1; min-width: 0; }
 `;
 
-export default async function Yazi({ params }) {
+export default async function Yazi(props) {
+  const params = await props.params;
   notFound();
   const p = await load(params.id);
   if (!p) notFound();

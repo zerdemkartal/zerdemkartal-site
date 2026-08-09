@@ -1,5 +1,7 @@
 import { prisma } from './db';
 import { licensePriceFor, normalizeDeviceLimit } from './licensePricing';
+import { INVOICE_TYPES } from './purchase-invoice.mjs';
+import { assessMailSpam } from './mail-security.mjs';
 
 const VARSAYILAN_KUTULAR = [
   'info@hermesastroloji.com'
@@ -101,6 +103,18 @@ export async function ingestIncomingEmail(email) {
   const mailbox = alicilar.find((x) => kutular.includes(x)) || alicilar[0] || kutular[0];
   const createdAt = guvenliTarih(email.created_at);
   let thread = await iliskiliThread(email, kisi, normalizedSubject);
+  const oncekiEngel = kisi.address ? await prisma.mailThread.count({
+    where: { participantEmail: kisi.address, folder: 'spam' }
+  }) : 0;
+  const spam = assessMailSpam({
+    fromAddress: kisi.address,
+    subject,
+    text: email.text,
+    html: email.html,
+    headers: email.headers,
+    blocklist: process.env.MAIL_SPAM_BLOCKLIST
+  });
+  const spamFolder = Boolean(oncekiEngel || spam.spam || thread?.folder === 'spam');
 
   if (!thread) {
     thread = await prisma.mailThread.create({
@@ -110,7 +124,7 @@ export async function ingestIncomingEmail(email) {
         participantName: kisi.name || null,
         participantEmail: kisi.address || null,
         mailbox,
-        folder: 'inbox',
+        folder: spamFolder ? 'spam' : 'inbox',
         unreadCount: 0,
         lastMessageAt: createdAt
       }
@@ -132,7 +146,10 @@ export async function ingestIncomingEmail(email) {
       subject,
       text: metinSinir(email.text, 2_000_000),
       html: metinSinir(email.html, 2_000_000),
-      headers: email.headers && typeof email.headers === 'object' ? email.headers : {},
+      headers: {
+        ...(email.headers && typeof email.headers === 'object' ? email.headers : {}),
+        hermesSpam: { score: spam.score, reasons: spam.reasons, blockedSender: Boolean(oncekiEngel) }
+      },
       attachments: Array.isArray(email.attachments) ? email.attachments.slice(0, 100) : [],
       status: 'received',
       createdAt
@@ -147,7 +164,7 @@ export async function ingestIncomingEmail(email) {
       participantName: kisi.name || thread.participantName,
       participantEmail: kisi.address || thread.participantEmail,
       mailbox,
-      folder: thread.folder === 'spam' ? 'spam' : 'inbox',
+      folder: spamFolder ? 'spam' : 'inbox',
       unreadCount: { increment: 1 },
       lastMessageAt: createdAt
     }
@@ -161,6 +178,13 @@ export async function ingestContactForm({ name, email, type, message, source = '
   const participantEmail = String(email || '').toLowerCase();
   const mailbox = mailboxAddresses()[0];
   const now = new Date();
+  const spam = assessMailSpam({
+    fromAddress: participantEmail,
+    subject,
+    text: message,
+    source,
+    blocklist: process.env.MAIL_SPAM_BLOCKLIST
+  });
   const guvenliMetadata = metadata && typeof metadata === 'object' && !Array.isArray(metadata)
     ? Object.fromEntries(Object.entries(metadata).slice(0, 20).map(([key, value]) => [
         String(key).slice(0, 80),
@@ -176,7 +200,7 @@ export async function ingestContactForm({ name, email, type, message, source = '
         participantName: name,
         participantEmail,
         mailbox,
-        folder: 'inbox',
+        folder: spam.spam ? 'spam' : 'inbox',
         unreadCount: 1,
         lastMessageAt: now
       }
@@ -195,7 +219,12 @@ export async function ingestContactForm({ name, email, type, message, source = '
         subject,
         text: message,
         html: null,
-        headers: { ...guvenliMetadata, source: String(source).slice(0, 80), leadId: lead.id },
+        headers: {
+          ...guvenliMetadata,
+          source: String(source).slice(0, 80),
+          leadId: lead.id,
+          hermesSpam: { score: spam.score, reasons: spam.reasons }
+        },
         attachments: [],
         status: 'received',
         createdAt: now
@@ -205,11 +234,17 @@ export async function ingestContactForm({ name, email, type, message, source = '
   });
 }
 
-/** Satın alma formunu yanıtlanabilir e-posta konuşmasına dönüştürür. */
-export async function ingestPurchaseRequest({ firstName, lastName, email, phone, whatsappPhone, deviceLimit }) {
+/** Satın alma formunu fatura bilgileriyle birlikte yanıtlanabilir e-posta konuşmasına dönüştürür. */
+export async function ingestPurchaseRequest({
+  firstName, lastName, email, phone, whatsappPhone, deviceLimit,
+  invoiceType, companyTitle, taxNumber, taxOffice,
+  billingAddress, billingDistrict, billingCity
+}) {
   const limit = normalizeDeviceLimit(deviceLimit);
   const price = licensePriceFor(limit);
   const name = `${String(firstName).trim()} ${String(lastName).trim()}`.trim();
+  const invoiceTitle = invoiceType === 'corporate' ? String(companyTitle).trim() : name;
+  const invoiceTypeLabel = INVOICE_TYPES[invoiceType] || INVOICE_TYPES.individual;
   const subject = `Satın alma talebi · ${limit} cihaz · ₺${price.toLocaleString('tr-TR')}`;
   const message = [
     'Yeni Hermes satın alma talebi',
@@ -219,6 +254,14 @@ export async function ingestPurchaseRequest({ firstName, lastName, email, phone,
     `Telefon: ${phone}`,
     `Lisans: ${limit} cihaz`,
     `Tutar: ₺${price.toLocaleString('tr-TR')} · KDV dahil`,
+    '',
+    'Fatura bilgileri',
+    `Fatura türü: ${invoiceTypeLabel}`,
+    `${invoiceType === 'corporate' ? 'Ticari unvan' : 'Fatura adı soyadı'}: ${invoiceTitle}`,
+    `${invoiceType === 'corporate' ? 'Vergi kimlik numarası' : 'T.C. kimlik numarası'}: ${taxNumber}`,
+    ...(invoiceType === 'corporate' ? [`Vergi dairesi: ${taxOffice}`] : []),
+    `Fatura adresi: ${billingAddress}`,
+    `İlçe / İl: ${billingDistrict} / ${billingCity}`,
     '',
     'Bu talep hermesastroloji.com/satin-al formundan gönderildi.'
   ].join('\n');
@@ -233,7 +276,14 @@ export async function ingestPurchaseRequest({ firstName, lastName, email, phone,
       whatsappPhone,
       deviceLimit: limit,
       price,
-      vatIncluded: true
+      vatIncluded: true,
+      invoiceType,
+      invoiceTitle,
+      taxNumber,
+      taxOffice,
+      billingAddress,
+      billingDistrict,
+      billingCity
     }
   });
 }

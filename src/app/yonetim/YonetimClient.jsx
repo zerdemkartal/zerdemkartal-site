@@ -7,6 +7,7 @@ import { Nav, Footer, T, kickerStyle, h1Style, pStyle, sectionStyle, btnPrimary,
 const KEY = 'h_admin_key';
 const PAGES = [
   { href: '/yonetim/posta', ad: 'Kurumsal Posta' },
+  { href: '/yonetim/lisans', ad: 'Lisans Yönetimi' },
   { href: '/', ad: 'Ana Sayfa' }, { href: '/ozellikler', ad: 'Özellikler' },
   { href: '/fiyat', ad: 'Fiyat' }, { href: '/indir', ad: 'İndir' }, { href: '/sss', ad: 'SSS' }
 ];

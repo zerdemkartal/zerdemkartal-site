@@ -13,6 +13,8 @@ const STATIC = [
   ['/iletisim', 0.5, 'yearly'],
   ['/yasal/kvkk', 0.2, 'yearly'],
   ['/yasal/gizlilik', 0.2, 'yearly'],
+  ['/yasal/on-bilgilendirme', 0.2, 'yearly'],
+  ['/yasal/teslimat', 0.2, 'yearly'],
   ['/yasal/mesafeli-satis', 0.2, 'yearly'],
   ['/yasal/iade', 0.2, 'yearly']
 ];

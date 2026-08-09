@@ -4,8 +4,8 @@ import { SITE, ORG, WEBSITE, appNode, pageMeta } from '@/lib/site';
 import SatinAlForm from './SatinAlForm';
 
 const PATH = '/satin-al';
-const TITLE = 'Hermes Satın Al | Ön Satış Lisansı';
-const DESCRIPTION = 'Hermes ön satış lisansını seç; iletişim bilgilerini güvenle ilet. Ekibimiz ödeme ve lisans teslimi için e-posta veya WhatsApp üzerinden dönüş yapsın.';
+const TITLE = 'Hermes Satın Al | EFT veya PayTR ile Kartlı Ödeme';
+const DESCRIPTION = 'Hermes lisansını seç; EFT/Havale ile ₺6.000’den satın al veya PayTR’nin güncel oranına göre otomatik hesaplanan kart fiyatıyla güvenli ödeme yap.';
 
 export const metadata = pageMeta({ title: TITLE, description: DESCRIPTION, path: PATH });
 

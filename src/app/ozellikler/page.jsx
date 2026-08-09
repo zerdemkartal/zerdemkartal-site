@@ -68,7 +68,7 @@ export default async function Ozellikler() {
             ))}
           </div>
           <div className="h-route-actions">
-            <a href="/fiyat" style={btnPrimary}>Ön satışa katıl</a>
+            <a href="/satin-al" style={btnPrimary}>Satın al</a>
             <a href="#motor" style={btnGhost}>Modülleri incele</a>
           </div>
         </div>

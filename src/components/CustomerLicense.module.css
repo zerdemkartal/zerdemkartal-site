@@ -1,0 +1,27 @@
+.kart{max-width:620px;margin:28px auto 0;padding:26px;border:1px solid var(--h-border);border-radius:18px;background:var(--h-card);box-shadow:0 20px 54px -46px var(--h-ink);text-align:left}
+.rozet{display:inline-flex;margin-bottom:12px;border:1px solid var(--h-border);border-radius:999px;background:var(--h-cream);color:var(--h-muted);padding:7px 11px;font-size:10px;font-weight:750;letter-spacing:.12em}
+.baslik{margin:0;color:var(--h-ink);font:500 25px/1.2 'Newsreader',serif}
+.aciklama{margin:8px 0 0;color:var(--h-muted);font-size:13.5px;line-height:1.65}
+.aciklama strong{color:var(--h-ink2)}
+.adimlar{display:grid;gap:10px;margin-top:20px}
+.adimlar article{display:grid;grid-template-columns:34px 1fr;gap:11px;align-items:start;border:1px solid var(--h-border);border-radius:13px;background:var(--h-cream);padding:12px 14px}
+.adimlar article>span{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--h-accent-text);color:var(--h-accent-ink);font-size:12px;font-weight:750}
+.adimlar article div{display:grid;gap:3px}
+.adimlar strong{color:var(--h-ink);font-size:13px}
+.adimlar small{color:var(--h-muted);font-size:11.5px;line-height:1.45}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px}
+.form label{display:grid;gap:7px;color:var(--h-ink2);font-size:12px;font-weight:650}
+.form input{width:100%;box-sizing:border-box;border:1px solid var(--h-border);border-radius:11px;background:var(--h-bg);color:var(--h-ink);padding:13px 14px;font:500 14px 'Hanken Grotesk',sans-serif;transition:border-color .2s ease,box-shadow .2s ease}
+.form input:focus{border-color:var(--h-accent);outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--h-accent) 16%,transparent)}
+.tam{grid-column:1/-1}
+.eylem{grid-column:1/-1;min-height:48px;margin-top:20px;border:0;border-radius:999px;padding:0 24px;background:var(--h-accent-text);color:var(--h-accent-ink);font:650 14px 'Hanken Grotesk',sans-serif;cursor:pointer;text-align:center;text-decoration:none;display:grid;place-items:center;transition:background .2s ease,opacity .2s ease}
+.eylem:hover:not(:disabled){background:var(--h-accent-hover);color:var(--h-accent-ink)}
+.eylem:disabled{opacity:.48;cursor:not-allowed}
+.mesaj{grid-column:1/-1;margin:0;border:1px solid var(--h-border);border-radius:11px;padding:11px 13px;background:var(--h-cream);color:var(--h-ink2);font-size:12.5px;line-height:1.55}
+.hata{border-color:color-mix(in srgb,var(--h-error) 56%,var(--h-border));background:color-mix(in srgb,var(--h-error) 8%,var(--h-card));color:var(--h-error)}
+.lisans{display:grid;gap:5px;margin-top:18px;padding:14px 16px;border:1px solid var(--h-border);border-radius:13px;background:var(--h-cream)}
+.lisans span{color:var(--h-muted);font-size:11px}.lisans strong{color:var(--h-ink);font:650 16px ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.04em;word-break:break-all}
+.alt{margin:14px 0 0;color:var(--h-muted);font-size:12px;line-height:1.6;text-align:center}
+.alt a{color:var(--h-accent-text)}
+@media(max-width:640px){.kart{margin-top:22px;padding:22px;border-radius:16px}.form{grid-template-columns:1fr}.tam,.eylem,.mesaj{grid-column:1}}
+@media(prefers-reduced-motion:reduce){.form input,.eylem{transition:none}}

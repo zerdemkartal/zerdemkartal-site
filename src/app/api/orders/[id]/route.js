@@ -5,11 +5,15 @@ import { z } from 'zod';
 const PatchIn = z.object({ status: z.enum(['pending', 'paid', 'delivered', 'cancelled']) });
 
 // PATCH /api/orders/:id — admin: teslim işaretle (lisans e-postası gönderildi vb.)
-export async function PATCH(request, { params }) {
-  const err = requireAdmin(request); if (err) return err;
+export async function PATCH(request, props) {
+  const params = await props.params;
+  const err = requireAdmin(request);if (err) return err;
   const body = await request.json().catch(() => null);
   const parsed = PatchIn.safeParse(body);
   if (!parsed.success) return Response.json({ error: 'geçersiz gövde' }, { status: 400 });
+  if (parsed.data.status === 'paid') {
+    return Response.json({ error: 'Ödeme yalnız MFA korumalı lisans yönetiminden onaylanabilir.' }, { status: 409 });
+  }
   const row = await prisma.order.update({ where: { id: params.id }, data: parsed.data }).catch(() => null);
   if (!row) return Response.json({ error: 'sipariş bulunamadı' }, { status: 404 });
   return Response.json(row);

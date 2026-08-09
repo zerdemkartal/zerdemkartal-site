@@ -18,11 +18,11 @@ export default function Tesekkurler() {
         <div style={kickerStyle}>ÖDEME ALINDI</div>
         <h1 style={h1Style}>Teşekkürler ☿&#xFE0E;</h1>
         <p style={{ ...pStyle, marginLeft: 'auto', marginRight: 'auto' }}>
-          Ödemen alındı ve siparişin oluşturuldu. Kurulum dosyası ve lisans etkinleştirme adımların e-posta
-          adresine iletildi. Dilersen hemen indirmeye başlayabilirsin.
+          Ödemen alındı, teşekkür ederiz. Hermes indirme bağlantısı e-posta adresine iletildi.
+          Programı kurduktan sonra Lisans İste bölümünden ad, soyad ve e-posta bilgilerini gönder.
         </p>
         <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginTop: 28, flexWrap: 'wrap' }}>
-          <a href="/indir" style={btnPrimary}>Hermes'i indir</a>
+          <a href="/indir" style={btnPrimary}>İndirme sayfasına git</a>
           <a href="/sss" style={btnGhost}>Kurulum & SSS</a>
         </div>
         <p style={{ fontSize: 13.5, color: T.muted, marginTop: 26 }}>

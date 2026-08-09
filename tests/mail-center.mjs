@@ -1,0 +1,98 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import {
+  MAIL_ATTACHMENT_MAX_BYTES,
+  assessMailSpam,
+  prepareOutboundAttachments
+} from '../src/lib/mail-security.mjs';
+
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+let passed = 0;
+
+function test(name, fn) {
+  try { fn(); passed += 1; console.log(`✓ ${name}`); }
+  catch (error) { console.error(`✗ ${name}`); throw error; }
+}
+
+test('PDF fatura eki doğrulanıyor ve yalnız metadata saklanıyor', () => {
+  const content = Buffer.from('%PDF-1.4\nHermes invoice', 'utf8').toString('base64');
+  const result = prepareOutboundAttachments([{
+    filename: 'Fatura 2026-001.pdf', contentType: 'application/pdf', content
+  }]);
+  assert.equal(result.ok, true);
+  assert.equal(result.attachments[0].content, content);
+  assert.equal(result.metadata[0].filename, 'Fatura 2026-001.pdf');
+  assert.equal('content' in result.metadata[0], false);
+});
+
+test('Çalıştırılabilir ek reddedilip güvenli davete yönlendiriliyor', () => {
+  const result = prepareOutboundAttachments([{
+    filename: 'Hermes.exe', contentType: 'application/octet-stream', content: 'TVqQAA=='
+  }]);
+  assert.equal(result.ok, false);
+  assert.match(result.error, /güvenli kurulum davetini/i);
+});
+
+test('Dosya uzantısı ve magic byte uyuşmazlığı reddediliyor', () => {
+  const result = prepareOutboundAttachments([{
+    filename: 'fatura.pdf', contentType: 'application/pdf',
+    content: Buffer.from('not a pdf', 'utf8').toString('base64')
+  }]);
+  assert.equal(result.ok, false);
+  assert.match(result.error, /uyuşmuyor/i);
+});
+
+test('Ek toplam boyut sınırı uygulanıyor', () => {
+  const largePdf = Buffer.concat([Buffer.from('%PDF-'), Buffer.alloc(MAIL_ATTACHMENT_MAX_BYTES + 1)]).toString('base64');
+  const result = prepareOutboundAttachments([{
+    filename: 'buyuk.pdf', contentType: 'application/pdf', content: largePdf
+  }]);
+  assert.equal(result.ok, false);
+  assert.match(result.error, /3 MB/i);
+});
+
+test('Bariz istenmeyen içerik Spam olarak sınıflanıyor', () => {
+  const result = assessMailSpam({
+    fromAddress: 'sales@example.net', subject: 'Guest post and backlink',
+    text: 'SEO service and link building offer https://a.test https://b.test https://c.test'
+  });
+  assert.equal(result.spam, true);
+  assert.ok(result.score >= 4);
+});
+
+test('Elle engellenen alan adı doğrudan Spam oluyor', () => {
+  const result = assessMailSpam({
+    fromAddress: 'offer@spam.example', subject: 'Hello', text: 'Message', blocklist: '@spam.example'
+  });
+  assert.equal(result.spam, true);
+  assert.ok(result.reasons.includes('engelli-gonderici'));
+});
+
+test('Satın alma talebi spam kelimelerinden etkilenmiyor', () => {
+  const result = assessMailSpam({
+    fromAddress: 'customer@example.com', subject: 'Satın alma', text: 'bitcoin casino', source: 'purchase-request'
+  });
+  assert.equal(result.spam, false);
+  assert.equal(result.score, 0);
+});
+
+test('Posta UI çöp, toplu işlem, şablon, fatura eki ve güvenli kurulumu birlikte sunuyor', () => {
+  const client = fs.readFileSync(path.join(ROOT, 'src/app/yonetim/posta/PostaClient.jsx'), 'utf8');
+  const route = fs.readFileSync(path.join(ROOT, 'src/app/api/mail/[id]/route.js'), 'utf8');
+  const leads = fs.readFileSync(path.join(ROOT, 'src/app/api/leads/route.js'), 'utf8');
+  assert.ok(client.includes("['trash', 'Çöp'"));
+  assert.ok(client.includes('Güvenli kurulum erişimi gönder'));
+  assert.ok(client.includes('Fatura veya belge ekle'));
+  assert.ok(client.includes('Hazır mesaj'));
+  assert.ok(!client.includes("import { Nav }"));
+  assert.ok(!client.includes('<header className={styles.ust}>'));
+  assert.ok(client.includes("document.body.classList.add('h-posta-app')"));
+  assert.ok(route.includes('export async function DELETE'));
+  assert.ok(route.includes('blockSender'));
+  assert.ok(leads.includes('formStartedAt'));
+  assert.ok(leads.includes('recent >= 5'));
+});
+
+console.log(`\n${passed} posta merkezi testi geçti.`);

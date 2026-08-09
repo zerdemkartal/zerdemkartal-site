@@ -11,6 +11,10 @@ import MobileNav from './MobileNav';
 import SmartNav from './SmartNav';
 import CommandPalette from './CommandPalette';
 import {
+  COMPANY_ADDRESS,
+  COMPANY_LEGAL_NAME,
+  COMPANY_TAX_OFFICE,
+  COMPANY_TAX_NUMBER_DISPLAY,
   CONTACT_EMAIL,
   INSTAGRAM_HANDLE,
   INSTAGRAM_URL,
@@ -61,7 +65,7 @@ export function Nav({ active }) {
               ? { color: T.accentText, textDecoration: 'underline', textUnderlineOffset: 6 }
               : { color: 'inherit', textDecoration: 'none' }}>{label}</a>
           ))}
-          <a href="/cok-yakinda" style={{ marginLeft: 2, background: T.dark, color: 'var(--h-dark-text)', borderRadius: 999, padding: '9px 16px', fontSize: 14, textDecoration: 'none' }}>Üye girişi</a>
+          <a href="/satin-al" style={{ marginLeft: 2, background: T.dark, color: 'var(--h-dark-text)', borderRadius: 999, padding: '9px 16px', fontSize: 14, textDecoration: 'none' }}>Satın al</a>
         </div>
         <CommandPalette />
         <ThemeToggle />
@@ -129,11 +133,15 @@ export function Footer() {
 
       <div className="h-footer-bottom">
         <div className="h-footer-copy">
-          © 2026 zerdemkartal · Hermes Astroloji Programı
+          <span>© 2026 zerdemkartal · Hermes Astroloji Programı</span>
+          <span className="h-footer-company">{COMPANY_LEGAL_NAME}</span>
+          <span className="h-footer-company">{COMPANY_ADDRESS} · {COMPANY_TAX_OFFICE} · Vergi No: {COMPANY_TAX_NUMBER_DISPLAY}</span>
         </div>
         <div className="h-footer-legal">
           <a href="/yasal/kvkk">KVKK</a>
           <a href="/yasal/gizlilik">Gizlilik &amp; Çerez</a>
+          <a href="/yasal/on-bilgilendirme">Ön Bilgilendirme</a>
+          <a href="/yasal/teslimat">Teslimat Koşulları</a>
           <a href="/yasal/mesafeli-satis">Mesafeli Satış</a>
           <a href="/yasal/iade">İptal &amp; İade</a>
         </div>

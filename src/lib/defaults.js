@@ -10,15 +10,15 @@ export const HERMES_SITE = {
   seo: {
     home: {
       title: 'Hermes — Profesyonel Masaüstü Astroloji Programı',
-      description: 'Hermes: doğum haritası, transit, sinastri, horary, rektifikasyon ve astrokartografi tek programda. Verilerin cihazında kalır. Tek seferlik lisans, her platform.'
+      description: 'Hermes: doğum haritası, transit, sinastri, horary, rektifikasyon ve astrokartografi tek programda. Şu an Windows 10/11’de. Her lisans yalnız bir cihazda geçerlidir.'
     },
     ozellikler: {
       title: 'Özellikler — Hermes Astroloji Programı',
       description: 'Hermes’in tüm modülleri: Swiss Ephemeris hassasiyetinde harita motoru, zamanlama teknikleri, sinastri, horary, elektif tarama, rektifikasyon, astrokartografi ve Uranyen dial.'
     },
     fiyat: {
-      title: 'Fiyat — Hermes | Tek seferlik lisans, abonelik yok',
-      description: 'Hermes ön satış fiyatı ₺6.000; program fiyatı ₺8.500. İkinci cihaz lisansı +₺2.500, iki cihaz toplam ₺8.500. Fiyatlara KDV dahildir; abonelik yoktur.'
+      title: 'Fiyat — Hermes | Tek seferlik cihaz lisansı',
+      description: 'Hermes 1 cihaz EFT/Havale fiyatı ₺6.000; farklı veya ikinci cihaz için ayrı lisans gerekir. İkinci cihaz lisansı +₺2.500, iki cihaz toplam ₺8.500’dür.'
     },
     indir: {
       title: 'İndir — Hermes Astroloji Programı (Windows)',
@@ -26,7 +26,7 @@ export const HERMES_SITE = {
     },
     sss: {
       title: 'Sık Sorulan Sorular — Hermes Astroloji Programı',
-      description: 'Hermes hakkında merak edilenler: lisans, ödeme, güncellemeler, çevrimdışı çalışma, veri gizliliği ve web sürümü.'
+      description: 'Hermes hakkında merak edilenler: cihaz lisansı, ödeme, güncellemeler, çevrimdışı çalışma, veri gizliliği, platform yol haritası ve senkronizasyon.'
     }
   },
 
@@ -36,7 +36,7 @@ export const HERMES_SITE = {
       title: 'Gökyüzü, masaüstünde.',
       p: 'Hermes; doğum haritasından horary’ye, rektifikasyondan astrokartografiye profesyonel bir astroloji atölyesini tek sakin ekranda toplar. Hesaplar Swiss Ephemeris hassasiyetinde, yorum dili Türkçe, verilerin ise yalnız senin cihazında.',
       btn1: 'Programı keşfet', btn1Href: '/ozellikler',
-      btn2: 'Ön satışa katıl — ₺6.000', btn2Href: '/fiyat',
+      btn2: 'Satın al — EFT/Havale ₺6.000', btn2Href: '/satin-al',
       stats: ['Windows 10/11', 'Tek seferlik lisans', 'Çevrimdışı çalışır'],
       doner: [
         'Kendi astroloji kütüphaneniz programın içinde, her an el altında olsun ister misiniz?',
@@ -103,9 +103,9 @@ export const HERMES_SITE = {
       rows: ['Danışan verisi cihazda — bulut zorunluluğu yok', 'Hesap motoru çevrimdışı çalışır', 'Otomatik güncelleme; sürümler imzalı dağıtılır']
     },
     fiyatBand: {
-      kicker: 'ÖN SATIŞ',
-      title: 'Ön satış ₺6.000, program fiyatı ₺8.500.',
-      p: 'Ön satış lisansı 1 cihaz için ₺6.000’dir. İkinci cihaz lisansı +₺2.500; iki cihaz toplam ₺8.500’dür. Fiyatlara KDV dahildir. Abonelik yok; güncellemeler ve yol haritasındaki web/Android erişimi dahildir.',
+      kicker: 'TEK SEFERLİK CİHAZ LİSANSI',
+      title: '1 cihaz EFT/Havale ₺6.000.',
+      p: 'Her lisans yalnız bir cihazda geçerlidir. İkinci cihaz için ayrı lisans +₺2.500; iki cihaz toplam ₺8.500’dür. Aynı cihaz için yayımlanan güncellemeler dahildir. Cihazlar arası veri senkronizasyonu ileride ayrı abonelik hizmeti olarak sunulacaktır.',
       btn: 'Fiyat ayrıntıları'
     }
   },
@@ -171,13 +171,14 @@ export const HERMES_SITE = {
       },
       {
         id: 'platform', baslik: 'Platform & gizlilik',
-        giris: 'Program bugün Windows’ta; lisansın ise platforma değil sana bağlı.',
+        giris: 'Hermes bugün Windows bilgisayarlarda kullanılabilir; her cihaz kendi lisansını gerektirir.',
         gorsel: { src: '/assets/ekranlar/modul-platform.png', cap: 'Koyu temada astrokartografi çalışma alanı' },
         items: [
           { ad: 'Çevrimdışı çekirdek', desc: 'Efemeris gömülü; internet yalnız lisans ve güncelleme için.' },
           { ad: 'Veri cihazda', desc: 'Danışan verilerin bilgisayarından çıkmaz; bulut zorunluluğu yok.' },
           { ad: 'Görsel temalar', desc: 'Gündüz ve gece çalışmaya uygun tema aileleri — bu sitenin koyu modu da programdaki “Meridyen Rasathanesi” temasıdır.' },
-          { ad: 'Yol haritası', desc: 'Web sürümü (satın alanlara, üye girişiyle) ve Android çalışması planda; tek lisans hepsinde geçerli olacak.' }
+          { ad: 'Yol haritası', desc: 'macOS sürümü 17 Ağustos 2026’da sunulacak; Android, iPhone ve iPad sürümleri daha sonra gelecek. Her cihaz için ayrı lisans gerekir.' },
+          { ad: 'Cihazlar arası senkronizasyon', desc: 'İleride isteğe bağlı, ayrı bir abonelik hizmeti olarak sunulacaktır; program lisansına dahil değildir.' }
         ]
       }
     ]
@@ -186,38 +187,41 @@ export const HERMES_SITE = {
   fiyat: {
     hero: {
       kicker: 'FİYAT',
-      title: 'Tek lisans. Abonelik yok.',
-      p: 'Hermes’i bir kez alırsın; Windows uygulaması ve güncellemeleri bu lisansa dahildir. Web ve Android sürümleri yol haritasında aynı hesapla devam edecek.'
+      title: 'Her cihaz için ayrı lisans.',
+      p: 'Hermes program lisansı tek seferliktir ve yalnız etkinleştirildiği bir cihazda geçerlidir. Farklı bir cihazda kullanmak için o cihaz adına ayrı lisans gerekir.'
     },
     kutu: {
-      kicker: 'ÖN SATIŞA ÖZEL',
-      price: '₺6.000', oldPrice: '₺8.500',
+      kicker: 'EFT / HAVALE FİYATI',
+      price: '₺6.000', oldPrice: '',
       secondLicensePrice: '₺2.500',
       secondPrice: '₺8.500',
       vatNote: 'Fiyatlara KDV dahildir.',
       rows: [
         '☿︎ Tüm modüller — sınırsız harita ve danışan',
-        '☿︎ Windows 10/11 (64-bit) kurulumu',
-        '☿︎ Tek cihaz lisansı',
-        '☿︎ Çıkan tüm sürümler ve güncellemeler dahil',
-        '☿︎ Web sürümü yayınlandığında üye girişinle erişim'
+        '☿︎ Windows 10/11 (64-bit) — şimdi',
+        '☿︎ Her lisans yalnız bir cihazda geçerlidir',
+        '☿︎ Farklı cihaz için ayrı lisans gerekir',
+        '☿︎ Aynı cihaz için yayımlanan güncellemeler dahil'
       ],
       alt: 'Satın alma sayfasında lisansını seç ve iletişim bilgilerini ilet; ödeme ve lisans teslim adımlarını birlikte netleştirelim.',
       btn: 'Satın al'
     },
     tekLisans: {
-      title: 'Lisans platforma değil, sana bağlı',
-      p: 'Bugün Windows’ta çalışıyorsun; web sürümü çıktığında aynı hesapla tarayıcıdan girersin, Android geldiğinde tablette devam edersin. Yeniden ödeme yok.',
+      title: 'Platform ve cihaz planı',
+      p: 'Windows ve Mac bilgisayarlar ile Android telefon veya tablet, iPhone ve iPad ayrı cihaz sayılır. Yeni bir cihazda Hermes kullanmak için o cihaz adına ayrı lisans alınır.',
       rows: [
-        'Masaüstü (Windows) — bugün',
-        'Web uygulaması — yol haritasında; satın alanlara üye girişiyle, tam sürüm',
-        'Android — yol haritasında'
+        'Windows 10/11 (64-bit) — şimdi',
+        'macOS — 17 Ağustos 2026',
+        'Android · iPhone · iPad — daha sonra',
+        'Cihazlar arası veri senkronizasyonu — ileride ayrı abonelik hizmeti'
       ]
     },
     sss: [
-      { q: 'Abonelik mi, tek seferlik mi?', a: 'Tek seferlik. Hermes’i bir kez satın alırsın; abonelik ve gizli ücret yoktur.' },
-      { q: 'Ön satış ne demek?', a: 'Program aktif geliştirmededir; ön satış fiyatı ₺6.000, program fiyatı ₺8.500’dür. İkinci cihaz lisansı +₺2.500’dür. Fiyatlara KDV dahildir.' },
-      { q: 'Güncellemeler ücretli mi?', a: 'Hayır. Çıkan tüm sürümler ve güncellemeler lisansına dahildir.' },
+      { q: 'Program lisansı abonelik mi?', a: 'Hayır. Program lisansı tek seferlik satın alınır ve etkinleştirildiği bir cihazda geçerlidir.' },
+      { q: 'Her lisans kaç cihazda geçerli?', a: 'Bir cihazda. Farklı veya ikinci bir cihazda kullanmak için o cihaz adına ayrı lisans gerekir.' },
+      { q: 'Kart fiyatı nasıl belirleniyor?', a: 'Tek çekim kart fiyatı, EFT/Havale hedef tutarı ve PayTR’nin güncel mağaza oranıyla otomatik hesaplanır. Taksitli toplam PayTR ekranında karta ve vadeye göre değişebilir.' },
+      { q: 'Güncellemeler ücretli mi?', a: 'Aynı cihaz için yayımlanan program güncellemeleri lisansa dahildir.' },
+      { q: 'Cihazlar arası senkronizasyon lisansa dahil mi?', a: 'Hayır. Veri senkronizasyonu ileride isteğe bağlı ve ayrı bir abonelik hizmeti olarak sunulacaktır.' },
       { q: 'İade var mı?', a: 'Mesafeli satış koşulları geçerlidir; ayrıntı için İptal & İade sayfasına bak.' }
     ]
   },
@@ -226,7 +230,7 @@ export const HERMES_SITE = {
     hero: {
       kicker: 'İNDİR',
       title: 'Hermes’i kur',
-      p: 'Hermes şu an Windows 10/11 (64-bit) için dağıtılıyor. Satın alım sonrası kurulum bağlantısı ve lisans anahtarın e-postana gönderilir; program açılışta lisansını doğrular.'
+      p: 'Hermes şu an Windows 10/11 (64-bit) için dağıtılıyor. Ödeme onayından sonra kurulum bağlantın e-postana gelir; lisans isteğini programın içinden gönderirsin.'
     },
     gorsel: { src: '/assets/ekranlar/indir-onizleme.png', cap: 'Hermes açılış ekranı' },
     surum: {
@@ -238,14 +242,14 @@ export const HERMES_SITE = {
       title: 'Kurulum',
       items: [
         { title: 'Satın alma talebini ilet', desc: 'Fiyat sayfasındaki Satın Al düğmesinden lisansını seç ve iletişim bilgilerini güvenle ilet.' },
-        { title: 'Kurulum dosyasını indir', desc: 'Ödeme sonrası e-postandaki bağlantıdan Windows kurulum dosyasını al.' },
-        { title: 'Lisansınla aç', desc: 'İlk açılışta lisans anahtarını gir; Hermes doğrular ve atölyen açılır.' }
+        { title: 'Kurulumu indir', desc: 'Ödeme onayından sonra e-postana gelen Hermes indirme sayfasını aç ve Windows kurulumunu bilgisayarına kaydet.' },
+        { title: 'Lisansını iste ve etkinleştir', desc: 'Programda Lisans İste bölümüne ad, soyad ve e-postanı yaz. İmzalı lisans anahtarın geldiğinde aynı ekrandan etkinleştir.' }
       ]
     },
     sistem: {
       title: 'Sistem gereksinimleri',
       win: ['Windows 10 / 11 (64-bit)', '8 GB RAM önerilir', '~1 GB boş disk alanı (efemeris dahil)', 'Lisans doğrulama ve güncelleme için internet'],
-      not: 'macOS ve Android sürümleri yol haritasındadır; lisansın onlarda da geçerli olacak.'
+      not: 'macOS sürümü 17 Ağustos 2026’da sunulacaktır. Android, iPhone ve iPad sürümleri daha sonra gelecektir. Her cihaz ayrı lisans gerektirir; cihazlar arası veri senkronizasyonu ileride ayrı abonelik hizmeti olarak sunulacaktır.'
     }
   },
 
@@ -255,10 +259,11 @@ export const HERMES_SITE = {
       { q: 'Hermes nedir?', a: 'Hermes, profesyonel kullanım için geliştirilmiş Türkçe masaüstü astroloji programıdır: doğum haritası, transit, ilerletme, dönem teknikleri, tutulmalar, sinastri, horary, elektif tarama, rektifikasyon, astrokartografi, Uranyen dial ve danışan yönetimi tek uygulamada.' },
       { q: 'Kimler için?', a: 'Danışmanlık veren astrologlar, ciddi öğrenciler ve araştırmacılar için tasarlandı. Günlük burç yorumu uygulaması değildir.' },
       { q: 'Hesaplar ne kadar hassas?', a: 'Hesap motoru Swiss Ephemeris kullanır; gezegen konumları, evler, asteroidler ve sabit yıldızlar efemeris kaynağıyla birebir hesaplanır. Efemeris dosyaları programla birlikte gelir, hesap için internet gerekmez.' },
-      { q: 'Lisans nasıl çalışıyor?', a: 'Tek seferlik satın alma; abonelik yok. Ön satış lisansı 1 cihaz için ₺6.000’dir. İkinci cihaz lisansı +₺2.500; iki cihaz toplam ₺8.500’dür. Fiyatlara KDV ve çıkan tüm güncellemeler dahildir.' },
-      { q: 'Web sürümü olacak mı?', a: 'Evet, yol haritasında. Web sürümü tam sürüm olacak ve yalnız satın alanlar üye girişi + lisans doğrulamasıyla kullanabilecek. Ek ücret yok — aynı lisans.' },
-      { q: 'Verilerim nerede tutuluyor?', a: 'Cihazında. Danışan kayıtların ve haritaların bilgisayarından çıkmaz; bulut zorunluluğu yoktur. İnternet yalnız lisans doğrulama ve güncelleme için kullanılır.' },
-      { q: 'Hangi platformlarda çalışıyor?', a: 'Bugün Windows 10/11 (64-bit). macOS, Android ve web sürümleri yol haritasındadır; tek lisans hepsinde geçerli olacak.' },
+      { q: 'Lisans nasıl çalışıyor?', a: 'Program lisansı tek seferlik satın alınır ve yalnız etkinleştirildiği bir cihazda geçerlidir. Farklı veya ikinci cihaz için ayrı lisans gerekir. 1 cihaz EFT/Havale fiyatı ₺6.000; ikinci cihaz lisansı +₺2.500, iki cihaz toplam ₺8.500’dür. Aynı cihaz için yayımlanan güncellemeler dahildir.' },
+      { q: 'Android, iPhone ve iPad sürümleri olacak mı?', a: 'Evet. Android, iPhone ve iPad sürümleri yol haritasındadır ve daha sonra yayımlanacaktır. Her cihaz için ayrı lisans gerekir.' },
+      { q: 'Verilerim nerede tutuluyor?', a: 'Varsayılan olarak cihazında. Danışan kayıtların ve haritaların bilgisayarından çıkmaz; bulut zorunluluğu yoktur. İnternet yalnız lisans doğrulama ve güncelleme için kullanılır.' },
+      { q: 'Hangi platformlarda çalışıyor?', a: 'Hermes şu an Windows 10/11 (64-bit) bilgisayarlarda kullanılabilir. macOS sürümü 17 Ağustos 2026’da sunulacaktır. Android, iPhone ve iPad sürümleri daha sonra gelecektir.' },
+      { q: 'Cihazlar arasında veri senkronizasyonu olacak mı?', a: 'Evet, ileride isteğe bağlı bir hizmet olarak sunulması planlanıyor. Senkronizasyon program lisansına dahil değildir ve ayrı abonelik gerektirecektir.' },
       { q: 'Güncellemeler nasıl geliyor?', a: 'Program kendini otomatik günceller: yeni sürüm yayınlandığında açılışta indirir ve kurar; ücretsizdir.' },
       { q: 'Satın almadan deneyebilir miyim?', a: 'Şu an deneme sürümü yok; gerçek program ekranlarını Ana Sayfa ve Özellikler sayfasından inceleyebilirsin. Sorularını iletişim formundan sorabilirsin.' },
       { q: 'Astroloji eğitimi veriyorum; işime yarar mı?', a: 'Evet — Öğretmen modülü sınıf ve ödeme takibi tutar; kütüphane ve AA harita arşivi ders materyali çalışmaya uygundur.' },

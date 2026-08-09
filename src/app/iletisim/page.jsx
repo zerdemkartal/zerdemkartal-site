@@ -1,5 +1,9 @@
 // İLETİŞİM — SSR portu (piksel referansı: Iletisim.dc.html). Form istemci bileşeni → POST /api/leads.
 import {
+  COMPANY_ADDRESS,
+  COMPANY_LEGAL_NAME,
+  COMPANY_TAX_OFFICE,
+  COMPANY_TAX_NUMBER_DISPLAY,
   CONTACT_EMAIL,
   INSTAGRAM_HANDLE,
   INSTAGRAM_URL,
@@ -67,6 +71,13 @@ export default function Iletisim() {
             <div style={{ ...kickerStyle, fontSize: 11.5 }}>YOUTUBE</div>
             <div style={{ fontFamily: T.serif, fontSize: 19, marginTop: 8 }}>@{YOUTUBE_HANDLE}</div>
           </a>
+          <div style={card}>
+            <div style={{ ...kickerStyle, fontSize: 11.5 }}>ŞİRKET BİLGİLERİ</div>
+            <div style={{ fontFamily: T.serif, fontSize: 19, lineHeight: 1.35, marginTop: 8 }}>{COMPANY_LEGAL_NAME}</div>
+            <div style={{ color: T.ink2, fontSize: 14, lineHeight: 1.65, marginTop: 8 }}>{COMPANY_TAX_OFFICE}</div>
+            <div style={{ color: T.ink2, fontSize: 14, lineHeight: 1.65, marginTop: 2 }}>Vergi No: {COMPANY_TAX_NUMBER_DISPLAY}</div>
+            <address style={{ color: T.ink2, fontSize: 14, lineHeight: 1.65, marginTop: 4, fontStyle: 'normal' }}>{COMPANY_ADDRESS}</address>
+          </div>
         </div>
         <IletisimForm />
       </section>

@@ -4,23 +4,42 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build --webpack",
     "start": "next start",
     "seed": "node --env-file-if-exists=.env prisma/seed.mjs",
     "mail:operator": "node --env-file-if-exists=.env prisma/mail-operator.mjs",
+    "license:owner": "node --env-file-if-exists=.env prisma/license-owner.mjs",
+    "license:import": "node --env-file-if-exists=.env prisma/license-import.mjs",
+    "license:provision": "node --env-file-if-exists=.env prisma/license-provision.mjs",
+    "license:backfill-emails": "node --env-file-if-exists=.env prisma/license-customer-email-backfill.mjs",
+    "license:rehash-events": "node --env-file-if-exists=.env prisma/license-event-rehash.mjs",
+    "release:register": "node --env-file-if-exists=.env prisma/release-publish.mjs",
+    "test:license-server": "node tests/license-server.mjs",
+    "test:customer-license": "node tests/customer-license.mjs",
+    "test:paytr": "node tests/paytr-link.mjs",
+    "test:site-license-copy": "node tests/site-license-copy.mjs",
+    "test:mail": "node tests/mail-center.mjs",
     "postinstall": "prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^5.18.0",
+    "@vercel/blob": "^2.6.1",
     "bcryptjs": "^2.4.3",
+    "google-auth-library": "^10.9.1",
     "iyzipay": "^2.0.64",
     "jsonwebtoken": "^9.0.2",
-    "next": "^14.2.5",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "next": "16.2.12",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
     "zod": "^3.23.8"
   },
   "devDependencies": {
     "prisma": "^5.18.0"
+  },
+  "overrides": {
+    "postcss": "8.5.25",
+    "sharp": "0.35.3",
+    "qs": "6.15.3",
+    "uuid": "11.1.1"
   }
 }

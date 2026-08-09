@@ -1,7 +1,7 @@
 # zerdemkartal — Yayına Alma ve Claude ile Yönetim Kılavuzu
 
-Bu dosya siteyi canlıya almak ve **her şeyi (SEO, yazılar, kod) Claude ile yönetmek**
-için izlenecek adımları içerir. Ödeme entegrasyonu bilinçli olarak kapsam dışıdır.
+Bu dosya siteyi canlıya almak, PayTR Link ödemesini güvenle etkinleştirmek ve
+**her şeyi (SEO, yazılar, kod) Claude ile yönetmek** için izlenecek adımları içerir.
 
 ## Mimari — tek bakışta
 
@@ -136,8 +136,17 @@ Claude Desktop'ı yeniden başlat → 🔨 menüsünde araçlar görünmeli → 
 | `MAILBOX_ADDRESSES` | Posta için ✅ | Posta Merkezi adresleri; ilk kurulumda `info@hermesastroloji.com` |
 | `MAILBOX_FROM_NAME` | — | Gönderen görünen adı; varsayılan `Hermes Astroloji` |
 | `EMAIL_FROM` | İşlemsel posta için ✅ | Ödeme/lisans e-postalarının göndereni; `Hermes Astroloji <info@hermesastroloji.com>` |
-| `GOOGLE_CLIENT_ID` | — | Google girişi (boş bırakılabilir) |
+| `GOOGLE_CLIENT_ID` | Lisans paneli için ✅ | Google Identity Services Web istemci kimliği (`*.apps.googleusercontent.com`) |
+| `LICENSE_GOOGLE_ONLY` | Lisans paneli için ✅ | `1`: parola uçlarını kapatır; yalnız Google → Authenticator akışını kabul eder |
+| `LICENSE_GOOGLE_OWNER_EMAIL` | Lisans paneli için ✅ | Google kimliği kabul edilecek tek sahip Gmail adresi |
 | `INDEXNOW_KEY` | — | IndexNow anahtarı (boşsa atlanır) |
+| `PAYTR_MERCHANT_ID` | Kartlı ödeme için ✅ | PayTR mağaza numarası |
+| `PAYTR_MERCHANT_KEY` | Kartlı ödeme için ✅ | PayTR entegrasyon anahtarı; yalnız Vercel sırrı |
+| `PAYTR_MERCHANT_SALT` | Kartlı ödeme için ✅ | PayTR entegrasyon salt değeri; yalnız Vercel sırrı |
+| `PAYTR_MAX_INSTALLMENT` | — | PayTR ekranındaki üst taksit sınırı; varsayılan `12` |
+| `PAYTR_DEBUG` | Testte ✅ | Entegrasyon testinde `1`, canlı onaydan sonra `0` |
+| `PAYTR_PRICE_BUFFER_PERCENT` | — | PayTR oranına eklenecek sözleşmesel pay; normalde `0` |
+| `PAYTR_SINGLE_RATIO_FALLBACK` | — | İlk oran sorgusu başarısızsa kullanılacak geçici güncel oran; boşsa kart ödeme güvenli biçimde kapanır |
 
 > `JWT_SECRET` ve `ADMIN_TOKEN` üretmek için (terminalde): `openssl rand -hex 32`
 
@@ -201,17 +210,48 @@ Remove-Item Env:MAIL_OPERATOR_EMAIL, Env:MAIL_OPERATOR_PASSWORD
 Neon veritabanına yalnız bcrypt parola özeti yazılır. Ana yönetim `ADMIN_TOKEN`
 değeri posta görevlisiyle paylaşılmaz.
 
-### Satın alma talebi akışı
+### PayTR Link satın alma akışı
 
-Fiyat sayfasındaki **Satın al** eylemi `/satin-al` rotasını açar. Ad, soyad,
-e-posta, telefon ve 1/2 cihaz seçimi `POST /api/purchase-request` üzerinden hem
-`Lead` kaydına hem Posta Merkezi’nde okunmamış bir konuşmaya yazılır. Telefon
-numarası konuşmanın güvenli metadata alanında E.164 biçiminde tutulur; Posta
-Merkezi bu kayıt için hazır mesajlı WhatsApp düğmesi gösterir. E-posta yanıtı
-konuşmadaki `participantEmail` adresine Resend üzerinden gönderilir. Satış
-konuşması açıldığında cihaz/tutar metadata’sından kurumsal ödeme yanıtı otomatik
-olarak taslağa doldurulur; gönderim yine görevlinin son kontrolü ve açık
-**E-posta yanıtını gönder** eylemiyle yapılır.
+Fiyat sayfasındaki **Satın al** eylemi `/satin-al` rotasını açar. Bu ekran ad,
+e-posta, telefon, adres, TCKN/VKN, fatura veya kart bilgisi istemez. Yalnız plan
+seçimi ve yasal metin sürümü sunucuya gönderilir:
+
+1. `/api/pay/paytr/pricing`, PayTR oran servisinden mağazanın güncel tek çekim
+   oranını alır. EFT hedefi `net / (1 - oran)` formülüyle kuruşa yukarı yuvarlanır.
+2. `/api/pay/paytr/link`, kişisel veri içermeyen, 30 dakika geçerli ve tek kullanımlık
+   ürün linki oluşturur. `pft` gönderilmez; taksit farkı PayTR ekranında müşteriye
+   yansır.
+3. Müşteri ad, iletişim, fatura ve kart bilgilerini yalnız PayTR sayfasına girer.
+4. `/api/pay/paytr/callback`, HMAC doğrulamasından sonra yalnız anonim işlem özeti
+   (`merchantOid`, plan, tutarlar, ödeme türü, test modu, sözleşme sürümü) saklar.
+   Aynı `merchantOid` tekrar gelirse ikinci teslim oluşturmaz ve yalnız `OK` döner.
+5. EFT/Havale seçeneği Vercel API’sine veri yazmaz; WhatsApp’ta banka bilgisi ister.
+6. Yetkili `/yonetim/odemeler` ekranı PayTR makbuzlarını canlı/test ayrımı, plan,
+   tahsil edilen tutar ve `merchantOid` ile listeler. Bu görünüm callback kimliğini,
+   müşteri iletişimini, adresi veya kart bilgisini istemez ve döndürmez. Referans
+   PayTR mağaza panelindeki işlemle eşleştirilir; teslim yerel lisans yöneticisinden
+   manuel yürütülür.
+
+PayTR anahtarları kaynak dosyaya veya sohbete yapıştırılmaz; yalnız Vercel’in
+Environment Variables bölümüne girilir. Şema değişikliği deploydan önce kontrollü
+olarak uygulanır:
+
+```bash
+npx prisma db push
+npm run test:paytr
+npm run build
+```
+
+`PaymentReceipt` tablosu 8 Ağustos 2026'da mevcut Neon şemasına yalnız ekleme
+olarak uygulanmış ve son salt okunur şema karşılaştırması boş dönmüştür. Sonraki
+şema değişikliklerinde yine önce `prisma migrate diff`, sonra kontrollü `db push`
+uygulanır.
+
+Canlıya geçmeden önce PayTR panelinde bir test ödeme yapın. İşlem “Başarılı” ve
+callback yanıtı `OK` görünmeden `PAYTR_DEBUG=0` yapmayın. İlk canlı teslimler,
+PayTR panelindeki ödeme bilgisi doğrulanarak mevcut yerel lisans yöneticisinden
+manuel yürütülür; callback müşteri e-postası taşımadığı için otomatik e-posta
+teslimi bu gizlilik modelinde bilerek kapalıdır.
 
 Mevcut Neon veritabanı eski tarihte migration tablosu olmadan kurulduğu için bu
 projenin şema değişiklikleri kontrollü olarak `npx prisma db push` ile uygulanır;

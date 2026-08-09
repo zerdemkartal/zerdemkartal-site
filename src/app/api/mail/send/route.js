@@ -2,6 +2,7 @@ import { prisma } from '@/lib/db';
 import { requireMailAccess } from '@/lib/auth';
 import { mailboxFrom, normalizeSubject, parseAddress } from '@/lib/mail';
 import { sendMail } from '@/lib/email';
+import { prepareOutboundAttachments } from '@/lib/mail-security.mjs';
 import { z } from 'zod';
 
 const SendIn = z.object({
@@ -9,7 +10,12 @@ const SendIn = z.object({
   to: z.string().trim().email().max(320).optional(),
   from: z.string().trim().email().max(320).optional(),
   subject: z.string().trim().min(1).max(500).optional(),
-  text: z.string().trim().min(1).max(100_000)
+  text: z.string().trim().min(1).max(100_000),
+  attachments: z.array(z.object({
+    filename: z.string().trim().min(1).max(180),
+    contentType: z.string().trim().min(3).max(100),
+    content: z.string().min(4).max(4_300_000)
+  }).strict()).max(5).optional()
 });
 
 function htmlKacir(value) {
@@ -39,11 +45,13 @@ function gonderimHatasi(sonuc) {
 }
 
 export async function POST(request) {
-  const err = requireMailAccess(request); if (err) return err;
+  const err = await requireMailAccess(request, prisma, 'posta.gonder'); if (err) return err;
   const parsed = SendIn.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return Response.json({ error: 'Alıcı, konu ve mesajı kontrol edin.' }, { status: 400 });
 
   const girdi = parsed.data;
+  const ekler = prepareOutboundAttachments(girdi.attachments);
+  if (!ekler.ok) return Response.json({ error: ekler.error }, { status: 400 });
   let thread = null;
   let parent = null;
   if (girdi.threadId) {
@@ -73,7 +81,8 @@ export async function POST(request) {
     subject,
     text: girdi.text,
     html: mailHtml(girdi.text),
-    headers
+    headers,
+    attachments: ekler.attachments
   });
   if (!sonuc.ok) {
     return Response.json({ error: gonderimHatasi(sonuc) }, { status: 503 });
@@ -111,7 +120,7 @@ export async function POST(request) {
       text: girdi.text,
       html: mailHtml(girdi.text),
       headers,
-      attachments: [],
+      attachments: ekler.metadata,
       status: 'sent',
       sentBy: 'admin',
       createdAt: now

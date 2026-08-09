@@ -1,7 +1,16 @@
-// YASAL — /yasal/[slug] (Yasal.dc.html'in SSR portu; hash router yerine gerçek URL'ler).
-// Metinler prototipten birebir taşındı. [köşeli] alanlar yayına almadan doldurulmalı + hukukçu okuması şart.
+// YASAL — /yasal/[slug]. Şirket kimliği merkezi site sabitlerinden gelir.
 import { notFound } from 'next/navigation';
-import { SITE, ORG, WEBSITE, pageMeta } from '@/lib/site';
+import {
+  COMPANY_ADDRESS,
+  COMPANY_LEGAL_NAME,
+  COMPANY_TAX_OFFICE,
+  COMPANY_TAX_NUMBER_DISPLAY,
+  CONTACT_EMAIL,
+  SITE,
+  ORG,
+  WEBSITE,
+  pageMeta
+} from '@/lib/site';
 import { JsonLd } from '@/components/JsonLd';
 import { Nav, Footer, T, kickerStyle, sectionStyle } from '@/components/Chrome';
 
@@ -10,117 +19,145 @@ const h3 = { fontFamily: T.serif, fontWeight: 500, fontSize: 22, margin: '34px 0
 const p = { fontSize: 15.5, lineHeight: 1.75, color: T.ink2, margin: '10px 0 0' };
 const ul = { fontSize: 15.5, lineHeight: 1.8, color: T.ink2, margin: '10px 0 0', paddingLeft: 22 };
 const sub = { fontSize: 13, color: T.muted, marginTop: 8 };
-const Bosluk = ({ children }) => <span style={{ background: T.cream, border: '1px dashed #D8D2C4', borderRadius: 6, padding: '0 8px', fontWeight: 600 }}>{children}</span>;
 const B = ({ children }) => <span style={{ fontWeight: 600 }}>{children}</span>;
+const SELLER = <>{COMPANY_LEGAL_NAME} — {COMPANY_ADDRESS} — Vergi Dairesi: {COMPANY_TAX_OFFICE} — Vergi No: {COMPANY_TAX_NUMBER_DISPLAY} — {CONTACT_EMAIL}</>;
 
 const DOCS = {
   kvkk: {
     title: 'KVKK Aydınlatma Metni',
-    desc: '6698 sayılı KVKK m.10 uyarınca hermesastroloji.com aydınlatma metni: işlenen veriler, amaçlar, aktarım, saklama süresi ve haklarınız.',
+    desc: '6698 sayılı KVKK uyarınca hermesastroloji.com aydınlatma metni: işlenen veriler, ödeme gizliliği, amaçlar, aktarım, saklama ve başvuru hakları.',
     body: (
       <>
         <h1 style={h2}>KVKK Aydınlatma Metni</h1>
-        <div style={sub}>6698 sayılı Kişisel Verilerin Korunması Kanunu m.10 uyarınca · Yürürlük: 7 Temmuz 2026</div>
+        <div style={sub}>6698 sayılı Kişisel Verilerin Korunması Kanunu m.10 uyarınca · Yürürlük: 8 Ağustos 2026</div>
         <h2 style={h3}>1. Veri sorumlusu</h2>
-        <p style={p}>Bu sitede (hermesastroloji.com) toplanan kişisel verileriniz bakımından veri sorumlusu, <Bosluk>[unvan / ad soyad]</Bosluk>, <Bosluk>[adres]</Bosluk> (&quot;zerdemkartal&quot;) olup her türlü talebiniz için info@hermesastroloji.com adresine yazabilirsiniz.</p>
+        <p style={p}>Bu sitede işlenen kişisel veriler bakımından veri sorumlusu <B>{COMPANY_LEGAL_NAME}</B>, {COMPANY_ADDRESS} adresinde yerleşiktir. Başvurularınızı {CONTACT_EMAIL} adresine iletebilirsiniz.</p>
         <h2 style={h3}>2. Hangi verileri işliyoruz</h2>
         <ul style={ul}>
-          <li><B>Kimlik ve iletişim:</B> ad soyad, e-posta adresi (üyelik, iletişim formu, talep ve ön sipariş formları).</li>
-          <li><B>Doğum bilgileri:</B> doğum tarihi, saati ve yeri — yalnızca doğum haritası hesaplaması ve danışmanlık hizmeti için, siz girdiğinizde.</li>
-          <li><B>Üyelik ve kullanım verileri:</B> hesap bilgileri, Astroloji 101 çalışma ilerlemesi, site tercihleri.</li>
-          <li><B>İşlem bilgileri:</B> danışmanlık talepleri, ön sipariş kayıtları ve yazışma geçmişi.</li>
+          <li><B>İletişim ve destek:</B> iletişim formunu, e-posta veya WhatsApp kanalını kullanmanız hâlinde paylaştığınız ad, iletişim bilgisi ve mesaj içeriği.</li>
+          <li><B>Lisans ve teslim:</B> lisansın hazırlanması, indirme erişimi ve destek için ayrıca paylaştığınız ad, e-posta ve lisans bilgileri.</li>
+          <li><B>Anonim ödeme mutabakatı:</B> seçilen lisans planı, tutar, para birimi, PayTR işlem referansı, ödeme türü, durum ve işlem zamanı.</li>
+          <li><B>Yasal kayıtlar:</B> fatura ve muhasebe mevzuatı gereği edinilen bilgiler, yalnız zorunlu süre ve kapsamda.</li>
         </ul>
-        <h2 style={h3}>3. İşleme amaçları ve hukuki sebepler</h2>
+        <p style={p}><B>Ödeme gizliliği:</B> Hermes satın alma sayfası ad, e-posta, telefon, adres, TCKN/VKN veya kart bilgisi toplamaz. Kartlı ödemede müşteri ve ödeme bilgileri doğrudan PayTR’nin güvenli sayfasına girilir; kart verileri Hermes/Vercel uygulamasından geçmez. Hermes tarafında yalnız yukarıdaki anonim işlem özeti saklanır.</p>
+        <h2 style={h3}>3. Amaç ve hukuki sebepler</h2>
         <ul style={ul}>
-          <li>Danışmanlık, program satışı ve üyelik hizmetlerinin sunulması — <span style={{ color: T.muted }}>sözleşmenin kurulması ve ifası (KVKK m.5/2-c)</span></li>
-          <li>Talep ve sorulara dönüş yapılması — <span style={{ color: T.muted }}>meşru menfaat (m.5/2-f)</span></li>
-          <li>Doğum bilgilerinizle harita hesaplanması ve yorumlanması — <span style={{ color: T.muted }}>açık rıza (m.5/1)</span></li>
-          <li>Fatura ve kayıt yükümlülükleri — <span style={{ color: T.muted }}>hukuki yükümlülük (m.5/2-ç)</span></li>
+          <li>Sözleşmenin kurulması ve ifası; ödeme mutabakatı, lisans ve dijital teslim işlemleri — KVKK m.5/2-c.</li>
+          <li>Fatura, muhasebe ve tüketici işlemi kayıtlarının tutulması — hukuki yükümlülük, KVKK m.5/2-ç.</li>
+          <li>Talep, destek ve uyuşmazlık süreçlerinin yönetilmesi — hakkın tesisi/kullanılması ve meşru menfaat, KVKK m.5/2-e ve f.</li>
         </ul>
-        <h2 style={h3}>4. Kimlere aktarılabilir</h2>
-        <p style={p}>Verileriniz satılmaz, reklam amacıyla paylaşılmaz. Yalnızca hizmetin gerektirdiği ölçüde; barındırma ve e-posta altyapı sağlayıcılarına, ödeme aşamasında ödeme kuruluşuna (ör. iyzico/PayTR) ve yasal zorunluluk hâlinde yetkili kurumlara aktarılabilir. Sunucuların yurt dışında bulunması hâlinde aktarım, KVKK m.9&#39;daki şartlara uygun yürütülür.</p>
-        <h2 style={h3}>5. Saklama süresi</h2>
-        <p style={p}>Veriler, amaç için gerekli süre ve ilgili mevzuattaki zamanaşımı süreleri boyunca saklanır; süre dolduğunda silinir, yok edilir veya anonim hâle getirilir. Üyeliğinizi sildirdiğinizde hesap verileriniz, yasal saklama yükümlülükleri saklı kalmak üzere kaldırılır.</p>
-        <h2 style={h3}>6. Haklarınız (KVKK m.11)</h2>
-        <p style={p}>Verinizin işlenip işlenmediğini öğrenme, bilgi talep etme, amaca uygun kullanılıp kullanılmadığını öğrenme, düzeltilmesini veya silinmesini isteme, otomatik sistemlerle analiz sonucu aleyhinize çıkan sonuçlara itiraz etme ve zarara uğramanız hâlinde tazminat talep etme hakkına sahipsiniz. Başvurunuzu info@hermesastroloji.com adresine iletebilirsiniz; en geç 30 gün içinde yanıtlanır.</p>
+        <h2 style={h3}>4. Aktarım</h2>
+        <p style={p}>Veriler satılmaz ve reklam amacıyla paylaşılmaz. Hizmetin gerektirdiği ölçüde ödeme kuruluşu PayTR’ye, e-posta/barındırma altyapısı sağlayıcılarına, mali müşavire ve kanuni zorunluluk hâlinde yetkili kurumlara aktarılabilir. Her sağlayıcı kendi rolü ve gizlilik koşulları kapsamında işlem yapar.</p>
+        <h2 style={h3}>5. Saklama ve güvenlik</h2>
+        <p style={p}>Kayıtlar, ilgili amaç ve mevzuat için gereken süre boyunca saklanır; süre sonunda silinir, yok edilir veya anonimleştirilir. Satın alma uygulamasındaki veri minimizasyonu kart verisi sızıntısı alanını daraltır; aktarım HTTPS ile korunur ve yönetim erişimleri yetkilendirilir.</p>
+        <h2 style={h3}>6. Haklarınız</h2>
+        <p style={p}>KVKK m.11 kapsamındaki bilgi alma, düzeltme, silme/yok etme, aktarılan kişileri öğrenme, otomatik sonuçlara itiraz ve zararın giderilmesini isteme haklarınız için {CONTACT_EMAIL} adresine başvurabilirsiniz. Başvurular kanuni süre içinde yanıtlanır.</p>
       </>
     )
   },
   gizlilik: {
     title: 'Gizlilik & Çerez Politikası',
-    desc: 'hermesastroloji.com gizlilik ve çerez politikası: çerezler, yerel depolama, doğum bilgileri, güvenlik ve değişiklikler.',
+    desc: 'hermesastroloji.com gizlilik ve çerez politikası: zorunlu depolama, ödeme gizliliği, üçüncü taraflar ve güvenlik.',
     body: (
       <>
         <h1 style={h2}>Gizlilik &amp; Çerez Politikası</h1>
-        <div style={sub}>Yürürlük: 7 Temmuz 2026</div>
-        <p style={{ ...p, margin: '26px 0 0' }}>Bu politika, hermesastroloji.com&#39;u ziyaret ettiğinizde hangi bilgilerin, ne amaçla ve hangi araçlarla işlendiğini açıklar. İlke basit: <B>yalnızca hizmet için gerekeni toplarız, veri satmayız, reklam ağlarıyla paylaşmayız.</B></p>
+        <div style={sub}>Yürürlük: 8 Ağustos 2026</div>
+        <p style={{ ...p, margin: '26px 0 0' }}>İlkemiz veri minimizasyonudur: hizmet için gerekli olmayan kişisel bilgiyi istemeyiz; verileri satmaz ve reklam ağı oluşturmak için kullanmayız.</p>
         <h2 style={h3}>1. Çerezler ve yerel depolama</h2>
         <ul style={ul}>
-          <li><B>Zorunlu:</B> oturumunuzu ve site tercihlerinizi hatırlamak için çerez ve tarayıcı yerel depolaması (localStorage) kullanılır. Üyelik oturumu, Astroloji 101 ilerlemesi ve doğum haritası girdileriniz bu kapsamdadır.</li>
-          <li><B>Analitik:</B> kullanılıyorsa, hangi sayfaların ziyaret edildiğini anonim/toplu olarak ölçer; kimliğinizle eşleştirilmez. <Bosluk>[kullanılan analitik aracı]</Bosluk></li>
-          <li><B>Üçüncü taraf içerikler:</B> sayfalara gömülü YouTube/Instagram içerikleri, kendi sağlayıcılarının çerezlerini kullanabilir.</li>
+          <li><B>Zorunlu işlevler:</B> tema tercihi, güvenli yönetim/indirme oturumu gibi işlevler için çerez veya tarayıcı yerel depolaması kullanılabilir.</li>
+          <li><B>Analitik ve reklam:</B> sitede şu anda isteğe bağlı analitik veya reklam çerezi kullanılmaz.</li>
+          <li><B>Üçüncü taraf bağlantıları:</B> PayTR, WhatsApp, YouTube veya Instagram’a geçtiğinizde ilgili hizmetin gizlilik ve çerez koşulları uygulanır.</li>
         </ul>
-        <h2 style={h3}>2. Çerezleri yönetme</h2>
-        <p style={p}>Tarayıcınızın ayarlarından çerezleri silebilir veya engelleyebilirsiniz. Zorunlu çerezleri/yerel depolamayı engellemeniz hâlinde üyelik oturumu ve ilerleme kaydı gibi özellikler çalışmayabilir.</p>
-        <h2 style={h3}>3. Doğum bilgileri hakkında özel not</h2>
-        <p style={p}>Doğum tarihi, saati ve yeri astrolojik hesaplama için hassas kişisel bilgidir. Bu bilgileri yalnızca siz girdiğinizde ve yalnızca harita hesaplaması/danışmanlık için kullanırız; üçüncü kişilerle paylaşılmaz.</p>
-        <h2 style={h3}>4. Güvenlik</h2>
-        <p style={p}>Veriler şifreli bağlantı (HTTPS) üzerinden taşınır; erişim, işin gerektirdiği kişilerle sınırlıdır. İnternette hiçbir aktarım %100 güvenli değildir; bir ihlal fark edilirse etkilenen kullanıcılar makul sürede bilgilendirilir.</p>
-        <h2 style={h3}>5. Değişiklikler</h2>
-        <p style={p}>Bu politika güncellenebilir; önemli değişiklikler bu sayfada yürürlük tarihiyle duyurulur. Sorularınız için: info@hermesastroloji.com</p>
+        <h2 style={h3}>2. Ödeme gizliliği</h2>
+        <p style={p}>Kartlı ödeme PayTR alan adında tamamlanır. Hermes’in Vercel uygulaması müşteri, fatura ve kart bilgisi alanı sunmaz; yalnız plan/fiyat oluşturur ve başarılı ödemeden anonim mutabakat bildirimi alır. EFT/Havale için WhatsApp veya e-posta seçerseniz, bu kanalda paylaştığınız bilgiler ilgili iletişim sağlayıcısının sisteminde de işlenebilir.</p>
+        <h2 style={h3}>3. Yönetim ve güvenlik</h2>
+        <p style={p}>Tarayıcınızdan çerez ve yerel depolama kayıtlarını silebilirsiniz; zorunlu kayıtların engellenmesi bazı oturum özelliklerini çalışmaz hâle getirebilir. Bağlantılar HTTPS ile korunur, gizli anahtarlar yalnız sunucu ortamında tutulur ve kart bilgisi Hermes sunucularına alınmaz.</p>
+        <h2 style={h3}>4. Değişiklikler ve iletişim</h2>
+        <p style={p}>Önemli değişiklikler bu sayfadaki yürürlük tarihi güncellenerek yayımlanır. Sorularınız için {CONTACT_EMAIL} adresine yazabilirsiniz.</p>
+      </>
+    )
+  },
+  'on-bilgilendirme': {
+    title: 'Ön Bilgilendirme Formu',
+    desc: 'Hermes dijital lisansı için satıcı, ürün, fiyat, ödeme, teslimat, cayma ve başvuru bilgilerinin satın alma öncesi özeti.',
+    body: (
+      <>
+        <h1 style={h2}>Ön Bilgilendirme Formu</h1>
+        <div style={sub}>6502 sayılı Kanun ve Mesafeli Sözleşmeler Yönetmeliği uyarınca · Yürürlük: 9 Ağustos 2026</div>
+        <h2 style={h3}>1. Satıcı</h2><p style={p}>{SELLER}</p>
+        <h2 style={h3}>2. Ürünün temel nitelikleri</h2>
+        <p style={p}>Hermes, şu an Windows 10/11 bilgisayarlar için sunulan profesyonel astroloji yazılımının tek seferlik program lisansıdır. Her lisans yalnız etkinleştirildiği bir cihazda geçerlidir; farklı veya ikinci cihaz için ayrı lisans gerekir. Aynı cihaz için yayımlanan güncellemeler lisansa dahildir. macOS sürümü 17 Ağustos 2026’da, Android, iPhone ve iPad sürümleri ise daha sonra sunulacaktır. Cihazlar arası veri senkronizasyonu program lisansına dahil değildir; yayımlandığında ayrı abonelik koşullarına tabi olacaktır. Ürün gayri maddi/dijital olarak teslim edilir; fiziksel kargo yapılmaz.</p>
+        <h2 style={h3}>3. Vergiler dâhil fiyat</h2>
+        <ul style={ul}>
+          <li><B>EFT/Havale:</B> 1 cihaz ₺6.000; 2 cihaz ₺8.500.</li>
+          <li><B>Kartla tek çekim:</B> EFT hedef tutarı ve PayTR’nin güncel mağaza tek çekim oranına göre satın alma sayfasında otomatik hesaplanan tutardır.</li>
+          <li><B>Taksit:</B> kart ve vade seçimine göre nihai toplam PayTR ödeme sayfasında gösterilir. Sipariş, bu toplam onaylandıktan sonra tamamlanır.</li>
+        </ul>
+        <h2 style={h3}>4. Ödeme, teslimat ve ek masraflar</h2>
+        <p style={p}>Kartlı ödeme PayTR’nin güvenli ödeme sayfasında; EFT/Havale satıcının bildirdiği banka hesabına yapılır. Dijital teslim nedeniyle kargo ücreti yoktur. Ödeme doğrulandıktan sonra indirme erişimi ve lisans hazırlama süreci başlar; teslimat en geç iki iş günü içinde, PayTR işlemi veya doğrudan iletişim sırasında doğrulanan iletişim kanalı üzerinden tamamlanır.</p>
+        <h2 style={h3}>5. Cayma ve iade</h2>
+        <p style={p}>Tüketici kural olarak sözleşmenin kurulmasından itibaren 14 gün içinde cayabilir. Ancak açık onayınızla elektronik ortamda ifasına başlanan ve tarafınıza teslim edilen dijital içerik/lisans için Mesafeli Sözleşmeler Yönetmeliği m.15/1-ğ kapsamındaki cayma hakkı istisnası uygulanabilir. Lisans ve indirme erişimi teslim edilmeden önce iptal talebinde bulunabilirsiniz. Ayıplı hizmete ilişkin kanuni haklarınız saklıdır.</p>
+        <h2 style={h3}>6. Başvuru ve uyuşmazlık</h2>
+        <p style={p}>İptal, destek ve şikâyetler {CONTACT_EMAIL} adresine iletilebilir. Uyuşmazlıklarda, yürürlükteki parasal sınırlar kapsamında tüketicinin yerleşim yerindeki veya işlemin yapıldığı yerdeki Tüketici Hakem Heyeti ve Tüketici Mahkemeleri yetkilidir.</p>
+      </>
+    )
+  },
+  teslimat: {
+    title: 'Teslimat ve Kargo Koşulları',
+    desc: 'Hermes dijital lisansının ödeme doğrulaması, indirme erişimi, lisans teslim süresi ve fiziksel kargo bulunmadığına ilişkin koşullar.',
+    body: (
+      <>
+        <h1 style={h2}>Teslimat ve Kargo Koşulları</h1>
+        <div style={sub}>Yürürlük: 8 Ağustos 2026</div>
+        <h2 style={h3}>1. Dijital teslimat</h2>
+        <p style={p}>Hermes fiziksel ürün değildir. Kargo veya kurye gönderimi yapılmaz; bu nedenle kargo ücreti yoktur. Teslimat, Windows kurulumuna erişim ve satın alınan cihaz sınırına uygun lisansın hazırlanmasıyla dijital olarak tamamlanır.</p>
+        <h2 style={h3}>2. Teslim süresi ve kanalı</h2>
+        <p style={p}>Ödeme PayTR bildirimi veya banka hareketi üzerinden doğrulandıktan sonra teslim süreci başlar. İndirme erişimi ve lisans adımları, ödeme sırasında PayTR’ye verilen ya da EFT/Havale görüşmesinde doğrulanan iletişim kanalı üzerinden <B>en geç iki iş günü içinde</B> iletilir.</p>
+        <h2 style={h3}>3. Alıcının kontrolü</h2>
+        <p style={p}>PayTR’ye veya satıcıyla iletişime verdiğiniz bilgilerin doğru olması teslim için gereklidir. Süre içinde bildirim ulaşmazsa işlem referansınızla {CONTACT_EMAIL} adresine yazabilirsiniz. Kart bilgisi, TCKN/VKN veya açık adresi e-postayla göndermeniz istenmez.</p>
+        <h2 style={h3}>4. Teknik sorun</h2>
+        <p style={p}>Kurulum bağlantısı veya lisans teknik nedenle çalışmazsa destek sağlanır. Sorun makul sürede giderilemezse tüketicinin ayıplı mal/hizmete ilişkin seçimlik hakları ve <a href="/yasal/iade" style={{ color: T.purple }}>İptal &amp; İade Koşulları</a> uygulanır.</p>
       </>
     )
   },
   'mesafeli-satis': {
     title: 'Mesafeli Satış Sözleşmesi',
-    desc: 'hermesastroloji.com mesafeli satış sözleşmesi: taraflar, konu, fiyat ve ödeme, teslimat, cayma hakkı ve uyuşmazlık.',
+    desc: 'Hermes dijital lisansı mesafeli satış sözleşmesi: taraflar, fiyat, PayTR veya EFT ödeme, teslimat, cayma ve uyuşmazlık.',
     body: (
       <>
         <h1 style={h2}>Mesafeli Satış Sözleşmesi</h1>
-        <div style={sub}>6502 sayılı Tüketicinin Korunması Hakkında Kanun ve Mesafeli Sözleşmeler Yönetmeliği uyarınca · Yürürlük: 7 Temmuz 2026</div>
+        <div style={sub}>6502 sayılı Kanun ve Mesafeli Sözleşmeler Yönetmeliği uyarınca · Yürürlük: 9 Ağustos 2026</div>
         <h2 style={h3}>1. Taraflar</h2>
-        <p style={p}><B>Satıcı:</B> <Bosluk>[unvan / ad soyad]</Bosluk> — <Bosluk>[adres]</Bosluk> — <Bosluk>[vergi dairesi / no]</Bosluk> — info@hermesastroloji.com<br /><B>Alıcı:</B> sipariş formunda ad, soyad ve e-posta bilgilerini veren kişi.</p>
-        <h2 style={h3}>2. Konu</h2>
-        <p style={p}>Sözleşmenin konusu, hermesastroloji.com üzerinden satışa sunulan <B>dijital ürünlerin</B> (Hermes Astroloji Programı lisansı) ve <B>danışmanlık hizmetlerinin</B> (astroloji analiz seansları) satışı ve teslimine ilişkin tarafların hak ve yükümlülükleridir. AstroPen ücretsizdir ve bu sözleşmenin kapsamı dışındadır.</p>
-        <h2 style={h3}>3. Ürün, fiyat ve ödeme</h2>
-        <p style={p}>Ürün/hizmetin temel nitelikleri ve vergiler dâhil satış fiyatı, sipariş anında ilgili sayfada yazan bilgilerdir. Ön satış döneminde Hermes lisansı, ilan edilen ön satış bedeli üzerinden satılır; program yayınlandığında ek ücret talep edilmez. Ödeme, sitede sunulan ödeme kuruluşu aracılığıyla yapılır.</p>
-        <h2 style={h3}>4. Teslimat</h2>
-        <ul style={ul}>
-          <li><B>Dijital ürün:</B> lisans anahtarı ve indirme bağlantısı, ödemenin onaylanmasının ardından (ön satışta: program yayınlandığında) Alıcının e-posta adresine gönderilir.</li>
-          <li><B>Danışmanlık:</B> taraflarca kararlaştırılan randevu tarihinde, çevrim içi veya yüz yüze ifa edilir.</li>
-        </ul>
+        <p style={p}><B>Satıcı:</B> {SELLER}<br /><B>Alıcı:</B> PayTR ödeme sayfasında veya EFT/Havale işlemi için doğrudan iletişimde bilgilerini vererek siparişi tamamlayan tüketici.</p>
+        <h2 style={h3}>2. Konu ve ürün</h2>
+        <p style={p}>Sözleşme, satın alma sayfasında seçilen 1 veya 2 cihazlık Hermes Astroloji Programı dijital lisansının satışı, ödemesi ve teslimine ilişkin tarafların hak ve yükümlülüklerini düzenler. Her cihaz için ayrı lisans düzenlenir; lisans farklı cihazlar arasında ortak kullanılamaz. Cihazlar arası veri senkronizasyonu bu lisansın kapsamında değildir ve ileride ayrı abonelik koşullarıyla sunulacaktır.</p>
+        <h2 style={h3}>3. Fiyat ve ödeme</h2>
+        <p style={p}>Vergiler dâhil EFT/Havale fiyatı 1 cihaz için ₺6.000, 2 cihaz için ₺8.500’dür. Kartla tek çekim fiyatı PayTR’nin güncel mağaza oranıyla otomatik hesaplanarak satın alma sayfasında gösterilir. Taksitte kart/vade kaynaklı toplam PayTR ekranında değişebilir. Alıcının PayTR’de onayladığı nihai tutar sipariş bedelidir. Kart bilgileri Hermes sunucularına girilmez.</p>
+        <h2 style={h3}>4. Sözleşmenin kurulması ve teslimat</h2>
+        <p style={p}>Alıcı ön bilgilendirme ve sözleşme koşullarını onaylayıp ödemeyi tamamladığında sözleşme kurulur. Ürün yalnız dijital teslim edilir; kargo yoktur. Ödeme doğrulamasından sonra indirme erişimi ve lisans en geç iki iş günü içinde, doğrulanan iletişim kanalı üzerinden iletilir.</p>
         <h2 style={h3}>5. Cayma hakkı</h2>
-        <p style={p}>Alıcı, 14 gün içinde gerekçe göstermeksizin cayma hakkına sahiptir. Ancak Mesafeli Sözleşmeler Yönetmeliği m.15/1-ğ uyarınca, <B>elektronik ortamda anında ifa edilen ve Alıcıya anında teslim edilen gayri maddi mallarda</B> (lisans anahtarı teslim edilmiş dijital ürün) cayma hakkı kullanılamaz; Alıcı sipariş sırasında bu durumu onaylar. Danışmanlık hizmetinde, hizmetin ifasına başlanmadan önce cayma hakkı saklıdır; ifa başladıktan sonra m.15/1-h uygulanır. Ayrıntılar için <a href="/yasal/iade" style={{ color: T.purple }}>İptal &amp; İade Koşulları</a>.</p>
-        <h2 style={h3}>6. Uyuşmazlık</h2>
-        <p style={p}>Uyuşmazlıklarda, Ticaret Bakanlığınca ilan edilen parasal sınırlar dâhilinde Alıcının yerleşim yerindeki Tüketici Hakem Heyetleri ve Tüketici Mahkemeleri yetkilidir.</p>
-        <h2 style={h3}>7. Yürürlük</h2>
-        <p style={p}>Alıcı, siparişi onayladığında bu sözleşmenin tüm koşullarını kabul etmiş sayılır ve sözleşme kurulmuş olur; bir örneği talep hâlinde e-postayla gönderilir.</p>
+        <p style={p}>Alıcı kural olarak 14 gün içinde cayabilir. Alıcının açık onayıyla elektronik ortamda ifasına başlanan ve teslim edilen gayri maddi ürünlerde Yönetmelik m.15/1-ğ uyarınca cayma hakkı istisnası uygulanır. Dijital teslim tamamlanmadan önce iptal talebi kabul edilir. Ayıplı mal veya hizmete ilişkin emredici kanuni haklar saklıdır.</p>
+        <h2 style={h3}>6. İade ve uyuşmazlık</h2>
+        <p style={p}>Onaylanan iade, kullanılan ödeme aracına uygun yöntemle ve kanuni süre içinde yapılır. Uyuşmazlıklarda yürürlükteki parasal sınırlar dâhilinde Alıcının yerleşim yerindeki veya işlemin yapıldığı yerdeki Tüketici Hakem Heyetleri ve Tüketici Mahkemeleri yetkilidir.</p>
       </>
     )
   },
   iade: {
     title: 'İptal & İade Koşulları',
-    desc: 'hermesastroloji.com iptal ve iade koşulları: dijital ürünler (Hermes), danışmanlık seansları, ücretsiz içerikler ve iade süreci.',
+    desc: 'Hermes dijital lisansı iptal ve iade koşulları: teslim öncesi iptal, cayma istisnası, teknik sorun ve geri ödeme süreci.',
     body: (
       <>
         <h1 style={h2}>İptal &amp; İade Koşulları</h1>
-        <div style={sub}>Yürürlük: 7 Temmuz 2026</div>
-        <h2 style={h3}>1. Dijital ürünler (Hermes)</h2>
-        <ul style={ul}>
-          <li>Lisans anahtarı <B>teslim edilmeden önce</B> siparişi iptal edebilirsin; ödemen kesintisiz iade edilir. Ön satış döneminde bu, program sana teslim edilene kadar geçerlidir.</li>
-          <li>Lisans anahtarı teslim edildikten sonra, dijital içerik anında ifa edildiğinden cayma hakkı kullanılamaz (Yönetmelik m.15/1-ğ).</li>
-          <li>Program teknik bir sorun nedeniyle çalışmıyorsa önce destek veririz; makul sürede çözülemezse ücret iadesi yapılır.</li>
-        </ul>
-        <h2 style={h3}>2. Danışmanlık seansları</h2>
-        <ul style={ul}>
-          <li>Randevundan <B>24 saat öncesine kadar</B> ücretsiz erteleyebilir veya iptal edebilirsin; iptalde ödemen tam iade edilir.</li>
-          <li>Son 24 saat içindeki iptallerde ve randevuya gelinmemesi hâlinde ücret iadesi yapılmaz; bir kez ücretsiz erteleme hakkı tanınır.</li>
-          <li>Seansın zerdemkartal tarafından iptali hâlinde yeni tarih önerilir; dilersen ücretin tamamı iade edilir.</li>
-        </ul>
-        <h2 style={h3}>3. Ücretsiz içerikler</h2>
-        <p style={p}>AstroPen, Astroloji 101 ve ücretsiz yayın içerikleri iade kapsamı dışındadır.</p>
-        <h2 style={h3}>4. İade süreci</h2>
-        <p style={p}>İade/iptal talebini sipariş e-postanla birlikte info@hermesastroloji.com adresine ya da <a href="/iletisim" style={{ color: T.purple }}>iletişim formuna</a> yaz. Onaylanan iadeler, ödeme yaptığın karta en geç 14 gün içinde yansıtılır (bankana bağlı olarak ekstrene yansıması birkaç gün sürebilir).</p>
+        <div style={sub}>Yürürlük: 8 Ağustos 2026</div>
+        <h2 style={h3}>1. Teslimden önce</h2>
+        <p style={p}>İndirme erişimi ve lisans teslim edilmeden önce {CONTACT_EMAIL} adresine işlem referansınızla yazarak iptal talep edebilirsiniz. Onaylanan iptalde tahsil edilen bedel kesintisiz iade edilir.</p>
+        <h2 style={h3}>2. Dijital teslimden sonra</h2>
+        <p style={p}>Açık onayınızla elektronik ortamda ifasına başlanan ve teslim edilen gayri maddi ürünlerde Mesafeli Sözleşmeler Yönetmeliği m.15/1-ğ uyarınca cayma hakkı istisnası uygulanır. Bu istisna, programın ayıplı olması hâlindeki ücretsiz onarım, bedel indirimi, sözleşmeden dönme ve diğer emredici kanuni hakları ortadan kaldırmaz.</p>
+        <h2 style={h3}>3. Teknik sorun</h2>
+        <p style={p}>Programın belgelenebilir bir teknik sorun nedeniyle çalışmaması hâlinde önce destek ve düzeltme sağlanır. Sorun makul sürede giderilemezse somut duruma uygun kanuni seçimlik hak uygulanır.</p>
+        <h2 style={h3}>4. İade yöntemi ve süre</h2>
+        <p style={p}>Talebinizi {CONTACT_EMAIL} adresine PayTR işlem referansı veya EFT açıklamasıyla iletin; kart numarası veya kimlik belgesi göndermeyin. Onaylanan bedel, ödemenin yapıldığı araca uygun yöntemle en geç 14 gün içinde iade edilir. Bankanın hesaba yansıtma süresi ayrıca değişebilir.</p>
       </>
     )
   }
@@ -129,6 +166,8 @@ const DOCS = {
 const MENU = [
   ['kvkk', 'KVKK Aydınlatma Metni'],
   ['gizlilik', 'Gizlilik & Çerez Politikası'],
+  ['on-bilgilendirme', 'Ön Bilgilendirme Formu'],
+  ['teslimat', 'Teslimat ve Kargo Koşulları'],
   ['mesafeli-satis', 'Mesafeli Satış Sözleşmesi'],
   ['iade', 'İptal & İade Koşulları']
 ];
@@ -137,45 +176,41 @@ export function generateStaticParams() {
   return Object.keys(DOCS).map((slug) => ({ slug }));
 }
 
-export function generateMetadata({ params }) {
+export async function generateMetadata(props) {
+  const params = await props.params;
   const doc = DOCS[params.slug];
   if (!doc) return { title: 'Bulunamadı' };
-  return pageMeta({ title: `${doc.title} — zerdemkartal`, description: doc.desc, path: `/yasal/${params.slug}` });
+  return pageMeta({ title: `${doc.title} — Hermes`, description: doc.desc, path: `/yasal/${params.slug}` });
 }
 
-export default function Yasal({ params }) {
+export default async function Yasal(props) {
+  const params = await props.params;
   const doc = DOCS[params.slug];
   if (!doc) notFound();
   const url = `${SITE}/yasal/${params.slug}`;
-
   const jsonld = { '@context': 'https://schema.org', '@graph': [
     ORG, WEBSITE,
-    { '@type': 'WebPage', '@id': url + '#webpage', url, name: `${doc.title} — zerdemkartal`, description: doc.desc, isPartOf: { '@id': SITE + '/#site' }, inLanguage: 'tr-TR' }
+    { '@type': 'WebPage', '@id': url + '#webpage', url, name: `${doc.title} — Hermes`, description: doc.desc, isPartOf: { '@id': SITE + '/#site' }, inLanguage: 'tr-TR' }
   ] };
 
   return (
     <main>
       <JsonLd data={jsonld} />
       <Nav />
-
       <section style={{ ...sectionStyle, paddingTop: 54 }}>
         <div style={kickerStyle}>YASAL BİLGİLER</div>
-        <div style={{ marginTop: 22, background: T.cream, border: `1px solid ${T.border}`, borderRadius: 14, padding: '16px 20px', fontSize: 13.5, lineHeight: 1.6, color: '#55524A', maxWidth: 780 }}>
-          Bu metinler zerdemkartal için hazırlanmış şablonlardır. Yayına almadan önce <Bosluk>köşeli</Bosluk> alanları gerçek bilgilerinle doldur ve bir hukukçuya son okuma yaptır.
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '240px 1fr', gap: 48, marginTop: 40, alignItems: 'start' }}>
+        <div className="h-legal-layout" style={{ display: 'grid', gridTemplateColumns: '240px minmax(0, 1fr)', gap: 48, marginTop: 40, alignItems: 'start' }}>
           <div style={{ position: 'sticky', top: 24, display: 'flex', flexDirection: 'column', gap: 4 }}>
             {MENU.map(([slug, label]) => (
               <a key={slug} href={`/yasal/${slug}`} style={{ padding: '10px 14px', borderRadius: 10, fontSize: 14.5, textDecoration: 'none', color: slug === params.slug ? T.ink : T.muted, background: slug === params.slug ? T.cream : 'transparent', fontWeight: slug === params.slug ? 600 : 400 }}>{label}</a>
             ))}
             <div style={{ borderTop: `1px solid ${T.border}`, marginTop: 14, paddingTop: 14, fontSize: 13, color: T.muted, lineHeight: 1.55 }}>
-              Sorusu olan: <a href="/iletisim" style={{ color: T.purple }}>iletişim formu</a>
+              Sorunuz için <a href="/iletisim" style={{ color: T.purple }}>iletişim formu</a>
             </div>
           </div>
-          <div style={{ maxWidth: 720 }}>{doc.body}</div>
+          <article style={{ maxWidth: 720 }}>{doc.body}</article>
         </div>
       </section>
-
       <Footer />
     </main>
   );

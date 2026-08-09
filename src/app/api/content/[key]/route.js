@@ -12,7 +12,8 @@ const KEY_PATHS = { hermes_site: ['/', '/ozellikler', '/fiyat', '/indir', '/sss'
 
 // GET /api/content/:key — public okuma (SSR sayfaları + MCP + zk-data köprüsü).
 // hermes_site: DB satırı yoksa VARSAYILAN model döner → MCP ilk günden oku-birleştir-yaz yapabilir.
-export async function GET(_request, { params }) {
+export async function GET(_request, props) {
+  const params = await props.params;
   if (!KEYS.has(params.key)) return Response.json({ error: 'bilinmeyen anahtar' }, { status: 404 });
   const row = await prisma.pageContent.findUnique({ where: { key: params.key } });
   if (params.key === 'hermes_site') return Response.json(migrateHermesPricing(row?.data ?? HERMES_SITE));
@@ -20,8 +21,9 @@ export async function GET(_request, { params }) {
 }
 
 // PUT /api/content/:key — admin yazma (MCP / panel)
-export async function PUT(request, { params }) {
-  const err = requireAdmin(request); if (err) return err;
+export async function PUT(request, props) {
+  const params = await props.params;
+  const err = requireAdmin(request);if (err) return err;
   if (!KEYS.has(params.key)) return Response.json({ error: 'bilinmeyen anahtar' }, { status: 404 });
   const data = await request.json().catch(() => null);
   if (data == null || typeof data !== 'object') return Response.json({ error: 'JSON gövde gerekli' }, { status: 400 });

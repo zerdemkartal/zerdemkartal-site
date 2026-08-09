@@ -8,7 +8,7 @@ generator client {
 datasource db {
   provider  = "postgresql" // SQLite ile başlamak için: "sqlite"
   url       = env("DATABASE_URL") // pooled (Neon -pooler) — uygulama çalışırken
-  directUrl = env("DIRECT_URL")   // direct/havuzsuz — migration + seed için
+  directUrl = env("DIRECT_URL") // direct/havuzsuz — migration + seed için
 }
 
 // zk_anasayfa / zk_danismanlik / zk_programlar / zk_pd_astropen / zk_pd_hermes /
@@ -22,21 +22,21 @@ model PageContent {
 
 // zk_blog_tree → düz tablo (ağaç parentId+order ile kurulur; API ağacı derleyip döner)
 model BlogNode {
-  id       String  @id // prototipteki node id'leri korunur (p-*, f-*)
-  type     String // "folder" | "page"
-  title    String
-  parentId String?
-  order    Int     @default(0)
-  glyph    String?
+  id        String   @id // prototipteki node id'leri korunur (p-*, f-*)
+  type      String // "folder" | "page"
+  title     String
+  parentId  String?
+  order     Int      @default(0)
+  glyph     String?
   // page alanları
-  body     String? // WYSIWYG HTML
-  md       String? // Markdown kaynağı (varsa)
-  excerpt  String?
-  date     String? // "YYYY-MM-DD" (prototip formatı korunur)
-  seoTitle String?
-  seoDesc  String?
-  status   String  @default("published") // "published" | "draft"
-  coverId  String? // Asset.id
+  body      String? // WYSIWYG HTML
+  md        String? // Markdown kaynağı (varsa)
+  excerpt   String?
+  date      String? // "YYYY-MM-DD" (prototip formatı korunur)
+  seoTitle  String?
+  seoDesc   String?
+  status    String   @default("published") // "published" | "draft"
+  coverId   String? // Asset.id
   updatedAt DateTime @updatedAt
 }
 
@@ -68,18 +68,130 @@ model Lead {
 
 // zk_siparis → Hermes lisans siparişleri (Faz 2.5 prototipte mock ödeme; canlıda iyzico/PayTR)
 model Order {
-  id          String   @id @default(cuid())
-  name        String
-  email       String
-  product     String   @default("Hermes")
-  price       Int // TRY, tam sayı (ör. 3000)
-  license     String?  @unique // ESKİ ZK-XXXX (opsiyonel; artık üretilmiyor — lisans çevrimdışı imzalanır)
-  status      String   @default("pending") // pending | paid | delivered | cancelled
-  deviceLimit Int      @default(1) // 1 cihaz standart; 2 cihaz seçeneği ayrı fiyatlandırılır
-  payProvider String? // "iyzico" | "paytr" | "mock"
-  payRef      String? // PSP referansı
-  createdAt   DateTime @default(now())
-  requests    LicenseRequest[]
+  id                 String                     @id @default(cuid())
+  name               String
+  email              String
+  product            String                     @default("Hermes")
+  price              Int // TRY, tam sayı (ör. 3000)
+  license            String?                    @unique // Ödeme sonrası ayrılan müşteri/lisans numarası; çevrimdışı anahtarda aynen kullanılır.
+  status             String                     @default("pending") // pending | paid | delivered | cancelled
+  deviceLimit        Int                        @default(1) // 1 cihaz standart; 2 cihaz seçeneği ayrı fiyatlandırılır
+  payProvider        String? // "iyzico" | "paytr" | "mock"
+  payRef             String? // PSP referansı
+  paidAt             DateTime?
+  paymentEmailSentAt DateTime?
+  createdAt          DateTime                   @default(now())
+  requests           LicenseRequest[]
+  customerAccess     CustomerLicenseCredential?
+  downloadInvites    DownloadInvite[]
+}
+
+// PayTR Link başarılı ödeme bildirimi. Mutabakat için gereken anonim işlem özeti
+// dışında müşteri, fatura, IP veya kart verisi saklanmaz.
+model PaymentReceipt {
+  id                 String   @id @default(cuid())
+  provider           String   @default("paytr_link")
+  merchantOid        String   @unique
+  callbackId         String
+  planId             String
+  termsVersion       String
+  deviceLimit        Int
+  netTargetKurus     Int
+  paymentAmountKurus Int
+  totalAmountKurus   Int
+  paymentType        String
+  currency           String
+  status             String   @default("paid")
+  testMode           Boolean  @default(false)
+  paidAt             DateTime @default(now())
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([status, paidAt])
+}
+
+// Müşterinin indirme/ilk etkinleştirme hesabı. Parola ve tek kullanımlık kurulum kodu
+// hiçbir zaman düz metin tutulmaz; yalnız bcrypt/SHA-256 özetleri saklanır.
+model CustomerLicenseCredential {
+  id                         String                   @id @default(cuid())
+  order                      Order                    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId                    String                   @unique
+  licenseNo                  String                   @unique
+  application                String                   @default("hermes")
+  email                      String
+  passwordHash               String?
+  passwordTemporary          Boolean                  @default(false)
+  temporaryPasswordExpiresAt DateTime?
+  setupTokenHash             String?                  @unique @db.Char(64)
+  setupExpiresAt             DateTime?
+  setupUsedAt                DateTime?
+  failedAttempts             Int                      @default(0)
+  lockedUntil                DateTime?
+  authVersion                Int                      @default(1)
+  createdAt                  DateTime                 @default(now())
+  updatedAt                  DateTime                 @updatedAt
+  sessions                   CustomerLicenseSession[]
+
+  @@index([email])
+  @@index([application, licenseNo])
+}
+
+// Site indirme oturumu kısa ömürlü ve iptal edilebilir; tarayıcıya yalnız rastgele
+// ham değer gider, Neon'da bunun SHA-256 özeti bulunur.
+model CustomerLicenseSession {
+  id           String                    @id @default(cuid())
+  credential   CustomerLicenseCredential @relation(fields: [credentialId], references: [id], onDelete: Cascade)
+  credentialId String
+  tokenHash    String                    @unique @db.Char(64)
+  expiresAt    DateTime
+  revokedAt    DateTime?
+  createdAt    DateTime                  @default(now())
+
+  @@index([credentialId, expiresAt])
+  @@index([expiresAt])
+}
+
+// Satın alma kaydı olsun veya olmasın yönetim panelinden gönderilebilen, kısa
+// ömürlü indirme daveti. Bağlantı belirteci ve geçici parola hiçbir zaman düz
+// metin tutulmaz; yalnız SHA-256/bcrypt özetleri saklanır.
+model DownloadInvite {
+  id                String            @id @default(cuid())
+  order             Order?            @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  orderId           String?
+  name              String
+  email             String
+  application       String            @default("hermes")
+  linkTokenHash     String            @unique @db.Char(64)
+  passwordHash      String
+  passwordExpiresAt DateTime
+  failedAttempts    Int               @default(0)
+  lockedUntil       DateTime?
+  openedAt          DateTime?
+  sentAt            DateTime?
+  revokedAt         DateTime?
+  createdByRef      String?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  sessions          DownloadSession[]
+
+  @@index([email, createdAt])
+  @@index([orderId, createdAt])
+  @@index([application, revokedAt, passwordExpiresAt])
+}
+
+// Başarılı geçici parola doğrulamasından sonra tarayıcıya yalnız rastgele ham
+// değer verilir; Neon'da 30 dakikalık oturumun SHA-256 özeti bulunur.
+model DownloadSession {
+  id        String         @id @default(cuid())
+  invite    DownloadInvite @relation(fields: [inviteId], references: [id], onDelete: Cascade)
+  inviteId  String
+  tokenHash String         @unique @db.Char(64)
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime       @default(now())
+
+  @@index([inviteId, expiresAt])
+  @@index([expiresAt])
 }
 
 // Masaüstü "Lisans İste" (lisans.html) istekleri → geliştirici ÇEVRİMDIŞI imzalar (Kripto Yönetim).
@@ -125,10 +237,28 @@ model Newsletter {
 
 // Panel + MCP girişi
 model AdminUser {
-  id       String @id @default(cuid())
-  email    String @unique
-  passHash String
-  role     String @default("admin")
+  id                         String           @id @default(cuid())
+  email                      String           @unique
+  passHash                   String
+  role                       String           @default("admin")
+  licenseRole                String?
+  licenseActive              Boolean          @default(false)
+  licenseMfaEnabled          Boolean          @default(false)
+  licenseMfaSecretCipher     String?
+  licenseMfaPendingCipher    String?
+  licenseMfaPendingExpiresAt DateTime?
+  licenseMfaLastCounter      BigInt?
+  licenseMfaRecoveryHashes   Json?
+  licenseFailedAttempts      Int              @default(0)
+  licenseLockedUntil         DateTime?
+  licenseLastLoginAt         DateTime?
+  licenseAuthVersion         Int              @default(1)
+  licenseRoleChangedAt       DateTime?
+  licenseGoogleSub           String?          @unique
+  licenseSessions            AdminSession[]
+  licenseEvents              LicenseEvent[]   @relation("LicenseEventActor")
+  licenseImports             LicenseImport[]  @relation("LicenseImportCreator")
+  desktopPairings            DesktopPairing[] @relation("DesktopPairingApprover")
 }
 
 // image-slot yüklemeleri (base64 → gerçek dosya/URL)
@@ -142,7 +272,7 @@ model Asset {
 }
 
 // Kurumsal Posta Merkezi — taşıma Resend, kalıcı iş akışı Hermes yönetim panelidir.
-// folder: inbox | sent | archive | spam. "Gönderilen" ayrıca yanıt içeren konuşmaları da süzer.
+// folder: inbox | sent | archive | spam | trash. "Gönderilen" ayrıca yanıt içeren konuşmaları da süzer.
 model MailThread {
   id                String        @id @default(cuid())
   subject           String
@@ -187,4 +317,194 @@ model MailMessage {
 
   @@index([threadId, createdAt])
   @@index([direction, createdAt])
+}
+
+// Çevrimdışı imzalı anahtarın çevrimiçi durum kaydı. Tam lisans anahtarı tutulmaz;
+// değişmez kimlik SHA-256 parmak izidir. signed* alanları azami yetki tavanıdır.
+model License {
+  id                   String          @id @default(cuid())
+  licenseNo            String          @unique
+  fingerprint          String          @unique @db.Char(64)
+  application          String
+  customerRef          String?
+  customerEmail        String?
+  issuedAt             DateTime
+  expiresAt            DateTime?
+  status               String          @default("aktif")
+  statusReason         String?
+  statusChangedAt      DateTime        @default(now())
+  suspendedUntil       DateTime?
+  signedLevel          String
+  signedFeatures       Json
+  remoteLevel          String
+  remoteFeatures       Json
+  authorizationVersion Int             @default(1)
+  deviceLimit          Int             @default(1)
+  monitoringOnly       Boolean         @default(true)
+  permanentlyRevokedAt DateTime?
+  sourceImportId       String?
+  sourceImport         LicenseImport?  @relation(fields: [sourceImportId], references: [id], onDelete: SetNull)
+  aliases              LicenseAlias[]
+  devices              LicenseDevice[]
+  events               LicenseEvent[]
+  nonces               LicenseNonce[]
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+
+  @@index([application, status])
+  @@index([customerEmail])
+  @@index([sourceImportId])
+}
+
+// Aynı imzalı anahtarın tarihsel defterde birden fazla lisans numarasıyla görünmesi
+// kaynak satırı silmeden tek License kimliğine bağlanır.
+model LicenseAlias {
+  id        String   @id @default(cuid())
+  license   License  @relation(fields: [licenseId], references: [id], onDelete: Cascade)
+  licenseId String
+  licenseNo String   @unique
+  sourceRow Int?
+  createdAt DateTime @default(now())
+
+  @@index([licenseId])
+}
+
+model LicenseDevice {
+  id             String        @id @default(cuid())
+  license        License       @relation(fields: [licenseId], references: [id], onDelete: Cascade)
+  licenseId      String
+  deviceHash     String        @db.Char(64)
+  active         Boolean       @default(true)
+  firstSeenAt    DateTime      @default(now())
+  lastSeenAt     DateTime      @default(now())
+  lastVerifiedAt DateTime?
+  lastAppVersion String?
+  releasedAt     DateTime?
+  lease          LicenseLease?
+
+  @@unique([licenseId, deviceHash])
+  @@index([licenseId, active])
+}
+
+// Her cihaz için yalnız son imzalı izin özeti tutulur; günlük davranış geçmişi biriktirilmez.
+model LicenseLease {
+  id           String        @id @default(cuid())
+  device       LicenseDevice @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  deviceId     String        @unique
+  status       String
+  rights       Json
+  serverTime   DateTime
+  nextCheckAt  DateTime
+  graceUntil   DateTime
+  nonceHash    String        @unique @db.Char(64)
+  responseHash String        @db.Char(64)
+  keyVersion   Int
+  updatedAt    DateTime      @updatedAt
+}
+
+// Kısa ömürlü yeniden oynatma koruması. Süresi dolan kayıtlar bakım işiyle temizlenir.
+model LicenseNonce {
+  id         String   @id @default(cuid())
+  license    License  @relation(fields: [licenseId], references: [id], onDelete: Cascade)
+  licenseId  String
+  nonceHash  String   @unique @db.Char(64)
+  deviceHash String   @db.Char(64)
+  createdAt  DateTime @default(now())
+  expiresAt  DateTime
+
+  @@index([expiresAt])
+  @@index([licenseId, deviceHash])
+}
+
+// Yönetim ve güvenlik olayları uygulama tarafından update/delete edilmez; migration
+// trigger'ı tabloyu veritabanı seviyesinde de append-only yapar.
+model LicenseEvent {
+  id           String     @id @default(cuid())
+  license      License?   @relation(fields: [licenseId], references: [id], onDelete: SetNull)
+  licenseId    String?
+  actor        AdminUser? @relation("LicenseEventActor", fields: [actorId], references: [id], onDelete: SetNull)
+  actorId      String?
+  actorRole    String?
+  action       String
+  outcome      String
+  reason       String?
+  beforeState  Json?
+  afterState   Json?
+  requestId    String     @unique
+  previousHash String?    @db.Char(64)
+  eventHash    String     @unique @db.Char(64)
+  createdAt    DateTime   @default(now())
+
+  @@index([licenseId, createdAt])
+  @@index([actorId, createdAt])
+}
+
+model LicenseImport {
+  id          String     @id @default(cuid())
+  sourceHash  String     @unique @db.Char(64)
+  mode        String     @default("dry-run")
+  status      String     @default("hazirlandi")
+  summary     Json
+  createdBy   AdminUser? @relation("LicenseImportCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  createdById String?
+  createdAt   DateTime   @default(now())
+  committedAt DateTime?
+  licenses    License[]
+
+  @@index([createdById, createdAt])
+}
+
+// Lisans yönetimi için kısa ömürlü, iptal edilebilir ve MFA durumu taşıyan oturum.
+model AdminSession {
+  id                String    @id @default(cuid())
+  admin             AdminUser @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  adminId           String
+  tokenHash         String    @unique @db.Char(64)
+  authVersion       Int
+  mfaVerifiedAt     DateTime?
+  reauthenticatedAt DateTime?
+  expiresAt         DateTime
+  revokedAt         DateTime?
+  lastSeenAt        DateTime  @default(now())
+  context           Json?
+  createdAt         DateTime  @default(now())
+
+  @@index([adminId, expiresAt])
+}
+
+// Kripto Yönetimi masaüstü uygulamasına kısa ömürlü, tek kullanımlık oturum devri.
+// Tarayıcıda yalnız onay verilir; eşleştirme sırrı ve yönetim tokeni düz saklanmaz.
+model DesktopPairing {
+  id           String     @id
+  secretHash   String     @unique @db.Char(64)
+  approvedBy   AdminUser? @relation("DesktopPairingApprover", fields: [approvedById], references: [id], onDelete: SetNull)
+  approvedById String?
+  approvedAt   DateTime?
+  claimedAt    DateTime?
+  expiresAt    DateTime
+  context      Json?
+  createdAt    DateTime   @default(now())
+
+  @@index([expiresAt])
+  @@index([approvedById, approvedAt])
+}
+
+// Özel Blob deposundaki imzalı kurulumların sunucu taraflı yayın manifesti.
+// Blob erişim anahtarı değil yalnız özel pathname ve doğrulama özetleri tutulur.
+model ReleaseArtifact {
+  id          String   @id @default(cuid())
+  application String
+  platform    String
+  version     String
+  fileName    String
+  blobPath    String   @unique
+  sha512      String
+  size        BigInt
+  active      Boolean  @default(false)
+  publishedAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([application, platform, version])
+  @@index([application, platform, active, publishedAt])
 }

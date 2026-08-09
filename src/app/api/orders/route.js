@@ -1,41 +1,29 @@
 import { prisma } from '@/lib/db';
 import { requireAdmin } from '@/lib/auth';
-import { licensePriceFor, normalizeDeviceLimit } from '@/lib/licensePricing';
-import { z } from 'zod';
 
 // SİPARİŞ = satın alma / hak sahipliği (entitlement). LİSANS BURADA ÜRETİLMEZ.
 // Masaüstü lisansı çevrimdışı imzalanır (Kripto Yönetim) → akış: ödeme → sipariş →
 // kullanıcı programda "Lisans İste" → POST /api/lisans/istek → geliştirici imzalar → e-posta.
-const OrderIn = z.object({
-  name: z.string().min(1).max(120),
-  email: z.string().email(),
-  product: z.string().max(80).default('Hermes'),
-  deviceLimit: z.union([z.literal(1), z.literal(2)]).default(1),
-  payProvider: z.string().max(40).optional(),
-  payRef: z.string().max(200).optional()
-});
-
-// POST /api/orders — public: ön sipariş/satın alma kaydı. Ödeme sağlayıcısı (iyzico/PayTR) H2'de
-// bağlanınca PSP callback'i status'ü 'paid'e çeker; şimdilik 'pending' oluşur.
-export async function POST(request) {
-  const body = await request.json().catch(() => null);
-  const p = OrderIn.safeParse(body);
-  if (!p.success) return Response.json({ error: 'geçersiz gövde' }, { status: 400 });
-  const deviceLimit = normalizeDeviceLimit(p.data.deviceLimit);
-  const row = await prisma.order.create({
-    data: {
-      ...p.data,
-      deviceLimit,
-      price: licensePriceFor(deviceLimit),
-      status: 'pending'
-    }
-  });
-  return Response.json({ id: row.id, status: row.status }, { status: 201 });
+// Eski public sipariş ucu PII içeren Order kaydı açıyordu. PayTR Link akışında
+// müşteriye ait veri alınmaz; gövde okunmadan bu uç kapalı tutulur.
+export async function POST() {
+  return Response.json({ error: 'bu_akisin_kullanimi_sona_erdi' }, { status: 410 });
 }
 
 // GET /api/orders — admin: sipariş listesi (+ bağlı lisans istekleri).
 export async function GET(request) {
   const err = requireAdmin(request); if (err) return err;
-  const rows = await prisma.order.findMany({ orderBy: { createdAt: 'desc' }, include: { requests: true } });
+  const rows = await prisma.order.findMany({
+    orderBy: { createdAt: 'desc' },
+    include: {
+      requests: true,
+      customerAccess: {
+        select: {
+          licenseNo: true, application: true, setupUsedAt: true,
+          failedAttempts: true, lockedUntil: true, updatedAt: true
+        }
+      }
+    }
+  });
   return Response.json(rows);
 }

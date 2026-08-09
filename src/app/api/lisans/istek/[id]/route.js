@@ -8,8 +8,9 @@ const PatchIn = z.object({
 });
 
 // PATCH /api/lisans/istek/:id — admin: imzalandı/gönderildi işaretle + not (çevrimdışı imza takibi).
-export async function PATCH(request, { params }) {
-  const err = requireAdmin(request); if (err) return err;
+export async function PATCH(request, props) {
+  const params = await props.params;
+  const err = requireAdmin(request);if (err) return err;
   const body = await request.json().catch(() => null);
   const p = PatchIn.safeParse(body);
   if (!p.success) return Response.json({ error: 'geçersiz gövde' }, { status: 400 });

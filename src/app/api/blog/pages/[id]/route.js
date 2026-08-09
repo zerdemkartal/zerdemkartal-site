@@ -5,7 +5,8 @@ import { mdToHtml } from '@/lib/md';
 import { pingIndexNow } from '@/lib/indexnow';
 
 // GET /api/blog/pages/:id — blog kamusal erişime kapalıyken yalnız admin okuyabilir.
-export async function GET(request, { params }) {
+export async function GET(request, props) {
+  const params = await props.params;
   const err = requireAdmin(request);
   if (err) return Response.json({ error: 'yazı bulunamadı' }, { status: 404 });
   const row = await prisma.blogNode.findUnique({ where: { id: params.id } });
@@ -26,9 +27,10 @@ const PageIn = z.object({
 });
 
 // POST /api/blog/pages/:id — yeni yazı oluştur (id istemciden: p-<zaman> prototip deseni)
-export async function POST(request, { params }) {
-  const err = requireAdmin(request); if (err) return err;
-  const d = await parse(request); if (d instanceof Response) return d;
+export async function POST(request, props) {
+  const params = await props.params;
+  const err = requireAdmin(request);if (err) return err;
+  const d = await parse(request);if (d instanceof Response) return d;
   const exists = await prisma.blogNode.findUnique({ where: { id: params.id } });
   if (exists) return Response.json({ error: 'id zaten var — güncellemek için PUT' }, { status: 409 });
   if (d.parentId && !(await prisma.blogNode.findUnique({ where: { id: d.parentId } })))
@@ -39,9 +41,10 @@ export async function POST(request, { params }) {
 }
 
 // PUT /api/blog/pages/:id — mevcut yazıyı güncelle (yalnız gönderilen alanlar)
-export async function PUT(request, { params }) {
-  const err = requireAdmin(request); if (err) return err;
-  const d = await parse(request); if (d instanceof Response) return d;
+export async function PUT(request, props) {
+  const params = await props.params;
+  const err = requireAdmin(request);if (err) return err;
+  const d = await parse(request);if (d instanceof Response) return d;
   const row = await prisma.blogNode.update({ where: { id: params.id }, data: toRow(d) }).catch(() => null);
   if (!row) return Response.json({ error: 'yazı bulunamadı' }, { status: 404 });
   await pingIndexNow(['/blog/yazi/' + row.id]);
