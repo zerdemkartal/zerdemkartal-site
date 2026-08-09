@@ -6,6 +6,8 @@
 // Kural: uydurma kullanıcı yorumu ve puan YOK (eski PD_HERMES'teki taklit yorumlar bilinçli atıldı).
 // Not: metin içi kesmeler tipografik ’ — düz ' tek tırnaklı string'i kırar.
 
+import { HERMES_FEATURE_GROUPS, HERMES_HOME_FEATURE_CARDS, HERMES_FEATURE_INVENTORY_VERSION, HERMES_FEATURE_METRICS } from './hermesFeatures.mjs';
+
 export const HERMES_SITE = {
   seo: {
     home: {
@@ -14,7 +16,7 @@ export const HERMES_SITE = {
     },
     ozellikler: {
       title: 'Özellikler — Hermes Astroloji Programı',
-      description: 'Hermes’in tüm modülleri: Swiss Ephemeris hassasiyetinde harita motoru, zamanlama teknikleri, sinastri, horary, elektif tarama, rektifikasyon, astrokartografi ve Uranyen dial.'
+      description: `Hermes’in ${HERMES_FEATURE_METRICS.alan} ana çalışma alanındaki ${HERMES_FEATURE_METRICS.ozellik} çalışan aracı: harita, öngörü, sinastri, horary, rektifikasyon, lokasyon astrolojisi, Uranyen teknikler, danışan, rapor ve araştırma.`
     },
     fiyat: {
       title: 'Fiyat — Hermes | Tek seferlik cihaz lisansı',
@@ -45,9 +47,9 @@ export const HERMES_SITE = {
       ]
     },
     moduller: {
-      kicker: 'NELER VAR',
+      kicker: `${HERMES_FEATURE_METRICS.alan} ANA ÇALIŞMA ALANI`,
       title: 'Bir astroloğun masasındaki her şey',
-      p: 'Hermes bir “burç uygulaması” değil; danışan defterinden araştırma arşivine, ciddi astroloji pratiğinin tamamı için tasarlandı.',
+      p: `Hermes, ${HERMES_FEATURE_METRICS.alan} ana çalışma alanındaki ${HERMES_FEATURE_METRICS.ozellik} çalışan araç ve özelliği tek atölyede birleştirir; gelecek platformlar ve yol haritası bu sayıya dahil değildir.`,
       featured: [
         {
           glyph: '☉',
@@ -64,15 +66,7 @@ export const HERMES_SITE = {
           alt: 'Hermes astroloji kütüphanesi konu ağacı ve okuma alanı'
         }
       ],
-      cards: [
-        { glyph: '☉', title: 'Doğum haritası & Zodyak', desc: 'Swiss Ephemeris motoru; gezegenler, evler, açılar, asteroidler ve sabit yıldızlar — derece derece.' },
-        { glyph: '☾', title: 'Zamanlama teknikleri', desc: 'Transitler, ilerletmeler, dönem teknikleri ve tutulmalar; öngörü çalışması tek akışta.' },
-        { glyph: '∞', title: 'Sinastri', desc: 'İki haritanın karşılaştırması — ilişkinin gökyüzünü iki taraftan okur.' },
-        { glyph: '☿︎', title: 'Horary (Soru Astrolojisi)', desc: 'Soru haritası kurulumu ve klasik horary değerlendirmesi için ayrılmış modül.' },
-        { glyph: '⌖', title: 'Rektifikasyon & Elektif', desc: 'Yaşam olaylarından doğum saati düzeltme; uygun an için tarih aralığı taraması.' },
-        { glyph: '◎', title: 'Astrokartografi & Uranyen', desc: 'Dünya haritası üzerinde yer analizi; 90° dial ve orta noktalarla Uranyen çalışması.' },
-        { glyph: '❧', title: 'Danışan atölyesi', desc: 'Danışan kayıtları, notlar, olay günlüğü, raporlar, kütüphane ve AA harita arşivi.' }
-      ]
+      cards: HERMES_HOME_FEATURE_CARDS
     },
     akis: {
       title: 'Üç adımda çalışmaya başla',
@@ -111,77 +105,13 @@ export const HERMES_SITE = {
   },
 
   ozellikler: {
+    envanterSurumu: HERMES_FEATURE_INVENTORY_VERSION,
     hero: {
-      kicker: 'ÖZELLİKLER',
-      title: 'Modül modül Hermes',
-      p: 'Aşağıdaki her başlık programda ayrı bir çalışma alanıdır. Hepsi aynı harita motorunu paylaşır; bir danışan seçtiğinde tüm modüller ona göre kurulur.'
+      kicker: 'DOĞRULANMIŞ ÜRÜN ENVANTERİ',
+      title: 'Hermes’in çalışma alanları',
+      p: `${HERMES_FEATURE_METRICS.alan} ana alandaki ${HERMES_FEATURE_METRICS.ozellik} çalışan araç ve özellik aşağıda tek tek listelenir. Gelecek macOS/mobil sürümleri, senkronizasyon planı ve kişisel geliştirme araçları bu sayıya dahil değildir.`
     },
-    gruplar: [
-      {
-        id: 'motor', baslik: 'Harita motoru',
-        giris: 'Hermes’in kalbi, Swiss Ephemeris tabanlı hesap motorudur; tüm modüller aynı hassas çekirdeği kullanır.',
-        gorsel: { src: '/assets/ekranlar/modul-motor.png', cap: 'Yeni nesil 90° harita motoru' },
-        items: [
-          { ad: 'Doğum haritası', desc: 'Gezegenler, evler, açılar; ev sistemleri ve ayanamsa seçenekleriyle. Derece hassasiyeti efemeris kaynağıyla birebir.' },
-          { ad: 'Zodyak çalışma alanı', desc: 'Burçlar, yöneticilikler ve asaletler üzerinde yoğun veri ekranı; öğrenme ve başvuru için.' },
-          { ad: 'Asteroidler & sabit yıldızlar', desc: 'Efemeris dosyaları programla gelir; internetsiz de tam hesap.' }
-        ]
-      },
-      {
-        id: 'zamanlama', baslik: 'Zamanlama & öngörü',
-        giris: 'Tahmin çalışması tek modüle sıkışmaz; teknikler yan yana kurulur ve aynı danışan üzerinde birleşir.',
-        gorsel: { src: '/assets/ekranlar/modul-zamanlama.png', cap: 'Transit katmanı ve gezegen bilgi kartı' },
-        items: [
-          { ad: 'Transitler', desc: 'Gökyüzü trafiğini natal haritanın üzerine bindirir; dönem dönem izlersin.' },
-          { ad: 'İlerletmeler', desc: 'Sekonder ilerletme ve yön teknikleriyle iç zamanlama.' },
-          { ad: 'Dönem teknikleri', desc: 'Zaman lordu yaklaşımlarıyla hayatı bölümler hâlinde okuma.' },
-          { ad: 'Tutulmalar', desc: 'Tutulma serilerini tarih aralığında tarar, haritaya temas noktalarını gösterir.' }
-        ]
-      },
-      {
-        id: 'iliski-soru', baslik: 'İlişki & soru',
-        giris: 'İki ayrı disiplin, iki ayrı modül: haritalar arası ilişki ve anın sorusu.',
-        gorsel: { src: '/assets/ekranlar/modul-iliski-soru.png', cap: 'Üç halkalı karşılaştırma kadranı' },
-        items: [
-          { ad: 'Sinastri', desc: 'İki haritanın karşılıklı açıları ve ev temasları; ilişki dinamiğini iki taraftan okur.' },
-          { ad: 'Horary (Soru Astrolojisi)', desc: 'Soru anına harita kurar; klasik horary değerlendirme düzeniyle çalışır.' }
-        ]
-      },
-      {
-        id: 'ileri', baslik: 'İleri teknikler',
-        giris: 'Çoğu programda eklenti olan araçlar Hermes’te yerleşiktir.',
-        gorsel: { src: '/assets/ekranlar/modul-ileri.png', cap: 'Dynamic Charts · Harmonik çalışma alanı' },
-        items: [
-          { ad: 'Rektifikasyon', desc: 'Yaşam olaylarından geriye doğru doğum saati düzeltme; aday saatleri puanlayarak daraltır.' },
-          { ad: 'Elektif (seçim taraması)', desc: 'Bir işe başlamak için tarih aralığını tarar, kriterlerine uyan anları listeler.' },
-          { ad: 'Astrokartografi', desc: 'Gezegen hatlarını dünya haritası üzerine çizer; yer değiştirme sorularına görsel cevap.' },
-          { ad: 'Uranyen astroloji', desc: '90° dial, orta noktalar ve yakınlaştırmalı kadran; Uranyen ekolüyle çalışanlar için.' }
-        ]
-      },      {
-        id: 'atolye', baslik: 'Danışan atölyesi',
-        giris: 'Hermes yalnız hesap yapmaz; bir danışmanlık pratiğinin defterini de tutar.',
-        gorsel: { src: '/assets/ekranlar/modul-atolye.png', cap: 'Analiz detay merkezi' },
-        items: [
-          { ad: 'Danışan yönetimi', desc: 'Kayıtlar, kategoriler, toplu işlemler; danışan başına harita, not, olay ve analiz geçmişi.' },
-          { ad: 'Raporlar', desc: 'Çalışmalarını derli toplu rapor hâline getirir.' },
-          { ad: 'Kütüphane & AA Harita Arşivi', desc: 'Astroloji kütüphanesi ve AstroDatabank tarzı doğrulanmış doğum verisi arşiviyle araştırma.' },
-          { ad: 'Araştırma & istatistikler', desc: 'Haritalar üzerinde desen arama ve istatistik toplama araçları.' },
-          { ad: 'Öğretmen modülü', desc: 'Astroloji eğitimi verenler için sınıf ve ödeme takibi.' }
-        ]
-      },
-      {
-        id: 'platform', baslik: 'Platform & gizlilik',
-        giris: 'Hermes bugün Windows bilgisayarlarda kullanılabilir; her cihaz kendi lisansını gerektirir.',
-        gorsel: { src: '/assets/ekranlar/modul-platform.png', cap: 'Koyu temada astrokartografi çalışma alanı' },
-        items: [
-          { ad: 'Çevrimdışı çekirdek', desc: 'Efemeris gömülü; internet yalnız lisans ve güncelleme için.' },
-          { ad: 'Veri cihazda', desc: 'Danışan verilerin bilgisayarından çıkmaz; bulut zorunluluğu yok.' },
-          { ad: 'Görsel temalar', desc: 'Gündüz ve gece çalışmaya uygun tema aileleri — bu sitenin koyu modu da programdaki “Meridyen Rasathanesi” temasıdır.' },
-          { ad: 'Yol haritası', desc: 'macOS sürümü 17 Ağustos 2026’da sunulacak; Android, iPhone ve iPad sürümleri daha sonra gelecek. Her cihaz için ayrı lisans gerekir.' },
-          { ad: 'Cihazlar arası senkronizasyon', desc: 'İleride isteğe bağlı, ayrı bir abonelik hizmeti olarak sunulacaktır; program lisansına dahil değildir.' }
-        ]
-      }
-    ]
+    gruplar: HERMES_FEATURE_GROUPS
   },
 
   fiyat: {

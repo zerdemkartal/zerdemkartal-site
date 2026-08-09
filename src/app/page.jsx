@@ -36,6 +36,7 @@ function buildJsonLd(c) {
 export default async function Home() {
   const c = await getHermes();
   const { hero, moduller, akis, ekranlar, gizlilik, fiyatBand } = c.home;
+  const ozellikSayisi = (c.ozellikler?.gruplar || []).reduce((total, group) => total + (group.items || []).length, 0);
 
   return (
     <main>
@@ -65,10 +66,10 @@ export default async function Home() {
         <HeroShowcase shots={ekranlar.shots || []} />
       </section>
 
-      {/* AKAN ŞERİT — modül başlıkları (Faz 4). Salt dekoratif değil: gerçek modül adları. */}
+      {/* AKAN ŞERİT — ana çalışma alanları (Faz 4). Salt dekoratif değil: gerçek alan adları. */}
       <Marquee items={(moduller.cards || []).map((x) => x.title)} sure={46} style={{ marginTop: 16 }} />
 
-      {/* MODÜLLER */}
+      {/* ANA ÇALIŞMA ALANLARI */}
       <section style={sectionStyle}>
         <Reveal style={{ textAlign: 'center', maxWidth: 760, margin: '0 auto' }}>
           <div style={kickerStyle} data-he data-path="home.moduller.kicker">{moduller.kicker}</div>
@@ -91,7 +92,7 @@ export default async function Home() {
             </Reveal>
           ))}
         </div>
-        <div className="h-module-compact-grid" aria-label="Hermes modülleri">
+        <div className="h-module-compact-grid" aria-label="Hermes ana çalışma alanları">
           {(moduller.cards || []).map((f, i, cards) => {
             const isClosing = i === cards.length - 1 && cards.length % 3 === 1;
             return (
@@ -120,7 +121,7 @@ export default async function Home() {
             );
           })}
         </div>
-        <p style={{ marginTop: 22 }}><a href="/ozellikler">Tüm özellikleri modül modül incele →</a></p>
+        <p style={{ marginTop: 22 }}><a href="/ozellikler">{ozellikSayisi} çalışan araç ve özelliğin tamamını incele →</a></p>
       </section>
 
       {/* 3 ADIM */}

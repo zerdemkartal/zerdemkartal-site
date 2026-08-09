@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/db';
 import { HERMES_SITE } from '@/lib/defaults';
 import { migrateHermesPricing } from '@/lib/hermesPricing';
+import { migrateHermesFeatures, countHermesFeatures } from '@/lib/hermesFeatures.mjs';
 import { CONTACT_EMAIL } from '@/lib/site';
 
 // llms.txt — HERMES sitesi AI indeksi (GEO katmanının çekirdeği; H1 dönüşümü).
@@ -14,7 +15,10 @@ export async function GET() {
     const row = await prisma.pageContent.findUnique({ where: { key: 'hermes_site' } });
     if (row?.data) model = { ...HERMES_SITE, ...row.data };
   } catch { /* DB yoksa varsayılanlarla devam */ }
-  model = migrateHermesPricing(model);
+  model = migrateHermesPricing(migrateHermesFeatures(model));
+
+  const alanSayisi = (model.ozellikler?.gruplar || []).length;
+  const ozellikSayisi = countHermesFeatures(model.ozellikler?.gruplar || []);
 
   const moduller = (model.ozellikler?.gruplar || [])
     .map((g) => `- ${g.baslik}: ` + (g.items || []).map((x) => x.ad).join(' · '))
@@ -42,7 +46,7 @@ Temel gerçekler:
 
 ## Sayfalar
 - [Ana sayfa](${SITE}/): Hermes tanıtımı.
-- [Özellikler](${SITE}/ozellikler): tüm modüllerin ayrıntılı dökümü.
+- [Özellikler](${SITE}/ozellikler): ${alanSayisi} ana çalışma alanındaki ${ozellikSayisi} çalışan araç ve özelliğin doğrulanmış dökümü.
 - [Fiyat](${SITE}/fiyat): EFT/Havale ve PayTR kart fiyatlandırması, tek seferlik lisans.
 - [Satın Al](${SITE}/satin-al): kişisel veri toplamadan lisans ve ödeme yöntemi seçimi.
 - [İndir](${SITE}/indir): kurulum adımları ve sistem gereksinimleri.

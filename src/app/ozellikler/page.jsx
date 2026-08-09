@@ -1,4 +1,4 @@
-// ÖZELLİKLER — modül modül Hermes (H1). İçerik: 'hermes_site' → ozellikler.
+// ÖZELLİKLER — doğrulanmış Hermes ürün envanteri. İçerik: 'hermes_site' → ozellikler.
 // Her grup #<id> çapasıyla derin linklenebilir (GEO: bölüm bazlı adreslenebilirlik).
 // JSON-LD: WebPage + Breadcrumb + SoftwareApplication (tam featureList) + ItemList.
 import { getHermes } from '@/lib/hermesContent';
@@ -10,7 +10,7 @@ import Shot from '@/components/Shot';
 import Reveal from '@/components/Reveal';
 // Faz 2 (27 Tem 2026) — kart parıltısı/eğilmesi.
 import Spotlight from '@/components/Spotlight';
-// Faz 4 (27 Tem 2026) — sayaçlar. Rakamlar içerik modelinden SAYILIR (uydurma yok).
+// Faz 4 (27 Tem 2026) — sayaçlar. Rakamlar doğrulanmış envanterden SAYILIR (uydurma yok).
 import Counter from '@/components/Counter';
 
 export const revalidate = 300;
@@ -32,7 +32,7 @@ function buildJsonLd(c) {
       { '@type': 'ListItem', position: 2, name: 'Özellikler', item: SITE + PATH }
     ] },
     appNode({ description: seo.description, featureList: feats }),
-    { '@type': 'ItemList', name: 'Hermes modülleri', itemListElement: (c.ozellikler.gruplar || []).map((g, i) => ({
+    { '@type': 'ItemList', name: 'Hermes çalışma alanları', itemListElement: (c.ozellikler.gruplar || []).map((g, i) => ({
       '@type': 'ListItem', position: i + 1, name: g.baslik, url: SITE + PATH + '#' + g.id
     })) }
   ] };
@@ -41,8 +41,8 @@ function buildJsonLd(c) {
 export default async function Ozellikler() {
   const c = await getHermes();
   const oz = c.ozellikler;
-  // Sayaç değerleri = içerik modelinin GERÇEK sayımı. İçerik MCP'den değişince
-  // rakamlar da değişir; elle yazılmış pazarlama sayısı yok.
+  // Sayaç değerleri = doğrulanmış envanterin GERÇEK sayımı. Her sayılan araç
+  // aşağıdaki kartlardan biri olarak görünür; elle yazılmış pazarlama sayısı yok.
   const grupSayisi = (oz.gruplar || []).length;
   const ozellikSayisi = (oz.gruplar || []).reduce((t, g) => t + (g.items || []).length, 0);
 
@@ -58,7 +58,7 @@ export default async function Ozellikler() {
           <p style={pStyle} data-he data-path="ozellikler.hero.p">{oz.hero.p}</p>
           {/* Faz 4 — sayaçlar (görünüre girince sayar; JS yoksa son değer basılı) */}
           <div className="h-feature-metrics">
-            {[[grupSayisi, 'modül'], [ozellikSayisi, 'özellik']].map(([sayi, ad]) => (
+            {[[grupSayisi, 'ana çalışma alanı'], [ozellikSayisi, 'çalışan araç & özellik']].map(([sayi, ad]) => (
               <div key={ad}>
                 <div style={{ fontFamily: T.serif, fontSize: 40, lineHeight: 1, color: T.accentText }}>
                   <Counter to={sayi} />
@@ -69,7 +69,7 @@ export default async function Ozellikler() {
           </div>
           <div className="h-route-actions">
             <a href="/satin-al" style={btnPrimary}>Satın al</a>
-            <a href="#motor" style={btnGhost}>Modülleri incele</a>
+            <a href="#harita-zodyak" style={btnGhost}>Envanteri incele</a>
           </div>
         </div>
         <Shot
@@ -118,8 +118,8 @@ export default async function Ozellikler() {
       <section style={sectionStyle}>
         <Reveal style={{ background: T.dark, color: 'var(--h-dark-text)', borderRadius: 28, padding: '48px 44px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 24 }}>
           <div style={{ maxWidth: 560 }}>
-            <h2 style={{ ...h2Style, color: 'var(--h-dark-wordmark)', margin: 0 }}>Hepsi tek lisansta.</h2>
-            <p style={{ ...pStyle, color: 'var(--h-dark-text2)' }}>Modül modül satış yok; Hermes’i aldığında bu sayfadaki her şey senindir.</p>
+            <h2 style={{ ...h2Style, color: 'var(--h-dark-wordmark)', margin: 0 }}>Tek programda, tek çalışma düzeninde.</h2>
+            <p style={{ ...pStyle, color: 'var(--h-dark-text2)' }}>Parça parça modül satışı yok; bu envanterdeki çalışma alanları ve araçlar cihaz lisansına dahildir.</p>
           </div>
           <a href="/fiyat" style={{ background: 'var(--h-dark-wordmark)', color: T.dark, borderRadius: 999, padding: '15px 30px', textDecoration: 'none', fontWeight: 700 }}>Fiyatı gör</a>
         </Reveal>

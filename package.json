@@ -18,6 +18,7 @@
     "test:customer-license": "node tests/customer-license.mjs",
     "test:paytr": "node tests/paytr-link.mjs",
     "test:site-license-copy": "node tests/site-license-copy.mjs",
+    "test:site-feature-inventory": "node tests/site-feature-inventory.mjs",
     "test:mail": "node tests/mail-center.mjs",
     "postinstall": "prisma generate"
   },
