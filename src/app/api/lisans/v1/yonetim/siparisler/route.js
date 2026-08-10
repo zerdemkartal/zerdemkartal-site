@@ -74,7 +74,17 @@ export async function GET(request) {
         status: true,
         testMode: true,
         paidAt: true,
-        createdAt: true
+        createdAt: true,
+        checkout: {
+          select: {
+            name: true,
+            email: true,
+            deliveryStatus: true,
+            deliveryAttempts: true,
+            deliverySentAt: true,
+            deliveryError: true
+          }
+        }
       }
     })
   ]);

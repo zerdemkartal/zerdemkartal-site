@@ -29,17 +29,17 @@ const DOCS = {
     body: (
       <>
         <h1 style={h2}>KVKK Aydınlatma Metni</h1>
-        <div style={sub}>6698 sayılı Kişisel Verilerin Korunması Kanunu m.10 uyarınca · Yürürlük: 8 Ağustos 2026</div>
+        <div style={sub}>6698 sayılı Kişisel Verilerin Korunması Kanunu m.10 uyarınca · Yürürlük: 10 Ağustos 2026</div>
         <h2 style={h3}>1. Veri sorumlusu</h2>
         <p style={p}>Bu sitede işlenen kişisel veriler bakımından veri sorumlusu <B>{COMPANY_LEGAL_NAME}</B>, {COMPANY_ADDRESS} adresinde yerleşiktir. Başvurularınızı {CONTACT_EMAIL} adresine iletebilirsiniz.</p>
         <h2 style={h3}>2. Hangi verileri işliyoruz</h2>
         <ul style={ul}>
           <li><B>İletişim ve destek:</B> iletişim formunu, e-posta veya WhatsApp kanalını kullanmanız hâlinde paylaştığınız ad, iletişim bilgisi ve mesaj içeriği.</li>
-          <li><B>Lisans ve teslim:</B> lisansın hazırlanması, indirme erişimi ve destek için ayrıca paylaştığınız ad, e-posta ve lisans bilgileri.</li>
-          <li><B>Anonim ödeme mutabakatı:</B> seçilen lisans planı, tutar, para birimi, PayTR işlem referansı, ödeme türü, durum ve işlem zamanı.</li>
+          <li><B>Satın alma, lisans ve teslim:</B> sözleşmenin kurulması, ödeme kaydının eşleştirilmesi, indirme erişimi, lisansın hazırlanması ve destek için verdiğiniz ad, e-posta ve lisans bilgileri.</li>
+          <li><B>Ödeme mutabakatı:</B> seçilen lisans planı, tutar, para birimi, PayTR işlem referansı, ödeme türü, durum ve işlem zamanı.</li>
           <li><B>Yasal kayıtlar:</B> fatura ve muhasebe mevzuatı gereği edinilen bilgiler, yalnız zorunlu süre ve kapsamda.</li>
         </ul>
-        <p style={p}><B>Ödeme gizliliği:</B> Hermes satın alma sayfası ad, e-posta, telefon, adres, TCKN/VKN veya kart bilgisi toplamaz. Kartlı ödemede müşteri ve ödeme bilgileri doğrudan PayTR’nin güvenli sayfasına girilir; kart verileri Hermes/Vercel uygulamasından geçmez. Hermes tarafında yalnız yukarıdaki anonim işlem özeti saklanır.</p>
+        <p style={p}><B>Ödeme gizliliği:</B> Hermes satın alma sayfası, kişisel indirme davetini iletmek ve ödemeyi doğru müşteriyle eşleştirmek için yalnız ad-soyad ve e-posta adresi ister. Telefon, açık adres, TCKN/VKN veya kart bilgisi istemez. Kart bilgileri doğrudan PayTR’nin güvenli sayfasına girilir ve Hermes/Vercel uygulamasından geçmez.</p>
         <h2 style={h3}>3. Amaç ve hukuki sebepler</h2>
         <ul style={ul}>
           <li>Sözleşmenin kurulması ve ifası; ödeme mutabakatı, lisans ve dijital teslim işlemleri — KVKK m.5/2-c.</li>
@@ -61,7 +61,7 @@ const DOCS = {
     body: (
       <>
         <h1 style={h2}>Gizlilik &amp; Çerez Politikası</h1>
-        <div style={sub}>Yürürlük: 8 Ağustos 2026</div>
+        <div style={sub}>Yürürlük: 10 Ağustos 2026</div>
         <p style={{ ...p, margin: '26px 0 0' }}>İlkemiz veri minimizasyonudur: hizmet için gerekli olmayan kişisel bilgiyi istemeyiz; verileri satmaz ve reklam ağı oluşturmak için kullanmayız.</p>
         <h2 style={h3}>1. Çerezler ve yerel depolama</h2>
         <ul style={ul}>
@@ -70,7 +70,7 @@ const DOCS = {
           <li><B>Üçüncü taraf bağlantıları:</B> PayTR, WhatsApp, YouTube veya Instagram’a geçtiğinizde ilgili hizmetin gizlilik ve çerez koşulları uygulanır.</li>
         </ul>
         <h2 style={h3}>2. Ödeme gizliliği</h2>
-        <p style={p}>Kartlı ödeme PayTR alan adında tamamlanır. Hermes’in Vercel uygulaması müşteri, fatura ve kart bilgisi alanı sunmaz; yalnız plan/fiyat oluşturur ve başarılı ödemeden anonim mutabakat bildirimi alır. EFT/Havale için WhatsApp veya e-posta seçerseniz, bu kanalda paylaştığınız bilgiler ilgili iletişim sağlayıcısının sisteminde de işlenebilir.</p>
+        <p style={p}>Hermes satın alma sayfası yalnız ad-soyad ve teslim e-postası alır; telefon, açık adres, TCKN/VKN ve kart bilgisi almaz. Kartlı ödeme PayTR alan adında tamamlanır; kart bilgileri Hermes sunucularından geçmez. Başarılı ödeme bildirimi ad/e-posta ile işlem kaydını eşleştirir ve kişisel indirme davetini gönderir. EFT/Havale için WhatsApp veya e-posta seçerseniz, bu kanalda paylaştığınız bilgiler ilgili iletişim sağlayıcısının sisteminde de işlenebilir.</p>
         <h2 style={h3}>3. Yönetim ve güvenlik</h2>
         <p style={p}>Tarayıcınızdan çerez ve yerel depolama kayıtlarını silebilirsiniz; zorunlu kayıtların engellenmesi bazı oturum özelliklerini çalışmaz hâle getirebilir. Bağlantılar HTTPS ile korunur, gizli anahtarlar yalnız sunucu ortamında tutulur ve kart bilgisi Hermes sunucularına alınmaz.</p>
         <h2 style={h3}>4. Değişiklikler ve iletişim</h2>
@@ -84,7 +84,7 @@ const DOCS = {
     body: (
       <>
         <h1 style={h2}>Ön Bilgilendirme Formu</h1>
-        <div style={sub}>6502 sayılı Kanun ve Mesafeli Sözleşmeler Yönetmeliği uyarınca · Yürürlük: 9 Ağustos 2026</div>
+        <div style={sub}>6502 sayılı Kanun ve Mesafeli Sözleşmeler Yönetmeliği uyarınca · Yürürlük: 10 Ağustos 2026</div>
         <h2 style={h3}>1. Satıcı</h2><p style={p}>{SELLER}</p>
         <h2 style={h3}>2. Ürünün temel nitelikleri</h2>
         <p style={p}>Hermes, şu an Windows 10/11 bilgisayarlar için sunulan profesyonel astroloji yazılımının tek seferlik program lisansıdır. Her lisans yalnız etkinleştirildiği bir cihazda geçerlidir; farklı veya ikinci cihaz için ayrı lisans gerekir. Aynı cihaz için yayımlanan güncellemeler lisansa dahildir. macOS sürümü 17 Ağustos 2026’da, Android, iPhone ve iPad sürümleri ise daha sonra sunulacaktır. Cihazlar arası veri senkronizasyonu program lisansına dahil değildir; yayımlandığında ayrı abonelik koşullarına tabi olacaktır. Ürün gayri maddi/dijital olarak teslim edilir; fiziksel kargo yapılmaz.</p>
@@ -95,7 +95,7 @@ const DOCS = {
           <li><B>Taksit:</B> kart ve vade seçimine göre nihai toplam PayTR ödeme sayfasında gösterilir. Sipariş, bu toplam onaylandıktan sonra tamamlanır.</li>
         </ul>
         <h2 style={h3}>4. Ödeme, teslimat ve ek masraflar</h2>
-        <p style={p}>Kartlı ödeme PayTR’nin güvenli ödeme sayfasında; EFT/Havale satıcının bildirdiği banka hesabına yapılır. Dijital teslim nedeniyle kargo ücreti yoktur. Ödeme doğrulandıktan sonra indirme erişimi ve lisans hazırlama süreci başlar; teslimat en geç iki iş günü içinde, PayTR işlemi veya doğrudan iletişim sırasında doğrulanan iletişim kanalı üzerinden tamamlanır.</p>
+        <p style={p}>Kartlı ödeme PayTR’nin güvenli ödeme sayfasında; EFT/Havale satıcının bildirdiği banka hesabına yapılır. Dijital teslim nedeniyle kargo ücreti yoktur. Başarılı kart ödemesi bildirildiğinde 72 saat geçerli kişisel indirme daveti satın alma sayfasında doğruladığınız e-posta adresine otomatik gönderilir. Programdaki <B>Lisans İste</B> kaydınızın ardından satın alınan cihaz sınırına uygun imzalı lisans en geç iki iş günü içinde hazırlanır.</p>
         <h2 style={h3}>5. Cayma ve iade</h2>
         <p style={p}>Tüketici kural olarak sözleşmenin kurulmasından itibaren 14 gün içinde cayabilir. Ancak açık onayınızla elektronik ortamda ifasına başlanan ve tarafınıza teslim edilen dijital içerik/lisans için Mesafeli Sözleşmeler Yönetmeliği m.15/1-ğ kapsamındaki cayma hakkı istisnası uygulanabilir. Lisans ve indirme erişimi teslim edilmeden önce iptal talebinde bulunabilirsiniz. Ayıplı hizmete ilişkin kanuni haklarınız saklıdır.</p>
         <h2 style={h3}>6. Başvuru ve uyuşmazlık</h2>
@@ -109,13 +109,13 @@ const DOCS = {
     body: (
       <>
         <h1 style={h2}>Teslimat ve Kargo Koşulları</h1>
-        <div style={sub}>Yürürlük: 8 Ağustos 2026</div>
+        <div style={sub}>Yürürlük: 10 Ağustos 2026</div>
         <h2 style={h3}>1. Dijital teslimat</h2>
         <p style={p}>Hermes fiziksel ürün değildir. Kargo veya kurye gönderimi yapılmaz; bu nedenle kargo ücreti yoktur. Teslimat, Windows kurulumuna erişim ve satın alınan cihaz sınırına uygun lisansın hazırlanmasıyla dijital olarak tamamlanır.</p>
         <h2 style={h3}>2. Teslim süresi ve kanalı</h2>
-        <p style={p}>Ödeme PayTR bildirimi veya banka hareketi üzerinden doğrulandıktan sonra teslim süreci başlar. İndirme erişimi ve lisans adımları, ödeme sırasında PayTR’ye verilen ya da EFT/Havale görüşmesinde doğrulanan iletişim kanalı üzerinden <B>en geç iki iş günü içinde</B> iletilir.</p>
+        <p style={p}>Başarılı kart ödemesi PayTR tarafından bildirildiğinde 72 saat geçerli kişisel indirme daveti, satın alma sayfasında iki kez doğruladığınız e-posta adresine otomatik gönderilir. EFT/Havale ödemesinde davet banka hareketinin yönetici tarafından onaylanmasından sonra gönderilir. İmzalı lisans, programdaki <B>Lisans İste</B> kaydınızdan sonra satın alınan cihaz sınırına uygun biçimde <B>en geç iki iş günü içinde</B> hazırlanır.</p>
         <h2 style={h3}>3. Alıcının kontrolü</h2>
-        <p style={p}>PayTR’ye veya satıcıyla iletişime verdiğiniz bilgilerin doğru olması teslim için gereklidir. Süre içinde bildirim ulaşmazsa işlem referansınızla {CONTACT_EMAIL} adresine yazabilirsiniz. Kart bilgisi, TCKN/VKN veya açık adresi e-postayla göndermeniz istenmez.</p>
+        <p style={p}>Satın alma sayfasında verdiğiniz e-posta adresinin doğru olması teslim için gereklidir. Ödeme başarılı olduğu hâlde indirme daveti ulaşmazsa gereksiz/spam klasörünü kontrol edip işlem referansınızla {CONTACT_EMAIL} adresine yazabilirsiniz. Kart bilgisi, TCKN/VKN veya açık adresi e-postayla göndermeniz istenmez.</p>
         <h2 style={h3}>4. Teknik sorun</h2>
         <p style={p}>Kurulum bağlantısı veya lisans teknik nedenle çalışmazsa destek sağlanır. Sorun makul sürede giderilemezse tüketicinin ayıplı mal/hizmete ilişkin seçimlik hakları ve <a href="/yasal/iade" style={{ color: T.purple }}>İptal &amp; İade Koşulları</a> uygulanır.</p>
       </>
@@ -127,15 +127,15 @@ const DOCS = {
     body: (
       <>
         <h1 style={h2}>Mesafeli Satış Sözleşmesi</h1>
-        <div style={sub}>6502 sayılı Kanun ve Mesafeli Sözleşmeler Yönetmeliği uyarınca · Yürürlük: 9 Ağustos 2026</div>
+        <div style={sub}>6502 sayılı Kanun ve Mesafeli Sözleşmeler Yönetmeliği uyarınca · Yürürlük: 10 Ağustos 2026</div>
         <h2 style={h3}>1. Taraflar</h2>
-        <p style={p}><B>Satıcı:</B> {SELLER}<br /><B>Alıcı:</B> PayTR ödeme sayfasında veya EFT/Havale işlemi için doğrudan iletişimde bilgilerini vererek siparişi tamamlayan tüketici.</p>
+        <p style={p}><B>Satıcı:</B> {SELLER}<br /><B>Alıcı:</B> Hermes satın alma sayfasında ad-soyad ve e-posta bilgisini verip PayTR ödeme sayfasında veya EFT/Havale yoluyla siparişi tamamlayan tüketici.</p>
         <h2 style={h3}>2. Konu ve ürün</h2>
         <p style={p}>Sözleşme, satın alma sayfasında seçilen 1 veya 2 cihazlık Hermes Astroloji Programı dijital lisansının satışı, ödemesi ve teslimine ilişkin tarafların hak ve yükümlülüklerini düzenler. Her cihaz için ayrı lisans düzenlenir; lisans farklı cihazlar arasında ortak kullanılamaz. Cihazlar arası veri senkronizasyonu bu lisansın kapsamında değildir ve ileride ayrı abonelik koşullarıyla sunulacaktır.</p>
         <h2 style={h3}>3. Fiyat ve ödeme</h2>
         <p style={p}>Vergiler dâhil EFT/Havale fiyatı 1 cihaz için ₺6.000, 2 cihaz için ₺8.500’dür. Kartla tek çekim fiyatı PayTR’nin güncel mağaza oranıyla otomatik hesaplanarak satın alma sayfasında gösterilir. Taksitte kart/vade kaynaklı toplam PayTR ekranında değişebilir. Alıcının PayTR’de onayladığı nihai tutar sipariş bedelidir. Kart bilgileri Hermes sunucularına girilmez.</p>
         <h2 style={h3}>4. Sözleşmenin kurulması ve teslimat</h2>
-        <p style={p}>Alıcı ön bilgilendirme ve sözleşme koşullarını onaylayıp ödemeyi tamamladığında sözleşme kurulur. Ürün yalnız dijital teslim edilir; kargo yoktur. Ödeme doğrulamasından sonra indirme erişimi ve lisans en geç iki iş günü içinde, doğrulanan iletişim kanalı üzerinden iletilir.</p>
+        <p style={p}>Alıcı ön bilgilendirme ve sözleşme koşullarını onaylayıp ödemeyi tamamladığında sözleşme kurulur. Ürün yalnız dijital teslim edilir; kargo yoktur. Başarılı kart ödemesi bildirildiğinde 72 saatlik indirme daveti doğrulanan e-posta adresine otomatik gönderilir. İmzalı lisans, programdaki <B>Lisans İste</B> kaydından sonra en geç iki iş günü içinde hazırlanır.</p>
         <h2 style={h3}>5. Cayma hakkı</h2>
         <p style={p}>Alıcı kural olarak 14 gün içinde cayabilir. Alıcının açık onayıyla elektronik ortamda ifasına başlanan ve teslim edilen gayri maddi ürünlerde Yönetmelik m.15/1-ğ uyarınca cayma hakkı istisnası uygulanır. Dijital teslim tamamlanmadan önce iptal talebi kabul edilir. Ayıplı mal veya hizmete ilişkin emredici kanuni haklar saklıdır.</p>
         <h2 style={h3}>6. İade ve uyuşmazlık</h2>

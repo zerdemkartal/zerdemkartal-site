@@ -184,7 +184,7 @@ await test('Test link ucu yonetici korumali ve callback kaydi test olarak ayrili
   assert.ok(route.indexOf('requireAdmin(request)') < route.indexOf('createPaytrLink({'));
   assert.ok(route.includes('TEST_PAYMENT_KURUS = 1000'));
   assert.ok(route.includes('testMode: true'));
-  assert.ok(callback.includes("testMode: callback.testMode || fields.test_mode === '1'"));
+  assert.ok(callback.includes("const testMode = callback.testMode || fields.test_mode === '1'"));
 });
 
 await test('Yonetim paneli 10 TL test linkini oturum anahtariyla aciyor', () => {
@@ -208,25 +208,34 @@ await test('Callback HMAC doğrulaması değiştirilmiş tutarı reddediyor', ()
   assert.equal(verifyPaytrCallbackHash({ ...fields, total_amount: '1' }, env), false);
 });
 
-await test('Kamusal satın alma akışı PII alanı içermiyor; eski POST uçları gövdeyi okumadan kapalı', () => {
+await test('Kamusal satın alma akışı yalnız teslim kimliğini alıyor; eski POST uçları gövdeyi okumadan kapalı', () => {
   const form = fs.readFileSync(path.join(ROOT, 'src/app/satin-al/SatinAlForm.jsx'), 'utf8');
+  const link = fs.readFileSync(path.join(ROOT, 'src/app/api/pay/paytr/link/route.js'), 'utf8');
   const purchase = fs.readFileSync(path.join(ROOT, 'src/app/api/purchase-request/route.js'), 'utf8');
   const orders = fs.readFileSync(path.join(ROOT, 'src/app/api/orders/route.js'), 'utf8');
   const iyzico = fs.readFileSync(path.join(ROOT, 'src/app/api/pay/iyzico/start/route.js'), 'utf8');
-  for (const field of ['firstName', 'lastName', 'taxNumber', 'billingAddress', 'companyTitle']) {
+  for (const field of ['firstName', 'lastName', 'taxNumber', 'billingAddress', 'companyTitle', 'phone']) {
     assert.ok(!form.includes(field));
   }
   for (const route of [purchase, orders, iyzico]) {
     assert.ok(route.includes('status: 410'));
     assert.ok(!route.includes('request.json'));
   }
+  assert.ok(form.includes('Ad soyad'));
+  assert.ok(form.includes('E-postayı doğrula'));
+  assert.ok(form.includes('requestId: globalThis.crypto.randomUUID()'));
   assert.ok(form.includes("fetch('/api/pay/paytr/link'"));
   assert.ok(form.includes('termsVersion: pricing.termsVersion'));
+  assert.ok(link.includes('adSoyad: z.string().trim().min(2).max(120)'));
+  assert.ok(link.includes('email: z.string().trim().email().max(254)'));
+  assert.ok(link.includes('requestId: z.string().uuid()'));
+  assert.ok(link.includes('prisma.paytrCheckout.create'));
 });
 
-await test('Anonim ödeme tablosunda müşteri alanı ve yasal sayfalarda yer tutucu yok', () => {
+await test('Makbuz kart verisi tutmuyor; checkout yalnız teslim için gereken müşteri alanlarını içeriyor', () => {
   const schema = fs.readFileSync(path.join(ROOT, 'prisma/schema.prisma'), 'utf8');
-  const receipt = schema.slice(schema.indexOf('model PaymentReceipt'), schema.indexOf('// Müşterinin indirme'));
+  const receipt = schema.slice(schema.indexOf('model PaymentReceipt'), schema.indexOf('model PaytrCheckout'));
+  const checkout = schema.slice(schema.indexOf('model PaytrCheckout'), schema.indexOf('// Müşterinin indirme'));
   const legal = fs.readFileSync(path.join(ROOT, 'src/app/yasal/[slug]/page.jsx'), 'utf8');
   assert.ok(receipt.includes('merchantOid'));
   assert.ok(receipt.includes('termsVersion'));
@@ -234,10 +243,30 @@ await test('Anonim ödeme tablosunda müşteri alanı ve yasal sayfalarda yer tu
   for (const forbidden of ['name ', 'email ', 'phone ', 'address ', 'taxNumber ', 'identityNumber ']) {
     assert.ok(!receipt.includes(forbidden));
   }
+  assert.ok(checkout.includes('name               String'));
+  assert.ok(checkout.includes('email              String'));
+  for (const forbidden of ['phone ', 'address ', 'taxNumber ', 'identityNumber ', 'cardNumber ']) {
+    assert.ok(!checkout.includes(forbidden));
+  }
   assert.ok(legal.includes("'on-bilgilendirme'"));
   assert.ok(legal.includes('teslimat:'));
+  assert.ok(legal.includes('72 saat geçerli kişisel indirme daveti'));
   assert.ok(!legal.includes('[kullanılan analitik aracı]'));
   assert.ok(!legal.includes('yayımdan önce'));
 });
 
-console.log(`\nSONUÇ: ${passed.length}/${passed.length} PayTR gizlilik ve fiyatlandırma kontrolü geçti.`);
+await test('Callback ödemeyi kilitleyip checkout ile eşliyor ve e-posta hatasında yeniden deniyor', () => {
+  const callback = fs.readFileSync(path.join(ROOT, 'src/app/api/pay/paytr/callback/route.js'), 'utf8');
+  const migration = fs.readFileSync(path.join(ROOT, 'prisma/migrations/20260810183000_paytr_checkout_delivery/migration.sql'), 'utf8');
+  assert.ok(callback.includes('pg_advisory_xact_lock'));
+  assert.ok(callback.includes('tx.paytrCheckout.findUnique'));
+  assert.ok(callback.includes('isSameCheckout(checkout, callback)'));
+  assert.ok(callback.includes('deliverPaytrCheckout'));
+  assert.ok(callback.includes("return plain('RETRY', 500)"));
+  assert.ok(migration.includes('CREATE TABLE "PaytrCheckout"'));
+  assert.ok(migration.includes('"requestId" UUID NOT NULL'));
+  assert.ok(migration.includes('"paymentReceiptId" TEXT'));
+  assert.ok(migration.includes('"downloadInviteId" TEXT'));
+});
+
+console.log(`\nSONUÇ: ${passed.length}/${passed.length} PayTR gizlilik, fiyatlandırma ve teslimat kontrolü geçti.`);

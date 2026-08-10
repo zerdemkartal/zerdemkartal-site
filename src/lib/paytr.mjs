@@ -3,9 +3,10 @@ import { LICENSE_DEVICE_PRICES, normalizeDeviceLimit } from './licensePricing.js
 
 export const PAYTR_LINK_CREATE_URL = 'https://www.paytr.com/odeme/api/link/create';
 export const PAYTR_RATES_URL = 'https://www.paytr.com/odeme/taksit-oranlari';
-export const PAYTR_TERMS_VERSION = '20260808';
+export const PAYTR_TERMS_VERSION = '20260810';
 export const PAYTR_RATE_CACHE_MS = 60 * 60 * 1000;
 export const PAYTR_STALE_RATE_MS = 24 * 60 * 60 * 1000;
+export const PAYTR_LINK_TTL_MS = 30 * 60 * 1000;
 
 let rateCache = null;
 
@@ -244,7 +245,7 @@ export function decodePaytrCallbackId(value) {
   };
 }
 
-function istanbulExpiry(minutes = 30, now = Date.now()) {
+function istanbulExpiry(minutes = PAYTR_LINK_TTL_MS / 60_000, now = Date.now()) {
   const parts = new Intl.DateTimeFormat('en-CA', {
     timeZone: 'Europe/Istanbul', year: 'numeric', month: '2-digit', day: '2-digit',
     hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23'

@@ -74,7 +74,7 @@ export default async function Fiyat() {
           <ul style={{ ...pStyle, fontSize: 14.5, paddingLeft: 20 }}>
             {(kutu.rows || []).map((r, i) => <li key={i} style={{ listStyle: 'none', marginLeft: -20 }} data-he data-path={`fiyat.kutu.rows.${i}`}>{r}</li>)}
           </ul>
-          <div style={{ color: T.muted, fontSize: 13.5, marginTop: 14 }}>Hermes ödeme ekranı ad, e-posta, telefon, fatura veya kart bilgisi toplamaz. Kart bilgileri Hermes sunucularından geçmez.</div>
+          <div style={{ color: T.muted, fontSize: 13.5, marginTop: 14 }}>Hermes ödeme ekranı teslimat için yalnız ad-soyad ve e-posta ister; telefon, adres, fatura veya kart bilgisi toplamaz. Kart bilgileri Hermes sunucularından geçmez.</div>
         </Spotlight>
       </section>
 

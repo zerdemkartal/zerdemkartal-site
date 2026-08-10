@@ -1,8 +1,9 @@
 // İşlemsel e-posta — Resend HTTP API (ek paket gerekmez, fetch ile).
-// RESEND_API_KEY yoksa SESSİZ no-op: e-posta atlanır, log düşer, çağıran akış (ödeme/callback) ASLA kırılmaz.
+// RESEND_API_KEY yoksa düşük seviye çağrı hata fırlatmaz; teslim/callback akışı sonucu
+// kontrol eder ve PayTR'a RETRY vererek teslim edilmemiş ödemeyi sessizce onaylamaz.
 // Env: RESEND_API_KEY, EMAIL_FROM (örn. "Hermes Astroloji <info@hermesastroloji.com>").
 // NOT: EMAIL_FROM domaini Resend'de doğrulanmış olmalı; değilse Resend gönderimi reddeder.
-import { SITE } from './site';
+import { SITE } from './site.js';
 
 const FROM = process.env.EMAIL_FROM || 'Hermes <onboarding@resend.dev>';
 
@@ -17,7 +18,7 @@ export function emailConfigured() {
 }
 
 // Düşük seviye gönderim. { ok:boolean, id?, skipped?, error? } döner — hata FIRLATMAZ.
-export async function sendMail({ to, subject, html, text, replyTo, from, headers, tags, attachments }) {
+export async function sendMail({ to, subject, html, text, replyTo, from, headers, tags, attachments, idempotencyKey }) {
   const key = process.env.RESEND_API_KEY;
   if (!key) {
     console.warn('[email] RESEND_API_KEY yok — e-posta atlandı:', subject);
@@ -26,7 +27,14 @@ export async function sendMail({ to, subject, html, text, replyTo, from, headers
   try {
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
-      headers: { Authorization: 'Bearer ' + key, 'Content-Type': 'application/json' },
+      headers: {
+        Authorization: 'Bearer ' + key,
+        'Content-Type': 'application/json',
+        ...(idempotencyKey ? {
+          'Idempotency-Key': String(idempotencyKey).replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 256)
+        } : {})
+      },
+      signal: AbortSignal.timeout(12_000),
       body: JSON.stringify({
         from: from || FROM,
         to: Array.isArray(to) ? to : [to],
@@ -90,7 +98,7 @@ function invitationExpiry(value) {
 
 // Yönetim panelinden veya ödeme onayından üretilen kişisel indirme daveti.
 // Geçici parola yalnız bu çağrının belleğinde bulunur; veri tabanında bcrypt özeti vardır.
-export async function downloadInvitationEmail({ recipient, access, paymentConfirmed = false }) {
+export async function downloadInvitationEmail({ recipient, access, paymentConfirmed = false, idempotencyKey }) {
   const safeName = escapeHtml(recipient.name);
   const safeOrderId = recipient.id ? escapeHtml(recipient.id) : '';
   // Parça (#) sunucu günlüklerine ve yönlendiren başlığına gitmez; tarayıcıdaki
@@ -132,7 +140,8 @@ ${safeOrderId ? `<p style="font-size:12.5px;line-height:1.7;color:#6b675e;margin
     subject: paymentConfirmed ? 'Ödemen alındı — Hermes indirme erişimin hazır' : 'Hermes indirme erişimin hazır',
     html: shell('Hermes indirme erişimin hazır', inner),
     text,
-    tags: [{ name: 'type', value: paymentConfirmed ? 'payment-confirmed' : 'download-invite' }]
+    tags: [{ name: 'type', value: paymentConfirmed ? 'payment-confirmed' : 'download-invite' }],
+    idempotencyKey
   });
 }
 

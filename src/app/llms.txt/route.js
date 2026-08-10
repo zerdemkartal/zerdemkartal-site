@@ -39,7 +39,7 @@ export async function GET() {
 Temel gerçekler:
 - Fiyat: EFT/Havale ile 1 cihaz ₺6.000; ikinci cihaz +₺2.500, iki cihaz toplam ₺8.500. Kartla tek çekim fiyatı PayTR’nin güncel mağaza oranına göre otomatik hesaplanır. Taksitli toplam PayTR ekranında karta ve vadeye göre değişebilir. Fiyatlara KDV dahildir.
 - Lisans: Program lisansı tek seferliktir. Her lisans yalnız etkinleştirildiği bir cihazda geçerlidir; farklı veya ikinci cihaz ayrı lisans gerektirir. Aynı cihaz için yayımlanan güncellemeler dahildir.
-- Satın alma: Hermes satın alma sayfası yalnız plan ve ödeme yöntemini seçtirir; ad, e-posta, telefon, adres, TCKN/VKN, fatura veya kart bilgisi toplamaz. Kartlı ödeme PayTR’nin güvenli sayfasında tamamlanır; Hermes/Vercel tarafında yalnız anonim ödeme mutabakatı tutulur. EFT/Havale bilgisi WhatsApp üzerinden istenir.
+- Satın alma: Hermes satın alma sayfası plan ve ödeme yöntemiyle birlikte yalnız ad-soyad ve teslim e-postası ister; telefon, adres, TCKN/VKN, fatura veya kart bilgisi toplamaz. Kartlı ödeme PayTR’nin güvenli sayfasında tamamlanır; başarılı ödeme sonrası 72 saatlik kişisel indirme daveti otomatik e-postalanır. EFT/Havale bilgisi WhatsApp üzerinden istenir.
 - Platformlar: Windows 10/11 (64-bit) şimdi kullanılabilir. macOS sürümü 17 Ağustos 2026’da sunulacaktır. Android, iPhone ve iPad sürümleri daha sonra gelecektir.
 - Senkronizasyon: Cihazlar arası veri senkronizasyonu program lisansına dahil değildir; ileride isteğe bağlı ve ayrı bir abonelik hizmeti olarak sunulacaktır.
 - Gizlilik: Harita hesapları çevrimdışı; internet yalnız lisans doğrulama ve güncelleme için.
@@ -48,7 +48,7 @@ Temel gerçekler:
 - [Ana sayfa](${SITE}/): Hermes tanıtımı.
 - [Özellikler](${SITE}/ozellikler): ${alanSayisi} ana çalışma alanındaki ${ozellikSayisi} çalışan araç ve özelliğin doğrulanmış dökümü.
 - [Fiyat](${SITE}/fiyat): EFT/Havale ve PayTR kart fiyatlandırması, tek seferlik lisans.
-- [Satın Al](${SITE}/satin-al): kişisel veri toplamadan lisans ve ödeme yöntemi seçimi.
+- [Satın Al](${SITE}/satin-al): yalnız ad-soyad ve teslim e-postasıyla lisans ve ödeme yöntemi seçimi.
 - [İndir](${SITE}/indir): kurulum adımları ve sistem gereksinimleri.
 - [SSS](${SITE}/sss): sık sorulan sorular (aşağıda tam liste).
 - [İletişim](${SITE}/iletisim): iletişim formu — ${CONTACT_EMAIL}

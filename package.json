@@ -16,7 +16,7 @@
     "release:register": "node --env-file-if-exists=.env prisma/release-publish.mjs",
     "test:license-server": "node tests/license-server.mjs",
     "test:customer-license": "node tests/customer-license.mjs",
-    "test:paytr": "node tests/paytr-link.mjs",
+    "test:paytr": "node tests/paytr-link.mjs && node tests/paytr-delivery.mjs",
     "test:site-license-copy": "node tests/site-license-copy.mjs",
     "test:site-feature-inventory": "node tests/site-feature-inventory.mjs",
     "test:mail": "node tests/mail-center.mjs",

@@ -41,6 +41,14 @@ function formatMoney(kurus, currency = 'TRY') {
   }).format(Number(kurus || 0) / 100);
 }
 
+function deliveryText(checkout) {
+  if (!checkout) return 'Eski/test kayıt · otomatik teslim yok';
+  if (checkout.deliveryStatus === 'sent') return `İndirme daveti gönderildi · ${formatDate(checkout.deliverySentAt)}`;
+  if (checkout.deliveryStatus === 'failed') return `Teslimat bekliyor · ${checkout.deliveryAttempts} deneme`;
+  if (checkout.deliveryStatus === 'sending') return 'İndirme daveti gönderiliyor';
+  return 'İndirme daveti bekliyor';
+}
+
 function requestId() {
   return globalThis.crypto.randomUUID();
 }
@@ -501,7 +509,7 @@ export default function LisansClient({ mode = 'licenses' }) {
     <main className={styles.sayfa}>
       <div className={styles.kabuk}>
         <header className={styles.ust}>
-          <div><span className={styles.kicker}>{isPayments ? 'HERMES · ÖDEME YÖNETİMİ' : 'HERMES · LİSANS YÖNETİMİ'}</span><h1>{isPayments ? 'Ödeme onayı ve indirme' : 'Lisans ve cihaz durumu'}</h1><p>Rol: <strong>{role}</strong>{isPayments ? ' · Anonim PayTR makbuzları, EFT onayı ve kişisel indirme davetleri bu sayfada yönetilir.' : ' · Sunucu yetkisi çevrimdışı imzalı tavanı aşamaz.'}</p></div>
+          <div><span className={styles.kicker}>{isPayments ? 'HERMES · ÖDEME YÖNETİMİ' : 'HERMES · LİSANS YÖNETİMİ'}</span><h1>{isPayments ? 'Ödeme onayı ve indirme' : 'Lisans ve cihaz durumu'}</h1><p>Rol: <strong>{role}</strong>{isPayments ? ' · PayTR ödeme kayıtları, otomatik teslimat, EFT onayı ve kişisel indirme davetleri bu sayfada yönetilir.' : ' · Sunucu yetkisi çevrimdışı imzalı tavanı aşamaz.'}</p></div>
           <div className={styles.ustEylem}><button className={styles.ikincil} onClick={() => isPayments ? loadOrders() : loadRows()} disabled={busy}>Yenile</button><button className={styles.ikincil} onClick={logout}>Çıkış</button></div>
         </header>
 
@@ -525,10 +533,10 @@ export default function LisansClient({ mode = 'licenses' }) {
 
           <section className={styles.paytrMakbuzlar} aria-labelledby="paytr-makbuz-baslik">
             <div className={styles.altBaslik}>
-              <div><span className={styles.kicker}>PAYTR · ANONİM KAYIT</span><strong id="paytr-makbuz-baslik">Kart ödemeleri</strong></div>
-              <span>Müşteri, iletişim, adres ve kart bilgisi tutulmaz.</span>
+              <div><span className={styles.kicker}>PAYTR · OTOMATİK TESLİM</span><strong id="paytr-makbuz-baslik">Kart ödemeleri</strong></div>
+              <span>Yalnız ad ve teslim e-postası tutulur; kart, telefon ve adres tutulmaz.</span>
             </div>
-            <p className={styles.paytrAciklama}>Referansı PayTR mağaza panelindeki işlemle eşleştir. Müşterinin iletişim bilgisi yalnız PayTR tarafında kalır; doğruladıktan sonra aşağıdaki kişisel indirme davetini elle gönder.</p>
+            <p className={styles.paytrAciklama}>Başarılı PayTR bildirimi ödeme kaydını oluşturur ve müşterinin doğruladığı e-posta adresine 72 saatlik kişisel indirme davetini otomatik gönderir. Aşağıdaki form yalnız istisnai durumlarda elle yeniden davet vermek içindir.</p>
             <div className={styles.paytrOzet} aria-label="PayTR ödeme özeti">
               <article><span>Toplam kayıt</span><strong>{paytrReceipts.length}</strong></article>
               <article><span>Canlı ödeme</span><strong>{livePaytrReceipts.length}</strong></article>
@@ -540,10 +548,11 @@ export default function LisansClient({ mode = 'licenses' }) {
                   <span>PayTR referansı</span>
                   <strong>{receipt.merchantOid}</strong>
                   <button type="button" onClick={() => copyPaytrReference(receipt.merchantOid)}>Referansı kopyala</button>
+                  {receipt.checkout && <small>{receipt.checkout.name} · {receipt.checkout.email}</small>}
                 </div>
                 <div><span>Ödenen tutar</span><strong>{formatMoney(receipt.totalAmountKurus, receipt.currency)}</strong><small>Tek çekim fiyatı {formatMoney(receipt.paymentAmountKurus, receipt.currency)}</small></div>
                 <div><span>Plan</span><strong>{receipt.deviceLimit} cihaz</strong><small>{receipt.planId} · EFT hedefi {formatMoney(receipt.netTargetKurus, receipt.currency)}</small></div>
-                <div><span>Durum</span><strong>{receipt.testMode ? 'Test' : 'Canlı'} · {receipt.status === 'paid' ? 'Ödendi' : receipt.status}</strong><small>{receipt.paymentType === 'card' ? 'Kart' : receipt.paymentType} · {formatDate(receipt.paidAt)}</small></div>
+                <div><span>Durum ve teslimat</span><strong>{receipt.testMode ? 'Test' : 'Canlı'} · {receipt.status === 'paid' ? 'Ödendi' : receipt.status}</strong><small>{receipt.paymentType === 'card' ? 'Kart' : receipt.paymentType} · {formatDate(receipt.paidAt)}</small><small>{deliveryText(receipt.checkout)}</small></div>
               </article>)}
             </div>}
           </section>

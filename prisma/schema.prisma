@@ -86,12 +86,13 @@ model Order {
   downloadInvites    DownloadInvite[]
 }
 
-// PayTR Link başarılı ödeme bildirimi. Mutabakat için gereken anonim işlem özeti
-// dışında müşteri, fatura, IP veya kart verisi saklanmaz.
+// PayTR Link başarılı ödeme bildirimi. Mutabakat için gereken işlem özeti
+// dışında fatura, telefon, adres, IP veya kart verisi saklanmaz. Müşteri adı ve
+// teslim e-postası yalnız ilişkili PaytrCheckout kaydında tutulur.
 model PaymentReceipt {
-  id                 String   @id @default(cuid())
-  provider           String   @default("paytr_link")
-  merchantOid        String   @unique
+  id                 String         @id @default(cuid())
+  provider           String         @default("paytr_link")
+  merchantOid        String         @unique
   callbackId         String
   planId             String
   termsVersion       String
@@ -101,13 +102,49 @@ model PaymentReceipt {
   totalAmountKurus   Int
   paymentType        String
   currency           String
-  status             String   @default("paid")
-  testMode           Boolean  @default(false)
-  paidAt             DateTime @default(now())
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  status             String         @default("paid")
+  testMode           Boolean        @default(false)
+  paidAt             DateTime       @default(now())
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  checkout           PaytrCheckout?
 
   @@index([status, paidAt])
+}
+
+// Kartlı satın alma başlamadan önce teslim için gerekli en az müşteri bilgisini
+// callback kimliğine bağlar. Kart/fatura/adres/telefon verisi bu tabloda tutulmaz.
+model PaytrCheckout {
+  id                 String          @id @default(cuid())
+  requestId          String          @unique @db.Uuid
+  callbackId         String          @unique @db.VarChar(64)
+  name               String
+  email              String
+  planId             String
+  termsVersion       String
+  deviceLimit        Int
+  netTargetKurus     Int
+  paymentAmountKurus Int
+  status             String          @default("pending")
+  merchantOid        String?         @unique
+  paymentReceipt     PaymentReceipt? @relation(fields: [paymentReceiptId], references: [id], onDelete: SetNull)
+  paymentReceiptId   String?         @unique
+  downloadInvite     DownloadInvite? @relation(fields: [downloadInviteId], references: [id], onDelete: SetNull)
+  downloadInviteId   String?         @unique
+  paymentPageUrl     String?         @db.VarChar(500)
+  linkId             String?         @db.VarChar(128)
+  expiresAt          DateTime
+  paidAt             DateTime?
+  deliveryStatus     String          @default("pending")
+  deliveryAttempts   Int             @default(0)
+  deliverySentAt     DateTime?
+  deliveryError      String?         @db.VarChar(64)
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+
+  @@index([email, createdAt])
+  @@index([status, expiresAt])
+  @@index([deliveryStatus, updatedAt])
 }
 
 // Müşterinin indirme/ilk etkinleştirme hesabı. Parola ve tek kullanımlık kurulum kodu
@@ -173,6 +210,7 @@ model DownloadInvite {
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
   sessions          DownloadSession[]
+  paytrCheckout     PaytrCheckout?
 
   @@index([email, createdAt])
   @@index([orderId, createdAt])

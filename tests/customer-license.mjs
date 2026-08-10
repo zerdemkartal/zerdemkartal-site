@@ -207,8 +207,9 @@ await test('Birleşik yönetici EFT ve manuel daveti ayrı yetkiyle koruyor, sı
   assert.ok(list.includes('paytrMakbuzlari: paytrReceipts'));
   assert.ok(!list.includes('callbackId: true'));
   assert.ok(panel.includes('İNDİRME YÖNETİCİSİ'));
-  assert.ok(panel.includes('PAYTR · ANONİM KAYIT'));
-  assert.ok(panel.includes('Müşteri, iletişim, adres ve kart bilgisi tutulmaz.'));
+  assert.ok(panel.includes('PAYTR · OTOMATİK TESLİM'));
+  assert.ok(panel.includes('Yalnız ad ve teslim e-postası tutulur; kart, telefon ve adres tutulmaz.'));
+  assert.ok(panel.includes('deliveryText(receipt.checkout)'));
   assert.ok(panel.includes('setPaytrReceipts(data.paytrMakbuzlari || [])'));
   assert.ok(panel.includes('İndirme linki gönder'));
   assert.ok(panel.includes('EFT ödemesi alındı'));
@@ -220,18 +221,22 @@ await test('Birleşik yönetici EFT ve manuel daveti ayrı yetkiyle koruyor, sı
   assert.ok(deleteRoute.includes('appendLicenseEvent'));
 });
 
-await test('Satın alma akışı kişisel veri toplamadan PayTR Link veya EFT seçtiriyor', () => {
+await test('Satın alma akışı yalnız teslim kimliğiyle PayTR Link veya EFT seçtiriyor', () => {
   const form = fs.readFileSync(path.join(ROOT, 'src/app/satin-al/SatinAlForm.jsx'), 'utf8');
+  const paytrRoute = fs.readFileSync(path.join(ROOT, 'src/app/api/pay/paytr/link/route.js'), 'utf8');
   const route = fs.readFileSync(path.join(ROOT, 'src/app/api/purchase-request/route.js'), 'utf8');
   const legal = fs.readFileSync(path.join(ROOT, 'src/app/yasal/[slug]/page.jsx'), 'utf8');
   assert.ok(form.includes("fetch('/api/pay/paytr/link'"));
   assert.ok(form.includes('EFT/Havale bilgilerini iste'));
+  assert.ok(form.includes('Ad soyad'));
+  assert.ok(form.includes('E-postayı doğrula'));
   assert.ok(!form.includes('name="taxNumber"'));
   assert.ok(!form.includes('name="billingAddress"'));
   assert.ok(!form.includes('firstName'));
   assert.ok(route.includes('status: 410'));
   assert.ok(!route.includes('request.json'));
-  assert.ok(legal.toLocaleLowerCase('tr-TR').includes('anonim ödeme mutabakatı'));
+  assert.ok(paytrRoute.includes('prisma.paytrCheckout.create'));
+  assert.ok(legal.includes('yalnız ad-soyad ve e-posta adresi ister'));
   assert.ok(legal.includes('Kart bilgileri Hermes sunucularına girilmez'));
 });
 

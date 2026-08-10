@@ -17,6 +17,9 @@ export default function SatinAlForm() {
   const [deviceLimit, setDeviceLimit] = useState(1);
   const [pricing, setPricing] = useState(null);
   const [fiyatHatasi, setFiyatHatasi] = useState('');
+  const [adSoyad, setAdSoyad] = useState('');
+  const [email, setEmail] = useState('');
+  const [emailTekrar, setEmailTekrar] = useState('');
   const [sozlesme, setSozlesme] = useState(false);
   const [dijitalTeslim, setDijitalTeslim] = useState(false);
   const [durum, setDurum] = useState('idle');
@@ -42,6 +45,10 @@ export default function SatinAlForm() {
     [pricing, plan.planId]
   );
   const kosullarTamam = sozlesme && dijitalTeslim;
+  const temizAd = adSoyad.trim().replace(/\s+/g, ' ');
+  const temizEmail = email.trim().toLowerCase();
+  const teslimatTamam = temizAd.length >= 2 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(temizEmail) &&
+    temizEmail === emailTekrar.trim().toLowerCase();
   const cardReady = Boolean(pricing?.configured && cardPlan?.cardPrice);
 
   function sec(device) {
@@ -51,6 +58,11 @@ export default function SatinAlForm() {
   }
 
   function kosullariKontrolEt() {
+    if (!teslimatTamam) {
+      setDurum('error');
+      setHata('İndirme bağlantısını gönderebilmemiz için ad-soyadını ve eşleşen e-posta adreslerini eksiksiz yaz.');
+      return false;
+    }
     if (kosullarTamam) return true;
     setDurum('error');
     setHata('Devam etmek için ön bilgilendirme, mesafeli satış ve dijital teslim koşullarını onaylayın.');
@@ -59,7 +71,7 @@ export default function SatinAlForm() {
 
   function eftBaslat() {
     if (!kosullariKontrolEt()) return;
-    const message = `Merhaba, Hermes ${deviceLimit} cihaz lisansını ${para(plan.eftPrice)} EFT/Havale fiyatıyla satın almak istiyorum. Ödeme bilgilerini paylaşabilir misiniz?`;
+    const message = `Merhaba, ben ${temizAd}. Hermes ${deviceLimit} cihaz lisansını ${para(plan.eftPrice)} EFT/Havale fiyatıyla satın almak istiyorum. Teslim e-postam: ${temizEmail}. Ödeme bilgilerini paylaşabilir misiniz?`;
     window.open(whatsappUrl(message), '_blank', 'noopener,noreferrer');
   }
 
@@ -73,6 +85,9 @@ export default function SatinAlForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           planId: plan.planId,
+          adSoyad: temizAd,
+          email: temizEmail,
+          requestId: globalThis.crypto.randomUUID(),
           termsAccepted: true,
           termsVersion: pricing.termsVersion
         }),
@@ -94,7 +109,7 @@ export default function SatinAlForm() {
       <header className={styles.giris}>
         <div className={styles.kicker}>HERMES · GÜVENLİ ÖDEME</div>
         <h1>Lisansını ve ödeme yöntemini seç.</h1>
-        <p>Hermes bu sayfada kişisel, fatura veya kart bilgisi istemez. Kartlı ödemede bu bilgiler yalnız PayTR’nin güvenli ödeme sayfasına girilir.</p>
+        <p>Hermes yalnız dijital teslim için adını ve e-posta adresini ister. Fatura ve kart bilgileri yalnız PayTR’nin güvenli ödeme sayfasına girilir.</p>
         <div className={styles.adimlar} aria-label="Satın alma adımları">
           <span className={styles.aktif}>01 · Lisans</span>
           <span>02 · Ödeme yöntemi</span>
@@ -124,7 +139,7 @@ export default function SatinAlForm() {
         <div className={styles.panel}>
           <div className={styles.panelBas}>
             <div><span>SATIN ALMA</span><h2>Ödeme yolunu seçin</h2></div>
-            <small>Uygulama katmanında kişisel veri tutulmaz</small>
+            <small>Yalnız teslim için gerekli bilgiler</small>
           </div>
 
           <fieldset className={styles.planlar}>
@@ -142,6 +157,25 @@ export default function SatinAlForm() {
               );
             })}
           </fieldset>
+
+          <section className={styles.teslimat} aria-labelledby="teslimat-bilgileri-baslik">
+            <div className={styles.teslimatBas}>
+              <div><span>DİJİTAL TESLİM</span><strong id="teslimat-bilgileri-baslik">İndirme bağlantısı nereye gönderilsin?</strong></div>
+              <small>Ödeme onayından sonra otomatik gönderilir</small>
+            </div>
+            <div className={styles.teslimatAlanlari}>
+              <label>Ad soyad
+                <input value={adSoyad} onChange={(event) => setAdSoyad(event.target.value)} minLength={2} maxLength={120} autoComplete="name" placeholder="Adınız ve soyadınız" required />
+              </label>
+              <label>E-posta
+                <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} maxLength={254} autoComplete="email" inputMode="email" placeholder="ornek@eposta.com" required />
+              </label>
+              <label>E-postayı doğrula
+                <input type="email" value={emailTekrar} onChange={(event) => setEmailTekrar(event.target.value)} maxLength={254} autoComplete="off" inputMode="email" placeholder="E-posta adresinizi tekrar yazın" required />
+              </label>
+            </div>
+            <p>Bu bilgiler PayTR işlem referansını sana gönderilecek 72 saatlik kişisel indirme davetiyle eşleştirmek için kullanılır.</p>
+          </section>
 
           <div className={styles.odemeler}>
             <article className={styles.odemeKart}>
@@ -165,7 +199,7 @@ export default function SatinAlForm() {
 
           <div className={styles.gizlilik}>
             <span aria-hidden="true">⌁</span>
-            <p><strong>Veri minimizasyonu:</strong> Hermes/Vercel ödeme akışı yalnız seçilen planı, fiyatı ve anonim PayTR işlem referansını işler. Ad, e-posta, telefon, adres, TCKN/VKN ve kart verisi bu akışta alınmaz veya saklanmaz.</p>
+            <p><strong>Veri minimizasyonu:</strong> Hermes/Vercel yalnız ad, e-posta, seçilen plan, tutar ve PayTR işlem referansını teslim ve yasal kayıt için işler. Telefon, adres, TCKN/VKN ve kart verisi Hermes sunucularına alınmaz.</p>
           </div>
 
           <div className={styles.kosullar}>
@@ -180,7 +214,7 @@ export default function SatinAlForm() {
           </div>
 
           {durum === 'error' && <div className={styles.hata} role="alert">{hata}</div>}
-          <p className={styles.dipnot}>Kart ödemesi PayTR sayfasında tamamlanır. Kart bilgileri Hermes sunucularından geçmez.</p>
+          <p className={styles.dipnot}>Kart ödemesi PayTR sayfasında tamamlanır. Başarılı ödemeden sonra kişisel indirme bağlantın e-postana otomatik gönderilir.</p>
         </div>
       </div>
     </section>
