@@ -38,7 +38,7 @@ export const HERMES_SITE = {
       title: 'Gökyüzü, masaüstünde.',
       p: 'Hermes; doğum haritasından horary’ye, rektifikasyondan astrokartografiye profesyonel bir astroloji atölyesini tek sakin ekranda toplar. Hesaplar Swiss Ephemeris hassasiyetinde, yorum dili Türkçe, verilerin ise yalnız senin cihazında.',
       btn1: 'Programı keşfet', btn1Href: '/ozellikler',
-      btn2: 'Satın al — EFT/Havale ₺6.000', btn2Href: '/satin-al',
+      btn2: 'Satın al', btn2Href: '/satin-al',
       stats: ['Windows 10/11', 'Tek seferlik lisans', 'Çevrimdışı çalışır'],
       doner: [
         'Kendi astroloji kütüphaneniz programın içinde, her an el altında olsun ister misiniz?',

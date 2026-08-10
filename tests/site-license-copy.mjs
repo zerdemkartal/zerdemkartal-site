@@ -38,5 +38,8 @@ for (const retired of [
 assert.match(migration, /retiredQuestions/);
 assert.match(migration, /Cihazlar arası veri senkronizasyonu/);
 assert.match(migration, /Her lisans yalnız bir cihazda geçerlidir/);
+assert.match(defaults, /btn2: 'Satın al', btn2Href: '\/satin-al'/);
+assert.match(migration, /hero: \{ \.\.\.model\.home\?\.hero, btn2: 'Satın al', btn2Href: '\/satin-al' \}/);
+assert.ok(!defaults.includes("btn2: 'Satın al — EFT/Havale ₺6.000'"));
 
-console.log('site lisans metni: 3/3 kontrol geçti');
+console.log('site lisans metni: 4/4 kontrol geçti');

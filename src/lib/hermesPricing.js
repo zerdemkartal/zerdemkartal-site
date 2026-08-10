@@ -97,7 +97,7 @@ export function migrateHermesPricing(model) {
     },
     home: {
       ...model.home,
-      hero: knownPricing ? { ...model.home?.hero, btn2: 'Satın al — EFT/Havale ₺6.000', btn2Href: '/satin-al' } : model.home?.hero,
+      hero: { ...model.home?.hero, btn2: 'Satın al', btn2Href: '/satin-al' },
       fiyatBand: knownPricing
         ? {
             ...model.home?.fiyatBand,
