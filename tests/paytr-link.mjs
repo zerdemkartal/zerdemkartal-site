@@ -187,6 +187,16 @@ await test('Test link ucu yonetici korumali ve callback kaydi test olarak ayrili
   assert.ok(callback.includes("testMode: callback.testMode || fields.test_mode === '1'"));
 });
 
+await test('Yonetim paneli 10 TL test linkini oturum anahtariyla aciyor', () => {
+  const panel = fs.readFileSync(path.join(ROOT, 'src/app/yonetim/YonetimClient.jsx'), 'utf8');
+  assert.ok(panel.includes("fetch('/api/pay/paytr/test-link'"));
+  assert.ok(panel.includes("sessionStorage.getItem(KEY)"));
+  assert.ok(panel.includes('Authorization: `Bearer ${token}`'));
+  assert.ok(panel.includes('10 TL test bağlantısı oluştur'));
+  assert.ok(panel.includes('role="status"'));
+  assert.ok(panel.includes('aria-live="polite"'));
+});
+
 await test('Callback HMAC doğrulaması değiştirilmiş tutarı reddediyor', () => {
   const fields = {
     callback_id: 'H11example', merchant_oid: 'oid123', status: 'success', total_amount: '650000'
