@@ -124,7 +124,28 @@ await test('Callback kimliği yalnız plan/tutar/sözleşme sürümü ve rastgel
     deviceLimit: 1,
     netKurus: 600000,
     paymentKurus: 628273,
-    termsVersion: PAYTR_TERMS_VERSION
+    termsVersion: PAYTR_TERMS_VERSION,
+    testMode: false
+  });
+});
+
+await test('10 TL test linki callback kimliginde test olarak isaretleniyor', () => {
+  const callbackId = createPaytrCallbackId({
+    deviceLimit: 1,
+    netKurus: 1000,
+    paymentKurus: 1000,
+    nonce: 'T1E2S3T4L5I6N7K8',
+    testMode: true
+  });
+  assert.match(callbackId, /^HT1/);
+  assert.deepEqual(decodePaytrCallbackId(callbackId), {
+    callbackId,
+    planId: 'hermes-test',
+    deviceLimit: 1,
+    netKurus: 1000,
+    paymentKurus: 1000,
+    termsVersion: PAYTR_TERMS_VERSION,
+    testMode: true
   });
 });
 
@@ -141,6 +162,29 @@ await test('Link Create gövdesinde müşteri, fatura, kart veya pft alanı bulu
   assert.equal(body.get('min_count'), '1');
   assert.equal(body.get('max_count'), '1');
   assert.equal(body.get('callback_link'), 'https://hermesastroloji.com/api/pay/paytr/callback');
+});
+
+await test('Yonetici test linki 10 TL, tek cekim ve lisans disi adla uretiliyor', () => {
+  const callbackId = createPaytrCallbackId({
+    deviceLimit: 1, netKurus: 1000, paymentKurus: 1000, nonce: 'T1E2S3T4L5I6N7K8', testMode: true
+  });
+  const body = buildPaytrLinkRequest({
+    deviceLimit: 1, paymentKurus: 1000, callbackId, testMode: true, env, now: 0
+  });
+  assert.equal(body.get('price'), '1000');
+  assert.equal(body.get('max_installment'), '1');
+  assert.equal(body.get('name'), 'Hermes callback testi - lisans degildir');
+  assert.equal(body.get('callback_id'), callbackId);
+});
+
+await test('Test link ucu yonetici korumali ve callback kaydi test olarak ayriliyor', () => {
+  const route = fs.readFileSync(path.join(ROOT, 'src/app/api/pay/paytr/test-link/route.js'), 'utf8');
+  const callback = fs.readFileSync(path.join(ROOT, 'src/app/api/pay/paytr/callback/route.js'), 'utf8');
+  assert.ok(route.includes('requireAdmin(request)'));
+  assert.ok(route.indexOf('requireAdmin(request)') < route.indexOf('createPaytrLink({'));
+  assert.ok(route.includes('TEST_PAYMENT_KURUS = 1000'));
+  assert.ok(route.includes('testMode: true'));
+  assert.ok(callback.includes("testMode: callback.testMode || fields.test_mode === '1'"));
 });
 
 await test('Callback HMAC doğrulaması değiştirilmiş tutarı reddediyor', () => {

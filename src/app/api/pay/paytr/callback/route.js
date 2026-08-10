@@ -73,7 +73,7 @@ export async function POST(request) {
         totalAmountKurus,
         paymentType: fields.payment_type.slice(0, 32) || 'unknown',
         currency: fields.currency,
-        testMode: fields.test_mode === '1'
+        testMode: callback.testMode || fields.test_mode === '1'
       }
     });
     return plain('OK');

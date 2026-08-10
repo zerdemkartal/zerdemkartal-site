@@ -203,7 +203,14 @@ function base36(value, width) {
   return Number(value).toString(36).padStart(width, '0');
 }
 
-export function createPaytrCallbackId({ deviceLimit, netKurus, paymentKurus, termsVersion = PAYTR_TERMS_VERSION, nonce } = {}) {
+export function createPaytrCallbackId({
+  deviceLimit,
+  netKurus,
+  paymentKurus,
+  termsVersion = PAYTR_TERMS_VERSION,
+  nonce,
+  testMode = false
+} = {}) {
   const device = normalizeDeviceLimit(deviceLimit);
   const cleanTerms = String(termsVersion).replace(/\D/g, '');
   const cleanNonce = String(nonce || randomBytes(10).toString('hex')).replace(/[^a-zA-Z0-9]/g, '').slice(0, 20);
@@ -211,26 +218,29 @@ export function createPaytrCallbackId({ deviceLimit, netKurus, paymentKurus, ter
   if (![netKurus, paymentKurus].every((value) => Number.isSafeInteger(value) && value > 0)) {
     throw new Error('Callback tutarı geçersiz.');
   }
-  const callbackId = `H1${device}${base36(netKurus, 7)}${base36(paymentKurus, 7)}${cleanTerms}${cleanNonce}`;
+  const mode = testMode ? 'T' : '1';
+  const callbackId = `H${mode}${device}${base36(netKurus, 7)}${base36(paymentKurus, 7)}${cleanTerms}${cleanNonce}`;
   if (!/^[a-zA-Z0-9]{1,64}$/.test(callbackId)) throw new Error('Callback kimliği geçersiz.');
   return callbackId;
 }
 
 export function decodePaytrCallbackId(value) {
   const callbackId = String(value || '');
-  const match = /^H1([12])([a-z0-9]{7})([a-z0-9]{7})(\d{8})([a-zA-Z0-9]{12,20})$/.exec(callbackId);
+  const match = /^H([1T])([12])([a-z0-9]{7})([a-z0-9]{7})(\d{8})([a-zA-Z0-9]{12,20})$/.exec(callbackId);
   if (!match) throw new Error('Callback kimliği geçersiz.');
-  const deviceLimit = Number(match[1]);
-  const netKurus = Number.parseInt(match[2], 36);
-  const paymentKurus = Number.parseInt(match[3], 36);
+  const testMode = match[1] === 'T';
+  const deviceLimit = Number(match[2]);
+  const netKurus = Number.parseInt(match[3], 36);
+  const paymentKurus = Number.parseInt(match[4], 36);
   if (![netKurus, paymentKurus].every(Number.isSafeInteger)) throw new Error('Callback tutarı geçersiz.');
   return {
     callbackId,
-    planId: `hermes-${deviceLimit}`,
+    planId: testMode ? 'hermes-test' : `hermes-${deviceLimit}`,
     deviceLimit,
     netKurus,
     paymentKurus,
-    termsVersion: match[4]
+    termsVersion: match[5],
+    testMode
   };
 }
 
@@ -243,14 +253,21 @@ function istanbulExpiry(minutes = 30, now = Date.now()) {
   return `${map.year}-${map.month}-${map.day} ${map.hour}:${map.minute}:${map.second}`;
 }
 
-export function buildPaytrLinkRequest({ deviceLimit, paymentKurus, callbackId, env = process.env, now = Date.now() }) {
+export function buildPaytrLinkRequest({
+  deviceLimit,
+  paymentKurus,
+  callbackId,
+  testMode = false,
+  env = process.env,
+  now = Date.now()
+}) {
   const config = getPaytrConfig(env);
   if (!config.configured) throw new Error('PayTR yapılandırılmadı.');
   const device = normalizeDeviceLimit(deviceLimit);
-  const name = `Hermes ${device} cihaz lisansı`;
+  const name = testMode ? 'Hermes callback testi - lisans degildir' : `Hermes ${device} cihaz lisansı`;
   const price = String(paymentKurus);
   const currency = 'TL';
-  const maxInstallment = String(config.maxInstallment);
+  const maxInstallment = testMode ? '1' : String(config.maxInstallment);
   const linkType = 'product';
   const lang = 'tr';
   const minCount = '1';
@@ -274,8 +291,15 @@ export function buildPaytrLinkRequest({ deviceLimit, paymentKurus, callbackId, e
   });
 }
 
-export async function createPaytrLink({ deviceLimit, paymentKurus, callbackId, env = process.env, fetchImpl = fetch }) {
-  const body = buildPaytrLinkRequest({ deviceLimit, paymentKurus, callbackId, env });
+export async function createPaytrLink({
+  deviceLimit,
+  paymentKurus,
+  callbackId,
+  testMode = false,
+  env = process.env,
+  fetchImpl = fetch
+}) {
+  const body = buildPaytrLinkRequest({ deviceLimit, paymentKurus, callbackId, testMode, env });
   const response = await fetchImpl(PAYTR_LINK_CREATE_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
