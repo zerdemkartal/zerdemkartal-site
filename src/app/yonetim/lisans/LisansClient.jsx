@@ -5,7 +5,7 @@ import styles from './lisans.module.css';
 
 const TOKEN_KEY = 'h_license_jwt';
 const FEATURES = ['dereceler', 'esmalar', 'analizler', 'ogretmen', 'egitim'];
-const LEVELS = ['temel', 'tam', 'yonetici'];
+const LEVELS = ['temel', 'tam', 'pro', 'yonetici'];
 const ADMIN_ROLES = ['lisans_yoneticisi', 'destek', 'denetci'];
 const ERROR_TEXT = {
   'google-girisi-hazir-degil': 'Google girişi henüz yapılandırılmamış.',

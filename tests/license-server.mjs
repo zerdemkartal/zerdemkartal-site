@@ -9,7 +9,7 @@ import {
   LICENSE_ROLES,
   licenseAuthorizationDecision
 } from '../src/lib/license/policy.mjs';
-import { LICENSE_PROTOCOL, effectiveLicenseRights } from '../src/lib/license/contract.mjs';
+import { LICENSE_LEVELS, LICENSE_PROTOCOL, effectiveLicenseRights } from '../src/lib/license/contract.mjs';
 import { verifyLicenseResponse } from '../src/lib/license/protocol.mjs';
 import { verifyLicenseRequest } from '../src/lib/license/service.mjs';
 import { authorizeLicenseRequest, licenseSessionTokenHash } from '../src/lib/license/access.mjs';
@@ -104,6 +104,15 @@ const privateKey = keys.privateKey.export({ type: 'pkcs8', format: 'pem' });
 const publicKey = keys.publicKey.export({ type: 'spki', format: 'pem' });
 
 await test('Çevrimiçi yetki yalnız çevrimdışı imzalı tavanın alt kümesi olabiliyor', () => {
+  assert.deepEqual(LICENSE_LEVELS, ['temel', 'tam', 'pro', 'yonetici']);
+  assert.deepEqual(effectiveLicenseRights({
+    signedLevel: 'pro', signedFeatures: ['dereceler', 'analizler'],
+    remoteLevel: 'pro', remoteFeatures: ['dereceler', 'analizler']
+  }), { ok: true, rights: { seviye: 'pro', ozellikler: ['dereceler', 'analizler'] } });
+  assert.equal(effectiveLicenseRights({
+    signedLevel: 'tam', signedFeatures: ['dereceler', 'analizler'],
+    remoteLevel: 'pro', remoteFeatures: ['dereceler', 'analizler']
+  }).reason, 'uzak-seviye-tavan-ustu');
   assert.deepEqual(effectiveLicenseRights({
     signedLevel: 'tam', signedFeatures: ['dereceler', 'ai'],
     remoteLevel: 'temel', remoteFeatures: ['dereceler', 'ai']
@@ -120,6 +129,15 @@ await test('Çevrimiçi yetki yalnız çevrimdışı imzalı tavanın alt kümes
     signedLevel: 'tam', signedFeatures: ['dereceler', 'gelecek'],
     remoteLevel: 'tam', remoteFeatures: ['dereceler']
   }).reason, 'imzali-tavanda-bilinmeyen-ozellik');
+});
+
+await test('Pro seviyesi masaustu esitleme ve web yonetiminde ortak sozlesmeden aciliyor', () => {
+  const syncRoute = fs.readFileSync(path.join(ROOT, 'src/app/api/lisans/v1/yonetim/esitle/route.js'), 'utf8');
+  const client = fs.readFileSync(path.join(ROOT, 'src/app/yonetim/lisans/LisansClient.jsx'), 'utf8');
+  assert.ok(syncRoute.includes("import { LICENSE_FEATURES, LICENSE_LEVELS } from '@/lib/license/contract.mjs'"));
+  assert.ok(syncRoute.includes('seviye: z.enum(LICENSE_LEVELS)'));
+  assert.ok(syncRoute.includes('ozellikler: z.array(z.enum(LICENSE_FEATURES))'));
+  assert.ok(client.includes("const LEVELS = ['temel', 'tam', 'pro', 'yonetici']"));
 });
 
 await test('Aktif lisans 24 saat kontrol ve 7 gün tolerans taşıyan doğrulanabilir Ed25519 cevap alıyor', async () => {

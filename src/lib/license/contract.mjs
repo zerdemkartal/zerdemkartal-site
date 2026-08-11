@@ -5,7 +5,7 @@ export const LICENSE_APPLICATIONS = Object.freeze(['hermes', 'astropen']);
 export const LICENSE_STATUSES = Object.freeze([
   'aktif', 'askida', 'iptal', 'suresi_doldu', 'cihaz_transferi', 'bakim'
 ]);
-export const LICENSE_LEVELS = Object.freeze(['temel', 'tam', 'yonetici']);
+export const LICENSE_LEVELS = Object.freeze(['temel', 'tam', 'pro', 'yonetici']);
 export const LICENSE_FEATURES = Object.freeze([
   'dereceler', 'esmalar', 'analizler', 'ogretmen', 'egitim'
 ]);
@@ -25,7 +25,7 @@ export const VerificationRequestSchema = z.object({
   nonce: z.string().min(16).max(128).regex(/^[A-Za-z0-9_-]+$/)
 }).strict();
 
-const LEVEL_RANK = Object.freeze({ temel: 1, tam: 2, yonetici: 3 });
+const LEVEL_RANK = Object.freeze({ temel: 1, tam: 2, pro: 3, yonetici: 4 });
 
 function exactFeatureArray(value) {
   return Array.isArray(value) && value.every((item) => typeof item === 'string') ? value : null;

@@ -1,10 +1,10 @@
 import crypto from 'node:crypto';
 import { prisma } from '@/lib/db';
 import { authorizeLicenseRequest } from '@/lib/license/access.mjs';
+import { LICENSE_FEATURES, LICENSE_LEVELS } from '@/lib/license/contract.mjs';
 import { appendLicenseEvent } from '@/lib/license/events.mjs';
 import { z } from 'zod';
 
-const FEATURES = ['dereceler', 'esmalar', 'analizler', 'ogretmen', 'egitim'];
 const Input = z.object({
   lisansNo: z.string().regex(/^[A-Z0-9]{6}\d{10}(?:-\d{2,})?$/),
   parmakIzi: z.string().regex(/^[a-f0-9]{64}$/),
@@ -14,8 +14,8 @@ const Input = z.object({
   eposta: z.string().trim().email().max(254).nullable().optional(),
   verilis: z.string().datetime(),
   bitis: z.string().datetime().nullable(),
-  seviye: z.enum(['temel', 'tam', 'yonetici']),
-  ozellikler: z.array(z.enum(FEATURES)).max(FEATURES.length),
+  seviye: z.enum(LICENSE_LEVELS),
+  ozellikler: z.array(z.enum(LICENSE_FEATURES)).max(LICENSE_FEATURES.length),
   oncekiLisansNo: z.string().regex(/^[A-Z0-9]{6}\d{10}(?:-\d{2,})?$/).optional(),
   gerekce: z.string().min(3).max(1000),
   istekId: z.string().uuid()
