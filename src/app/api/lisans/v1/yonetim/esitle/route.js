@@ -3,6 +3,7 @@ import { prisma } from '@/lib/db';
 import { authorizeLicenseRequest } from '@/lib/license/access.mjs';
 import { LICENSE_FEATURES, LICENSE_LEVELS } from '@/lib/license/contract.mjs';
 import { appendLicenseEvent } from '@/lib/license/events.mjs';
+import { resolvePreviousLicense } from '@/lib/license/sync-previous.mjs';
 import { z } from 'zod';
 
 const Input = z.object({
@@ -49,10 +50,27 @@ export async function POST(request) {
         }
         throw Object.assign(new Error('license-conflict'), { code: 'CONFLICT' });
       }
-      const previous = q.oncekiLisansNo
-        ? await tx.license.findUnique({ where: { licenseNo: q.oncekiLisansNo }, include: { devices: true } })
-        : null;
-      if (q.oncekiLisansNo && !previous) throw Object.assign(new Error('previous-missing'), { code: 'PREVIOUS' });
+      const previousResolution = await resolvePreviousLicense(tx, {
+        requestedLicenseNo: q.oncekiLisansNo,
+        deviceHash: q.cihazKimligi,
+        application: q.uygulama
+      });
+      const previous = previousResolution.license;
+      if (q.oncekiLisansNo && !previous) {
+        console.warn('[license-sync] previous license could not be resolved', {
+          requestedLicenseNo: q.oncekiLisansNo,
+          application: q.uygulama,
+          matchedBy: previousResolution.matchedBy
+        });
+        throw Object.assign(new Error('previous-missing'), { code: 'PREVIOUS' });
+      }
+      if (previousResolution.matchedBy === 'device') {
+        console.info('[license-sync] previous license resolved by active device', {
+          requestedLicenseNo: q.oncekiLisansNo,
+          resolvedLicenseNo: previous.licenseNo,
+          application: q.uygulama
+        });
+      }
       if (previous && previous.application !== q.uygulama) throw Object.assign(new Error('previous-app'), { code: 'CONFLICT' });
 
       const collision = await tx.licenseDevice.findFirst({
@@ -103,6 +121,8 @@ export async function POST(request) {
           summary: {
             lisansNo: q.lisansNo,
             oncekiLisansNo: q.oncekiLisansNo || null,
+            cozumlenenOncekiLisansNo: previous?.licenseNo || null,
+            oncekiLisansEsleme: previousResolution.matchedBy,
             uygulama: q.uygulama,
             seviye: q.seviye,
             ozellikSayisi: q.ozellikler.length,
@@ -123,7 +143,11 @@ export async function POST(request) {
           issuedAt: new Date(q.verilis),
           expiresAt: q.bitis ? new Date(q.bitis) : null,
           status: 'aktif',
-          statusReason: q.oncekiLisansNo ? 'masaüstü yenileme senkronu' : 'masaüstü yeni lisans senkronu',
+          statusReason: q.oncekiLisansNo
+            ? (previousResolution.matchedBy === 'device'
+              ? 'masaüstü yenileme senkronu · önceki kayıt cihaz eşliğiyle çözüldü'
+              : 'masaüstü yenileme senkronu')
+            : 'masaüstü yeni lisans senkronu',
           statusChangedAt: now,
           signedLevel: q.seviye,
           signedFeatures: q.ozellikler,
@@ -143,12 +167,22 @@ export async function POST(request) {
         action: 'lisans.aktar',
         outcome: 'basarili',
         reason: q.gerekce,
-        beforeState: q.oncekiLisansNo ? { oncekiLisansNo: q.oncekiLisansNo } : null,
+        beforeState: q.oncekiLisansNo ? {
+          istenenOncekiLisansNo: q.oncekiLisansNo,
+          cozumlenenOncekiLisansNo: previous?.licenseNo || null,
+          esleme: previousResolution.matchedBy
+        } : null,
         afterState: { durum: 'aktif', uygulama: q.uygulama, seviye: q.seviye, ozellikSayisi: q.ozellikler.length, izlemeModu: true },
         requestId: q.istekId,
         createdAt: now
       });
-      return { created: true, licenseNo: license.licenseNo, status: license.status };
+      return {
+        created: true,
+        licenseNo: license.licenseNo,
+        status: license.status,
+        previousLicenseNo: previous?.licenseNo || null,
+        previousMatchedBy: previousResolution.matchedBy
+      };
     }, { timeout: 30000 });
     return Response.json({ tamam: true, ...result }, { headers: { 'Cache-Control': 'no-store' } });
   } catch (error) {

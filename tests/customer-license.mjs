@@ -255,4 +255,14 @@ await test('Kripto Yönetimi elle verilen lisans numarasını koruyor', () => {
   assert.ok(manager.includes("lisansNo: b.lisansNo || ''"));
 });
 
+await test('Kripto Yönetimi başarısız sunucu eşitlemesini aktif lisans gibi bırakmıyor', () => {
+  const core = fs.readFileSync(path.join(HERMES, 'YARDIMCI PROGRAMLAR', '13- Kripto Yönetim Dosyası', 'lisans-cekirdek.js'), 'utf8');
+  const main = fs.readFileSync(path.join(HERMES, 'YARDIMCI PROGRAMLAR', '13- Kripto Yönetim Dosyası', 'main.js'), 'utf8');
+  const manager = fs.readFileSync(path.join(HERMES, 'YARDIMCI PROGRAMLAR', '13- Kripto Yönetim Dosyası', 'index.html'), 'utf8');
+  assert.ok(core.includes('function ayniMakineDigerleriniArsivle'));
+  assert.ok(main.includes("cekirdek.sil(result.anahtar, 'Canlı lisans sunucusu eşitlemesi başarısız: ' + sync.hata)"));
+  assert.ok(main.includes('cekirdek.ayniMakineDigerleriniArsivle(result.kayit'));
+  assert.ok(manager.includes('Başarısız deneme yerel arşive taşındı; mevcut lisans korundu.'));
+});
+
 console.log(`\nSONUÇ: ${passed.length}/${passed.length} güvenli indirme daveti kapısı geçti.`);

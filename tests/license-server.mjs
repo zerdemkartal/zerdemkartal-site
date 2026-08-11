@@ -27,6 +27,7 @@ import {
 } from '../src/lib/license/mfa.mjs';
 import { LICENSE_AUTH_MAX_FAILURES, LICENSE_SESSION_MS } from '../src/lib/license/admin-auth.mjs';
 import { parseGithubLatestYaml } from '../src/lib/github-release.mjs';
+import { resolvePreviousLicense } from '../src/lib/license/sync-previous.mjs';
 import {
   LICENSE_GOOGLE_CHALLENGE_MS,
   createLicenseGoogleChallenge,
@@ -139,6 +140,55 @@ await test('Pro seviyesi masaüstü eşitleme ve web yönetiminde ortak sözleş
   assert.ok(syncRoute.includes('seviye: z.enum(LICENSE_LEVELS)'));
   assert.ok(syncRoute.includes('ozellikler: z.array(z.enum(LICENSE_FEATURES))'));
   assert.ok(client.includes("const LEVELS = ['temel', 'tam', 'pro', 'yonetici']"));
+});
+
+await test('Masaüstü yenileme önceki lisansı öncelikle lisans numarasıyla çözüyor', async () => {
+  const exact = { id: 'old-1', licenseNo: 'ZERKAR0808261812', application: 'hermes', devices: [] };
+  let deviceLookup = false;
+  const database = {
+    license: { findUnique: async ({ where }) => where.licenseNo ? exact : null },
+    licenseDevice: { findMany: async () => { deviceLookup = true; return []; } }
+  };
+  const result = await resolvePreviousLicense(database, {
+    requestedLicenseNo: exact.licenseNo,
+    deviceHash: 'd'.repeat(64),
+    application: 'hermes'
+  });
+  assert.equal(result.license, exact);
+  assert.equal(result.matchedBy, 'license-no');
+  assert.equal(deviceLookup, false);
+});
+
+await test('Yerelde kalmış başarısız lisans numarası aynı aktif cihazdaki canlı lisansa güvenle bağlanıyor', async () => {
+  const previous = { id: 'old-1', licenseNo: 'ZERKAR0808261812', application: 'hermes', devices: [{ active: true }] };
+  const database = {
+    license: {
+      findUnique: async ({ where }) => where.licenseNo ? null : (where.id === previous.id ? previous : null)
+    },
+    licenseDevice: { findMany: async () => [{ licenseId: previous.id }] }
+  };
+  const result = await resolvePreviousLicense(database, {
+    requestedLicenseNo: 'ZERKAR1108262219',
+    deviceHash: 'd'.repeat(64),
+    application: 'hermes'
+  });
+  assert.equal(result.license, previous);
+  assert.equal(result.matchedBy, 'device');
+  assert.equal(result.requestedLicenseNo, 'ZERKAR1108262219');
+});
+
+await test('Birden fazla aktif cihaz adayı varsa önceki lisans tahmin edilmiyor', async () => {
+  const database = {
+    license: { findUnique: async () => null },
+    licenseDevice: { findMany: async () => [{ licenseId: 'old-1' }, { licenseId: 'old-2' }] }
+  };
+  const result = await resolvePreviousLicense(database, {
+    requestedLicenseNo: 'ZERKAR1108262219',
+    deviceHash: 'd'.repeat(64),
+    application: 'hermes'
+  });
+  assert.equal(result.license, null);
+  assert.equal(result.matchedBy, 'ambiguous-device');
 });
 
 await test('Aktif lisans 24 saat kontrol ve 7 gün tolerans taşıyan doğrulanabilir Ed25519 cevap alıyor', async () => {
