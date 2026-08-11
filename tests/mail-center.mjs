@@ -7,6 +7,7 @@ import {
   assessMailSpam,
   prepareOutboundAttachments
 } from '../src/lib/mail-security.mjs';
+import { invoiceValidationIssue, normalizeInvoiceData } from '../src/lib/purchase-invoice.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 let passed = 0;
@@ -78,6 +79,18 @@ test('Satın alma talebi spam kelimelerinden etkilenmiyor', () => {
   assert.equal(result.score, 0);
 });
 
+test('Fatura bilgileri ödeme öncesinde normalize edilip eksik alanlar reddediliyor', () => {
+  const invoice = normalizeInvoiceData({
+    invoiceType: 'corporate', phone: '0555 111 22 33', companyTitle: 'Hermes Test Ltd.',
+    taxNumber: '1234567890', taxOffice: 'Merkez', billingAddress: 'Örnek Mahallesi 10/2',
+    billingDistrict: 'Mezitli', billingCity: 'Mersin'
+  });
+  assert.equal(invoice.phone, '+905551112233');
+  assert.equal(invoice.taxNumber, '1234567890');
+  assert.equal(invoiceValidationIssue(invoice), null);
+  assert.equal(invoiceValidationIssue({ ...invoice, billingAddress: '' }).field, 'billingAddress');
+});
+
 test('Posta UI çöp, toplu işlem, şablon, fatura eki ve güvenli kurulumu birlikte sunuyor', () => {
   const client = fs.readFileSync(path.join(ROOT, 'src/app/yonetim/posta/PostaClient.jsx'), 'utf8');
   const route = fs.readFileSync(path.join(ROOT, 'src/app/api/mail/[id]/route.js'), 'utf8');
@@ -93,6 +106,15 @@ test('Posta UI çöp, toplu işlem, şablon, fatura eki ve güvenli kurulumu bir
   assert.ok(route.includes('blockSender'));
   assert.ok(leads.includes('formStartedAt'));
   assert.ok(leads.includes('recent >= 5'));
+});
+
+test('Ek hazırlanırken yeni ileti ve yanıt gönderimi kilitleniyor', () => {
+  const client = fs.readFileSync(path.join(ROOT, 'src/app/yonetim/posta/PostaClient.jsx'), 'utf8');
+  assert.ok(client.includes('const attachmentBusyRef = useRef(false)'));
+  assert.ok(client.includes('if (attachmentBusyRef.current)'));
+  assert.ok(client.includes('disabled={sending || attachmentBusy}'));
+  assert.ok(client.includes("attachmentBusy ? 'Ek hazırlanıyor…'"));
+  assert.ok(client.includes("if (name.endsWith('.pdf')) return 'application/pdf'"));
 });
 
 console.log(`\n${passed} posta merkezi testi geçti.`);

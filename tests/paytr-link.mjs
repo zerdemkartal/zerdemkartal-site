@@ -208,19 +208,22 @@ await test('Callback HMAC doğrulaması değiştirilmiş tutarı reddediyor', ()
   assert.equal(verifyPaytrCallbackHash({ ...fields, total_amount: '1' }, env), false);
 });
 
-await test('Kamusal satın alma akışı yalnız teslim kimliğini alıyor; eski POST uçları gövdeyi okumadan kapalı', () => {
+await test('Kamusal satın alma akışı ödeme öncesi teslim ve fatura bilgisini doğruluyor', () => {
   const form = fs.readFileSync(path.join(ROOT, 'src/app/satin-al/SatinAlForm.jsx'), 'utf8');
   const link = fs.readFileSync(path.join(ROOT, 'src/app/api/pay/paytr/link/route.js'), 'utf8');
   const purchase = fs.readFileSync(path.join(ROOT, 'src/app/api/purchase-request/route.js'), 'utf8');
   const orders = fs.readFileSync(path.join(ROOT, 'src/app/api/orders/route.js'), 'utf8');
   const iyzico = fs.readFileSync(path.join(ROOT, 'src/app/api/pay/iyzico/start/route.js'), 'utf8');
-  for (const field of ['firstName', 'lastName', 'taxNumber', 'billingAddress', 'companyTitle', 'phone']) {
-    assert.ok(!form.includes(field));
+  for (const field of ['taxNumber', 'billingAddress', 'companyTitle', 'phone', 'invoiceType']) {
+    assert.ok(form.includes(field));
   }
-  for (const route of [purchase, orders, iyzico]) {
+  for (const route of [orders, iyzico]) {
     assert.ok(route.includes('status: 410'));
     assert.ok(!route.includes('request.json'));
   }
+  assert.ok(purchase.includes('request.json'));
+  assert.ok(purchase.includes('ingestPurchaseRequest'));
+  assert.ok(purchase.includes('purchaseRequestNotificationEmail'));
   assert.ok(form.includes('Ad soyad'));
   assert.ok(form.includes('E-postayı doğrula'));
   assert.ok(form.includes('requestId: globalThis.crypto.randomUUID()'));
@@ -228,11 +231,13 @@ await test('Kamusal satın alma akışı yalnız teslim kimliğini alıyor; eski
   assert.ok(form.includes('termsVersion: pricing.termsVersion'));
   assert.ok(link.includes('adSoyad: z.string().trim().min(2).max(120)'));
   assert.ok(link.includes('email: z.string().trim().email().max(254)'));
+  assert.ok(link.includes("invoiceType: z.enum(['individual', 'corporate'])"));
+  assert.ok(link.includes('billingAddress: z.string().trim().min(10).max(500)'));
   assert.ok(link.includes('requestId: z.string().uuid()'));
   assert.ok(link.includes('prisma.paytrCheckout.create'));
 });
 
-await test('Makbuz kart verisi tutmuyor; checkout yalnız teslim için gereken müşteri alanlarını içeriyor', () => {
+await test('Makbuz kart verisi tutmuyor; checkout teslim ve fatura alanlarını içeriyor', () => {
   const schema = fs.readFileSync(path.join(ROOT, 'prisma/schema.prisma'), 'utf8');
   const receipt = schema.slice(schema.indexOf('model PaymentReceipt'), schema.indexOf('model PaytrCheckout'));
   const checkout = schema.slice(schema.indexOf('model PaytrCheckout'), schema.indexOf('// Müşterinin indirme'));
@@ -243,14 +248,18 @@ await test('Makbuz kart verisi tutmuyor; checkout yalnız teslim için gereken m
   for (const forbidden of ['name ', 'email ', 'phone ', 'address ', 'taxNumber ', 'identityNumber ']) {
     assert.ok(!receipt.includes(forbidden));
   }
-  assert.ok(checkout.includes('name               String'));
-  assert.ok(checkout.includes('email              String'));
-  for (const forbidden of ['phone ', 'address ', 'taxNumber ', 'identityNumber ', 'cardNumber ']) {
+  assert.match(checkout, /\bname\s+String\b/);
+  assert.match(checkout, /\bemail\s+String\b/);
+  for (const required of ['phone', 'invoiceType', 'taxNumber', 'billingAddress', 'billingDistrict', 'billingCity']) {
+    assert.match(checkout, new RegExp(`\\b${required}\\s+String`));
+  }
+  for (const forbidden of ['cardNumber ', 'cardExpiry ', 'cvv ']) {
     assert.ok(!checkout.includes(forbidden));
   }
   assert.ok(legal.includes("'on-bilgilendirme'"));
   assert.ok(legal.includes('teslimat:'));
   assert.ok(legal.includes('72 saat geçerli kişisel indirme daveti'));
+  assert.ok(legal.includes('telefon, fatura türü, TCKN veya VKN'));
   assert.ok(!legal.includes('[kullanılan analitik aracı]'));
   assert.ok(!legal.includes('yayımdan önce'));
 });
@@ -258,6 +267,7 @@ await test('Makbuz kart verisi tutmuyor; checkout yalnız teslim için gereken m
 await test('Callback ödemeyi kilitleyip checkout ile eşliyor ve e-posta hatasında yeniden deniyor', () => {
   const callback = fs.readFileSync(path.join(ROOT, 'src/app/api/pay/paytr/callback/route.js'), 'utf8');
   const migration = fs.readFileSync(path.join(ROOT, 'prisma/migrations/20260810183000_paytr_checkout_delivery/migration.sql'), 'utf8');
+  const billingMigration = fs.readFileSync(path.join(ROOT, 'prisma/migrations/20260811160000_paytr_checkout_billing/migration.sql'), 'utf8');
   assert.ok(callback.includes('pg_advisory_xact_lock'));
   assert.ok(callback.includes('tx.paytrCheckout.findUnique'));
   assert.ok(callback.includes('isSameCheckout(checkout, callback)'));
@@ -267,6 +277,8 @@ await test('Callback ödemeyi kilitleyip checkout ile eşliyor ve e-posta hatas�
   assert.ok(migration.includes('"requestId" UUID NOT NULL'));
   assert.ok(migration.includes('"paymentReceiptId" TEXT'));
   assert.ok(migration.includes('"downloadInviteId" TEXT'));
+  assert.ok(billingMigration.includes('ADD COLUMN "invoiceType"'));
+  assert.ok(billingMigration.includes('ADD COLUMN "billingAddress"'));
 });
 
 console.log(`\nSONUÇ: ${passed.length}/${passed.length} PayTR gizlilik, fiyatlandırma ve teslimat kontrolü geçti.`);

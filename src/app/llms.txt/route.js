@@ -39,7 +39,7 @@ export async function GET() {
 Temel gerçekler:
 - Fiyat: EFT/Havale ile 1 cihaz ₺6.000; ikinci cihaz +₺2.500, iki cihaz toplam ₺8.500. Kartla tek çekim fiyatı PayTR’nin güncel mağaza oranına göre otomatik hesaplanır. Taksitli toplam PayTR ekranında karta ve vadeye göre değişebilir. Fiyatlara KDV dahildir.
 - Lisans: Program lisansı tek seferliktir. Her lisans yalnız etkinleştirildiği bir cihazda geçerlidir; farklı veya ikinci cihaz ayrı lisans gerektirir. Aynı cihaz için yayımlanan güncellemeler dahildir.
-- Satın alma: Hermes satın alma sayfası plan ve ödeme yöntemiyle birlikte yalnız ad-soyad ve teslim e-postası ister; telefon, adres, TCKN/VKN, fatura veya kart bilgisi toplamaz. Kartlı ödeme PayTR’nin güvenli sayfasında tamamlanır; başarılı ödeme sonrası 72 saatlik kişisel indirme daveti otomatik e-postalanır. EFT/Havale bilgisi WhatsApp üzerinden istenir.
+- Satın alma: Hermes satın alma sayfası teslimat, iletişim ve fatura bilgilerini ödeme öncesinde alır. Kart numarası, son kullanma tarihi ve CVV yalnız PayTR’nin güvenli sayfasına girilir; Hermes sunucularından geçmez. Başarılı ödeme sonrası müşteriye 72 saatlik kişisel indirme daveti, yetkili yönetici adreslerine satış ve fatura özeti otomatik e-postalanır. EFT/Havale talebi Posta Merkezi’ne kaydedilir ve yöneticilere bildirilir.
 - Platformlar: Windows 10/11 (64-bit) şimdi kullanılabilir. macOS sürümü 17 Ağustos 2026’da sunulacaktır. Android, iPhone ve iPad sürümleri daha sonra gelecektir.
 - Senkronizasyon: Cihazlar arası veri senkronizasyonu program lisansına dahil değildir; ileride isteğe bağlı ve ayrı bir abonelik hizmeti olarak sunulacaktır.
 - Gizlilik: Harita hesapları çevrimdışı; internet yalnız lisans doğrulama ve güncelleme için.
@@ -48,7 +48,7 @@ Temel gerçekler:
 - [Ana sayfa](${SITE}/): Hermes tanıtımı.
 - [Özellikler](${SITE}/ozellikler): ${alanSayisi} ana çalışma alanındaki ${ozellikSayisi} çalışan araç ve özelliğin doğrulanmış dökümü.
 - [Fiyat](${SITE}/fiyat): EFT/Havale ve PayTR kart fiyatlandırması, tek seferlik lisans.
-- [Satın Al](${SITE}/satin-al): yalnız ad-soyad ve teslim e-postasıyla lisans ve ödeme yöntemi seçimi.
+- [Satın Al](${SITE}/satin-al): lisans ve ödeme yöntemi seçimi; ödeme öncesinde teslimat, iletişim ve fatura bilgilerinin güvenli biçimde alınması.
 - [İndir](${SITE}/indir): kurulum adımları ve sistem gereksinimleri.
 - [SSS](${SITE}/sss): sık sorulan sorular (aşağıda tam liste).
 - [İletişim](${SITE}/iletisim): iletişim formu — ${CONTACT_EMAIL}

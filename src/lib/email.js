@@ -3,7 +3,7 @@
 // kontrol eder ve PayTR'a RETRY vererek teslim edilmemiş ödemeyi sessizce onaylamaz.
 // Env: RESEND_API_KEY, EMAIL_FROM (örn. "Hermes Astroloji <info@hermesastroloji.com>").
 // NOT: EMAIL_FROM domaini Resend'de doğrulanmış olmalı; değilse Resend gönderimi reddeder.
-import { SITE } from './site.js';
+import { CONTACT_EMAIL, SITE } from './site.js';
 
 const FROM = process.env.EMAIL_FROM || 'Hermes <onboarding@resend.dev>';
 
@@ -15,6 +15,21 @@ function escapeHtml(value) {
 
 export function emailConfigured() {
   return !!process.env.RESEND_API_KEY;
+}
+
+export function salesNotificationRecipients(env = process.env) {
+  const unique = new Set(String(env.SALES_NOTIFICATION_EMAILS || '')
+    .split(',')
+    .map((value) => value.trim().toLocaleLowerCase('en-US'))
+    .filter((value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)));
+  return Array.from(unique).slice(0, 2);
+}
+
+function supportReplyAddress(env = process.env) {
+  return String(env.MAILBOX_ADDRESSES || '')
+    .split(',')
+    .map((value) => value.trim())
+    .find((value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) || CONTACT_EMAIL;
 }
 
 // Düşük seviye gönderim. { ok:boolean, id?, skipped?, error? } döner — hata FIRLATMAZ.
@@ -140,7 +155,123 @@ ${safeOrderId ? `<p style="font-size:12.5px;line-height:1.7;color:#6b675e;margin
     subject: paymentConfirmed ? 'Ödemen alındı — Hermes indirme erişimin hazır' : 'Hermes indirme erişimin hazır',
     html: shell('Hermes indirme erişimin hazır', inner),
     text,
+    replyTo: supportReplyAddress(),
     tags: [{ name: 'type', value: paymentConfirmed ? 'payment-confirmed' : 'download-invite' }],
+    idempotencyKey
+  });
+}
+
+function formatMoneyFromKurus(value, currency = 'TL') {
+  return new Intl.NumberFormat('tr-TR', {
+    style: 'currency',
+    currency: currency === 'TL' ? 'TRY' : currency,
+    minimumFractionDigits: 2
+  }).format(Number(value || 0) / 100);
+}
+
+function formatAdminDate(value) {
+  return new Intl.DateTimeFormat('tr-TR', {
+    dateStyle: 'long', timeStyle: 'short', timeZone: 'Europe/Istanbul'
+  }).format(new Date(value));
+}
+
+// Başarılı canlı kart ödemesini Hermes yöneticilerine bildirir. Aynı API çağrısı iki
+// yönetici adresine birlikte gider; PayTR tekrarında idempotency anahtarı çift postayı önler.
+export async function paytrSaleNotificationEmail({ recipients, checkout, receipt, idempotencyKey }) {
+  const addresses = Array.isArray(recipients) ? recipients : salesNotificationRecipients();
+  if (addresses.length === 0) return { ok: false, skipped: true, error: 'sales-recipients-missing' };
+
+  const managementUrl = `${SITE}/yonetim/odemeler`;
+  const product = `Hermes Astroloji Programı · ${checkout.deviceLimit} cihaz lisansı`;
+  const amount = formatMoneyFromKurus(receipt.totalAmountKurus, receipt.currency);
+  const singleAmount = formatMoneyFromKurus(receipt.paymentAmountKurus, receipt.currency);
+  const paidAt = formatAdminDate(receipt.paidAt || checkout.paidAt || new Date());
+  const corporate = checkout.invoiceType === 'corporate';
+  const invoiceTitle = corporate ? checkout.companyTitle : checkout.name;
+  const invoiceHtml = checkout.invoiceType ? `
+  <div style="margin-top:10px;padding-top:10px;border-top:1px solid #e8e3d6;font-size:13px;line-height:1.8;color:#3a2d20"><b>Fatura:</b> ${corporate ? 'Kurumsal' : 'Bireysel'} · ${escapeHtml(invoiceTitle)}</div>
+  <div style="font-size:13px;line-height:1.8;color:#3a2d20"><b>${corporate ? 'VKN' : 'TCKN'}:</b> ${escapeHtml(checkout.taxNumber)}${corporate ? ` · <b>Vergi dairesi:</b> ${escapeHtml(checkout.taxOffice)}` : ''}</div>
+  <div style="font-size:13px;line-height:1.8;color:#3a2d20"><b>Telefon:</b> ${escapeHtml(checkout.phone)}</div>
+  <div style="font-size:13px;line-height:1.8;color:#3a2d20"><b>Fatura adresi:</b> ${escapeHtml(checkout.billingAddress).replace(/\r?\n/g, '<br />')}<br />${escapeHtml(checkout.billingDistrict)} / ${escapeHtml(checkout.billingCity)}</div>` : `
+  <div style="margin-top:10px;padding-top:10px;border-top:1px solid #e8e3d6;font-size:13px;line-height:1.8;color:#8b2c2c"><b>Fatura bilgisi yok:</b> Bu kayıt yeni fatura formundan önce oluşturulmuş.</div>`;
+  const inner = `
+<p style="font-size:15px;line-height:1.7;color:#3a2d20;margin:0 0 14px"><b>${escapeHtml(checkout.name)}</b> canlı siteden ödeme yaptı.</p>
+<div style="margin:0 0 18px;padding:16px 18px;border:1px solid #e8e3d6;border-radius:12px;background:#f4f1e8">
+  <div style="font-size:13px;line-height:1.8;color:#3a2d20"><b>Müşteri:</b> ${escapeHtml(checkout.name)} · <a href="mailto:${escapeHtml(checkout.email)}" style="color:#6b4fa0">${escapeHtml(checkout.email)}</a></div>
+  <div style="font-size:13px;line-height:1.8;color:#3a2d20"><b>Satın alınan:</b> ${escapeHtml(product)}</div>
+  <div style="font-size:13px;line-height:1.8;color:#3a2d20"><b>Plan:</b> ${escapeHtml(checkout.planId)} · <b>Ödenen:</b> ${escapeHtml(amount)} · <b>Tek çekim tabanı:</b> ${escapeHtml(singleAmount)}</div>
+  <div style="font-size:13px;line-height:1.8;color:#3a2d20"><b>Ödeme:</b> ${escapeHtml(receipt.paymentType === 'card' ? 'Kart' : receipt.paymentType)} · ${escapeHtml(paidAt)}</div>
+  <div style="font-size:13px;line-height:1.8;color:#3a2d20"><b>PayTR referansı:</b> ${escapeHtml(receipt.merchantOid)}</div>
+  ${invoiceHtml}
+</div>
+<p style="font-size:14px;line-height:1.7;color:#3a2d20;margin:0 0 18px">Müşterinin kişisel indirme daveti otomatik hazırlanmıştır. Kurulumdan sonra programdaki <b>Lisans İste</b> kaydının Kripto Yönetimi’ndeki bekleyenlere düşmesi beklenir.</p>
+${btn(managementUrl, 'Ödeme yöneticisini aç')}`;
+  const text = [
+    'Hermes canlı satış bildirimi',
+    `Müşteri: ${checkout.name} · ${checkout.email}`,
+    `Satın alınan: ${product}`,
+    `Plan: ${checkout.planId}`,
+    `Ödenen: ${amount} · Tek çekim tabanı: ${singleAmount}`,
+    `Ödeme: ${receipt.paymentType === 'card' ? 'Kart' : receipt.paymentType} · ${paidAt}`,
+    `PayTR referansı: ${receipt.merchantOid}`,
+    checkout.invoiceType
+      ? `Fatura: ${corporate ? 'Kurumsal' : 'Bireysel'} · ${invoiceTitle}\n${corporate ? 'VKN' : 'TCKN'}: ${checkout.taxNumber}${corporate ? ` · Vergi dairesi: ${checkout.taxOffice}` : ''}\nTelefon: ${checkout.phone}\nAdres: ${checkout.billingAddress} · ${checkout.billingDistrict} / ${checkout.billingCity}`
+      : 'Fatura bilgisi yok: kayıt yeni fatura formundan önce oluşturulmuş.',
+    'Durum: İndirme daveti otomatik hazırlanır; programdan Lisans İste kaydı beklenir.',
+    `Yönetim: ${managementUrl}`
+  ].join('\n\n');
+  return sendMail({
+    to: addresses,
+    subject: `Yeni Hermes satışı · ${checkout.name} · ${amount}`,
+    html: shell('Yeni Hermes satışı', inner),
+    text,
+    replyTo: checkout.email,
+    tags: [{ name: 'type', value: 'sale-notification' }],
+    idempotencyKey
+  });
+}
+
+// EFT/Havale düğmesine basıldığında ödeme henüz doğrulanmadan önce yöneticilere
+// fatura/iletişim bilgisini yollar. Konu ve gövde bunun bir satış değil talep olduğunu açıkça belirtir.
+export async function purchaseRequestNotificationEmail({ recipients, request, idempotencyKey }) {
+  const addresses = Array.isArray(recipients) ? recipients : salesNotificationRecipients();
+  if (addresses.length === 0) return { ok: false, skipped: true, error: 'sales-recipients-missing' };
+
+  const managementUrl = `${SITE}/yonetim/posta`;
+  const corporate = request.invoiceType === 'corporate';
+  const invoiceTitle = corporate ? request.companyTitle : request.name;
+  const amount = formatMoneyFromKurus(Number(request.price || 0) * 100, 'TL');
+  const addressHtml = escapeHtml(request.billingAddress).replace(/\r?\n/g, '<br />');
+  const inner = `
+<p style="font-size:15px;line-height:1.7;color:#3a2d20;margin:0 0 14px"><b>${escapeHtml(request.name)}</b> EFT/Havale ödeme bilgilerini istedi. <b>Ödeme henüz doğrulanmadı.</b></p>
+<div style="margin:0 0 18px;padding:16px 18px;border:1px solid #e8e3d6;border-radius:12px;background:#f4f1e8">
+  <div style="font-size:13px;line-height:1.8;color:#3a2d20"><b>İletişim:</b> <a href="mailto:${escapeHtml(request.email)}" style="color:#6b4fa0">${escapeHtml(request.email)}</a> · ${escapeHtml(request.phone)}</div>
+  <div style="font-size:13px;line-height:1.8;color:#3a2d20"><b>Talep:</b> Hermes Astroloji Programı · ${escapeHtml(request.deviceLimit)} cihaz lisansı · ${escapeHtml(amount)}</div>
+  <div style="font-size:13px;line-height:1.8;color:#3a2d20"><b>Fatura türü:</b> ${corporate ? 'Kurumsal' : 'Bireysel'} · <b>Fatura adı/unvanı:</b> ${escapeHtml(invoiceTitle)}</div>
+  <div style="font-size:13px;line-height:1.8;color:#3a2d20"><b>${corporate ? 'VKN' : 'TCKN'}:</b> ${escapeHtml(request.taxNumber)}${corporate ? ` · <b>Vergi dairesi:</b> ${escapeHtml(request.taxOffice)}` : ''}</div>
+  <div style="font-size:13px;line-height:1.8;color:#3a2d20"><b>Fatura adresi:</b> ${addressHtml}<br />${escapeHtml(request.billingDistrict)} / ${escapeHtml(request.billingCity)}</div>
+</div>
+<p style="font-size:14px;line-height:1.7;color:#3a2d20;margin:0 0 18px">Banka hareketi doğrulanmadan lisans veya indirme teslimi yapmayın.</p>
+${btn(managementUrl, 'Posta Merkezi’ni aç')}`;
+  const text = [
+    'Hermes EFT/Havale talebi — ÖDEME HENÜZ DOĞRULANMADI',
+    `Müşteri: ${request.name} · ${request.email} · ${request.phone}`,
+    `Talep: ${request.deviceLimit} cihaz lisansı · ${amount}`,
+    `Fatura türü: ${corporate ? 'Kurumsal' : 'Bireysel'}`,
+    `Fatura adı/unvanı: ${invoiceTitle}`,
+    `${corporate ? 'VKN' : 'TCKN'}: ${request.taxNumber}`,
+    ...(corporate ? [`Vergi dairesi: ${request.taxOffice}`] : []),
+    `Fatura adresi: ${request.billingAddress} · ${request.billingDistrict} / ${request.billingCity}`,
+    'Banka hareketi doğrulanmadan teslim yapmayın.',
+    `Yönetim: ${managementUrl}`
+  ].join('\n\n');
+  return sendMail({
+    to: addresses,
+    subject: `EFT/Havale talebi · ödeme bekleniyor · ${request.name}`,
+    html: shell('EFT/Havale talebi', inner),
+    text,
+    replyTo: request.email,
+    tags: [{ name: 'type', value: 'eft-request' }],
     idempotencyKey
   });
 }

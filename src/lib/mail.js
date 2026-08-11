@@ -236,13 +236,13 @@ export async function ingestContactForm({ name, email, type, message, source = '
 
 /** Satın alma formunu fatura bilgileriyle birlikte yanıtlanabilir e-posta konuşmasına dönüştürür. */
 export async function ingestPurchaseRequest({
-  firstName, lastName, email, phone, whatsappPhone, deviceLimit,
+  name: fullName, firstName, lastName, email, phone, whatsappPhone, deviceLimit,
   invoiceType, companyTitle, taxNumber, taxOffice,
   billingAddress, billingDistrict, billingCity
 }) {
   const limit = normalizeDeviceLimit(deviceLimit);
   const price = licensePriceFor(limit);
-  const name = `${String(firstName).trim()} ${String(lastName).trim()}`.trim();
+  const name = String(fullName || '').trim() || `${String(firstName || '').trim()} ${String(lastName || '').trim()}`.trim();
   const invoiceTitle = invoiceType === 'corporate' ? String(companyTitle).trim() : name;
   const invoiceTypeLabel = INVOICE_TYPES[invoiceType] || INVOICE_TYPES.individual;
   const subject = `Satın alma talebi · ${limit} cihaz · ₺${price.toLocaleString('tr-TR')}`;

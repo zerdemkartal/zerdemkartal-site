@@ -1,6 +1,10 @@
 import { createHmac } from 'node:crypto';
 import bcrypt from 'bcryptjs';
-import { downloadInvitationEmail } from './email.js';
+import {
+  downloadInvitationEmail,
+  paytrSaleNotificationEmail,
+  salesNotificationRecipients
+} from './email.js';
 import { DOWNLOAD_INVITE_MS, downloadSecretHash } from './download-invite.mjs';
 
 const PASSWORD_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789';
@@ -87,15 +91,8 @@ async function ensureCheckoutInvite({ database, checkoutId, env, now }) {
   }, { timeout: 15000 });
 }
 
-export async function deliverPaytrCheckout({
-  database,
-  checkoutId,
-  env = process.env,
-  sendInvitation = downloadInvitationEmail,
-  now = new Date()
-}) {
-  const prepared = await ensureCheckoutInvite({ database, checkoutId, env, now });
-  if (prepared.repeated) return { ok: true, repeated: true };
+async function sendCustomerInvitation({ database, prepared, sendInvitation, now }) {
+  if (prepared.repeated) return { ok: true, repeated: true, emailId: null };
 
   const access = {
     ...prepared.secrets,
@@ -139,4 +136,85 @@ export async function deliverPaytrCheckout({
     });
   });
   return { ok: true, repeated: false, emailId: sent.id || null };
+}
+
+async function prepareSaleNotification({ database, checkoutId }) {
+  return database.$transaction(async (tx) => {
+    await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${`paytr-sale-notification:${checkoutId}`}))`;
+    const checkout = await tx.paytrCheckout.findUnique({
+      where: { id: checkoutId },
+      include: { paymentReceipt: true }
+    });
+    if (!checkout || checkout.status !== 'paid' || !checkout.paymentReceipt) {
+      throw new Error('paytr-odeme-kaydi-hazir-degil');
+    }
+    if (checkout.salesNotificationSentAt) return { checkout, repeated: true };
+
+    const updated = await tx.paytrCheckout.update({
+      where: { id: checkout.id },
+      data: {
+        salesNotificationStatus: 'sending',
+        salesNotificationAttempts: { increment: 1 },
+        salesNotificationError: null
+      },
+      include: { paymentReceipt: true }
+    });
+    return { checkout: updated, repeated: false };
+  }, { timeout: 15000 });
+}
+
+async function sendSaleNotice({ database, checkoutId, env, sendSaleNotification, now }) {
+  const prepared = await prepareSaleNotification({ database, checkoutId });
+  if (prepared.repeated) return { ok: true, repeated: true, emailId: null };
+
+  const recipients = salesNotificationRecipients(env);
+  const sent = await sendSaleNotification({
+    recipients,
+    checkout: prepared.checkout,
+    receipt: prepared.checkout.paymentReceipt,
+    idempotencyKey: `paytr-sale-${prepared.checkout.id}`
+  });
+  if (!sent.ok) {
+    const errorCode = recipients.length === 0
+      ? 'sales-recipients-missing'
+      : sent.skipped ? 'email-not-configured' : 'sales-email-send-failed';
+    await database.paytrCheckout.update({
+      where: { id: prepared.checkout.id },
+      data: { salesNotificationStatus: 'failed', salesNotificationError: errorCode }
+    }).catch(() => {});
+    return { ok: false, error: errorCode };
+  }
+
+  await database.paytrCheckout.update({
+    where: { id: prepared.checkout.id },
+    data: {
+      salesNotificationStatus: 'sent',
+      salesNotificationSentAt: prepared.checkout.salesNotificationSentAt || now,
+      salesNotificationError: null
+    }
+  });
+  return { ok: true, repeated: false, emailId: sent.id || null };
+}
+
+export async function deliverPaytrCheckout({
+  database,
+  checkoutId,
+  env = process.env,
+  sendInvitation = downloadInvitationEmail,
+  sendSaleNotification = paytrSaleNotificationEmail,
+  now = new Date()
+}) {
+  const prepared = await ensureCheckoutInvite({ database, checkoutId, env, now });
+  const [customer, sale] = await Promise.all([
+    sendCustomerInvitation({ database, prepared, sendInvitation, now }),
+    sendSaleNotice({ database, checkoutId, env, sendSaleNotification, now })
+  ]);
+  if (!customer.ok) return customer;
+  if (!sale.ok) return sale;
+  return {
+    ok: true,
+    repeated: customer.repeated && sale.repeated,
+    emailId: customer.emailId || null,
+    notificationEmailId: sale.emailId || null
+  };
 }

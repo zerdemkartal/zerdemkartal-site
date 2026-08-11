@@ -29,17 +29,17 @@ const DOCS = {
     body: (
       <>
         <h1 style={h2}>KVKK Aydınlatma Metni</h1>
-        <div style={sub}>6698 sayılı Kişisel Verilerin Korunması Kanunu m.10 uyarınca · Yürürlük: 10 Ağustos 2026</div>
+        <div style={sub}>6698 sayılı Kişisel Verilerin Korunması Kanunu m.10 uyarınca · Yürürlük: 11 Ağustos 2026</div>
         <h2 style={h3}>1. Veri sorumlusu</h2>
         <p style={p}>Bu sitede işlenen kişisel veriler bakımından veri sorumlusu <B>{COMPANY_LEGAL_NAME}</B>, {COMPANY_ADDRESS} adresinde yerleşiktir. Başvurularınızı {CONTACT_EMAIL} adresine iletebilirsiniz.</p>
         <h2 style={h3}>2. Hangi verileri işliyoruz</h2>
         <ul style={ul}>
           <li><B>İletişim ve destek:</B> iletişim formunu, e-posta veya WhatsApp kanalını kullanmanız hâlinde paylaştığınız ad, iletişim bilgisi ve mesaj içeriği.</li>
-          <li><B>Satın alma, lisans ve teslim:</B> sözleşmenin kurulması, ödeme kaydının eşleştirilmesi, indirme erişimi, lisansın hazırlanması ve destek için verdiğiniz ad, e-posta ve lisans bilgileri.</li>
+          <li><B>Satın alma, lisans ve teslim:</B> sözleşmenin kurulması, ödeme kaydının eşleştirilmesi, indirme erişimi, lisansın hazırlanması ve destek için verdiğiniz ad, e-posta, telefon ve lisans bilgileri.</li>
           <li><B>Ödeme mutabakatı:</B> seçilen lisans planı, tutar, para birimi, PayTR işlem referansı, ödeme türü, durum ve işlem zamanı.</li>
           <li><B>Yasal kayıtlar:</B> fatura ve muhasebe mevzuatı gereği edinilen bilgiler, yalnız zorunlu süre ve kapsamda.</li>
         </ul>
-        <p style={p}><B>Ödeme gizliliği:</B> Hermes satın alma sayfası, kişisel indirme davetini iletmek ve ödemeyi doğru müşteriyle eşleştirmek için yalnız ad-soyad ve e-posta adresi ister. Telefon, açık adres, TCKN/VKN veya kart bilgisi istemez. Kart bilgileri doğrudan PayTR’nin güvenli sayfasına girilir ve Hermes/Vercel uygulamasından geçmez.</p>
+        <p style={p}><B>Ödeme ve fatura gizliliği:</B> Hermes satın alma sayfası teslimat ve fatura düzenleme için ad-soyad, e-posta, telefon, fatura türü, TCKN veya VKN, gerekiyorsa ticari unvan/vergi dairesi ve fatura adresini ödeme öncesinde alır. Kart numarası, son kullanma tarihi ve CVV doğrudan PayTR’nin güvenli sayfasına girilir; Hermes/Vercel uygulamasından geçmez.</p>
         <h2 style={h3}>3. Amaç ve hukuki sebepler</h2>
         <ul style={ul}>
           <li>Sözleşmenin kurulması ve ifası; ödeme mutabakatı, lisans ve dijital teslim işlemleri — KVKK m.5/2-c.</li>
@@ -61,7 +61,7 @@ const DOCS = {
     body: (
       <>
         <h1 style={h2}>Gizlilik &amp; Çerez Politikası</h1>
-        <div style={sub}>Yürürlük: 10 Ağustos 2026</div>
+        <div style={sub}>Yürürlük: 11 Ağustos 2026</div>
         <p style={{ ...p, margin: '26px 0 0' }}>İlkemiz veri minimizasyonudur: hizmet için gerekli olmayan kişisel bilgiyi istemeyiz; verileri satmaz ve reklam ağı oluşturmak için kullanmayız.</p>
         <h2 style={h3}>1. Çerezler ve yerel depolama</h2>
         <ul style={ul}>
@@ -70,7 +70,7 @@ const DOCS = {
           <li><B>Üçüncü taraf bağlantıları:</B> PayTR, WhatsApp, YouTube veya Instagram’a geçtiğinizde ilgili hizmetin gizlilik ve çerez koşulları uygulanır.</li>
         </ul>
         <h2 style={h3}>2. Ödeme gizliliği</h2>
-        <p style={p}>Hermes satın alma sayfası yalnız ad-soyad ve teslim e-postası alır; telefon, açık adres, TCKN/VKN ve kart bilgisi almaz. Kartlı ödeme PayTR alan adında tamamlanır; kart bilgileri Hermes sunucularından geçmez. Başarılı ödeme bildirimi ad/e-posta ile işlem kaydını eşleştirir ve kişisel indirme davetini gönderir. EFT/Havale için WhatsApp veya e-posta seçerseniz, bu kanalda paylaştığınız bilgiler ilgili iletişim sağlayıcısının sisteminde de işlenebilir.</p>
+        <p style={p}>Hermes satın alma sayfası teslimat, iletişim ve fatura düzenleme için gerekli bilgileri ödeme öncesinde alır. Kartlı ödeme PayTR alan adında tamamlanır; kart numarası, son kullanma tarihi ve CVV Hermes sunucularından geçmez. Başarılı ödeme bildirimi satın alma kaydını eşleştirir, kişisel indirme davetini müşteriye ve satış/fatura özetini yetkili yönetici adreslerine gönderir. EFT/Havale talebi ayrıca Posta Merkezi’ne kaydedilir; WhatsApp’a yalnız talep ve teslim e-postası aktarılır.</p>
         <h2 style={h3}>3. Yönetim ve güvenlik</h2>
         <p style={p}>Tarayıcınızdan çerez ve yerel depolama kayıtlarını silebilirsiniz; zorunlu kayıtların engellenmesi bazı oturum özelliklerini çalışmaz hâle getirebilir. Bağlantılar HTTPS ile korunur, gizli anahtarlar yalnız sunucu ortamında tutulur ve kart bilgisi Hermes sunucularına alınmaz.</p>
         <h2 style={h3}>4. Değişiklikler ve iletişim</h2>
@@ -115,7 +115,7 @@ const DOCS = {
         <h2 style={h3}>2. Teslim süresi ve kanalı</h2>
         <p style={p}>Başarılı kart ödemesi PayTR tarafından bildirildiğinde 72 saat geçerli kişisel indirme daveti, satın alma sayfasında iki kez doğruladığınız e-posta adresine otomatik gönderilir. EFT/Havale ödemesinde davet banka hareketinin yönetici tarafından onaylanmasından sonra gönderilir. İmzalı lisans, programdaki <B>Lisans İste</B> kaydınızdan sonra satın alınan cihaz sınırına uygun biçimde <B>en geç iki iş günü içinde</B> hazırlanır.</p>
         <h2 style={h3}>3. Alıcının kontrolü</h2>
-        <p style={p}>Satın alma sayfasında verdiğiniz e-posta adresinin doğru olması teslim için gereklidir. Ödeme başarılı olduğu hâlde indirme daveti ulaşmazsa gereksiz/spam klasörünü kontrol edip işlem referansınızla {CONTACT_EMAIL} adresine yazabilirsiniz. Kart bilgisi, TCKN/VKN veya açık adresi e-postayla göndermeniz istenmez.</p>
+        <p style={p}>Satın alma sayfasında verdiğiniz e-posta adresinin doğru olması teslim için gereklidir. Ödeme başarılı olduğu hâlde indirme daveti ulaşmazsa gereksiz/spam klasörünü kontrol edip işlem referansınızla {CONTACT_EMAIL} adresine yazabilirsiniz. Kart bilgilerinizi hiçbir zaman e-postayla göndermeyin; fatura bilgisinde düzeltme gerekiyorsa işlem referansınızla destek isteyin.</p>
         <h2 style={h3}>4. Teknik sorun</h2>
         <p style={p}>Kurulum bağlantısı veya lisans teknik nedenle çalışmazsa destek sağlanır. Sorun makul sürede giderilemezse tüketicinin ayıplı mal/hizmete ilişkin seçimlik hakları ve <a href="/yasal/iade" style={{ color: T.purple }}>İptal &amp; İade Koşulları</a> uygulanır.</p>
       </>
@@ -127,9 +127,9 @@ const DOCS = {
     body: (
       <>
         <h1 style={h2}>Mesafeli Satış Sözleşmesi</h1>
-        <div style={sub}>6502 sayılı Kanun ve Mesafeli Sözleşmeler Yönetmeliği uyarınca · Yürürlük: 10 Ağustos 2026</div>
+        <div style={sub}>6502 sayılı Kanun ve Mesafeli Sözleşmeler Yönetmeliği uyarınca · Yürürlük: 11 Ağustos 2026</div>
         <h2 style={h3}>1. Taraflar</h2>
-        <p style={p}><B>Satıcı:</B> {SELLER}<br /><B>Alıcı:</B> Hermes satın alma sayfasında ad-soyad ve e-posta bilgisini verip PayTR ödeme sayfasında veya EFT/Havale yoluyla siparişi tamamlayan tüketici.</p>
+        <p style={p}><B>Satıcı:</B> {SELLER}<br /><B>Alıcı:</B> Hermes satın alma sayfasında teslimat, iletişim ve fatura bilgilerini verip PayTR ödeme sayfasında veya EFT/Havale yoluyla siparişi tamamlayan kişi ya da kurum.</p>
         <h2 style={h3}>2. Konu ve ürün</h2>
         <p style={p}>Sözleşme, satın alma sayfasında seçilen 1 veya 2 cihazlık Hermes Astroloji Programı dijital lisansının satışı, ödemesi ve teslimine ilişkin tarafların hak ve yükümlülüklerini düzenler. Her cihaz için ayrı lisans düzenlenir; lisans farklı cihazlar arasında ortak kullanılamaz. Cihazlar arası veri senkronizasyonu bu lisansın kapsamında değildir ve ileride ayrı abonelik koşullarıyla sunulacaktır.</p>
         <h2 style={h3}>3. Fiyat ve ödeme</h2>

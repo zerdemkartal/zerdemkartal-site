@@ -112,39 +112,52 @@ model PaymentReceipt {
   @@index([status, paidAt])
 }
 
-// Kartlı satın alma başlamadan önce teslim için gerekli en az müşteri bilgisini
-// callback kimliğine bağlar. Kart/fatura/adres/telefon verisi bu tabloda tutulmaz.
+// Kartlı satın alma başlamadan önce teslim, iletişim ve fatura bilgilerini callback
+// kimliğine bağlar. Kart numarası, son kullanma tarihi ve CVV hiçbir zaman tutulmaz.
 model PaytrCheckout {
-  id                 String          @id @default(cuid())
-  requestId          String          @unique @db.Uuid
-  callbackId         String          @unique @db.VarChar(64)
-  name               String
-  email              String
-  planId             String
-  termsVersion       String
-  deviceLimit        Int
-  netTargetKurus     Int
-  paymentAmountKurus Int
-  status             String          @default("pending")
-  merchantOid        String?         @unique
-  paymentReceipt     PaymentReceipt? @relation(fields: [paymentReceiptId], references: [id], onDelete: SetNull)
-  paymentReceiptId   String?         @unique
-  downloadInvite     DownloadInvite? @relation(fields: [downloadInviteId], references: [id], onDelete: SetNull)
-  downloadInviteId   String?         @unique
-  paymentPageUrl     String?         @db.VarChar(500)
-  linkId             String?         @db.VarChar(128)
-  expiresAt          DateTime
-  paidAt             DateTime?
-  deliveryStatus     String          @default("pending")
-  deliveryAttempts   Int             @default(0)
-  deliverySentAt     DateTime?
-  deliveryError      String?         @db.VarChar(64)
-  createdAt          DateTime        @default(now())
-  updatedAt          DateTime        @updatedAt
+  id                        String          @id @default(cuid())
+  requestId                 String          @unique @db.Uuid
+  callbackId                String          @unique @db.VarChar(64)
+  name                      String
+  email                     String
+  phone                     String?         @db.VarChar(24)
+  invoiceType               String?         @db.VarChar(16)
+  companyTitle              String?         @db.VarChar(200)
+  taxNumber                 String?         @db.VarChar(11)
+  taxOffice                 String?         @db.VarChar(120)
+  billingAddress            String?         @db.VarChar(500)
+  billingDistrict           String?         @db.VarChar(120)
+  billingCity               String?         @db.VarChar(120)
+  planId                    String
+  termsVersion              String
+  deviceLimit               Int
+  netTargetKurus            Int
+  paymentAmountKurus        Int
+  status                    String          @default("pending")
+  merchantOid               String?         @unique
+  paymentReceipt            PaymentReceipt? @relation(fields: [paymentReceiptId], references: [id], onDelete: SetNull)
+  paymentReceiptId          String?         @unique
+  downloadInvite            DownloadInvite? @relation(fields: [downloadInviteId], references: [id], onDelete: SetNull)
+  downloadInviteId          String?         @unique
+  paymentPageUrl            String?         @db.VarChar(500)
+  linkId                    String?         @db.VarChar(128)
+  expiresAt                 DateTime
+  paidAt                    DateTime?
+  deliveryStatus            String          @default("pending")
+  deliveryAttempts          Int             @default(0)
+  deliverySentAt            DateTime?
+  deliveryError             String?         @db.VarChar(64)
+  salesNotificationStatus   String          @default("pending")
+  salesNotificationAttempts Int             @default(0)
+  salesNotificationSentAt   DateTime?
+  salesNotificationError    String?         @db.VarChar(64)
+  createdAt                 DateTime        @default(now())
+  updatedAt                 DateTime        @updatedAt
 
   @@index([email, createdAt])
   @@index([status, expiresAt])
   @@index([deliveryStatus, updatedAt])
+  @@index([salesNotificationStatus, updatedAt])
 }
 
 // Müşterinin indirme/ilk etkinleştirme hesabı. Parola ve tek kullanımlık kurulum kodu

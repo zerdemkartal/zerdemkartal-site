@@ -7,10 +7,20 @@ export function invoiceDigits(value) {
   return String(value || '').replace(/\D/g, '');
 }
 
+export function normalizePhone(value) {
+  const raw = String(value || '').trim();
+  const digits = invoiceDigits(raw);
+  if (digits.length === 10) return `+90${digits}`;
+  if (digits.length === 11 && digits.startsWith('0')) return `+90${digits.slice(1)}`;
+  if (digits.length === 12 && digits.startsWith('90')) return `+${digits}`;
+  return raw.startsWith('+') ? `+${digits}` : digits;
+}
+
 export function normalizeInvoiceData(value = {}) {
   const invoiceType = value.invoiceType === 'corporate' ? 'corporate' : 'individual';
   return {
     invoiceType,
+    phone: normalizePhone(value.phone),
     companyTitle: invoiceType === 'corporate' ? String(value.companyTitle || '').trim() : '',
     taxNumber: invoiceDigits(value.taxNumber),
     taxOffice: invoiceType === 'corporate' ? String(value.taxOffice || '').trim() : '',
@@ -24,6 +34,9 @@ export function invoiceValidationIssue(value = {}) {
   const data = normalizeInvoiceData(value);
   if (!Object.hasOwn(INVOICE_TYPES, value.invoiceType)) {
     return { field: 'invoiceType', message: 'Fatura türünü seçin.' };
+  }
+  if (!/^\+?\d{10,15}$/.test(data.phone)) {
+    return { field: 'phone', message: 'İletişim için geçerli bir telefon numarası girin.' };
   }
   if (data.invoiceType === 'corporate' && data.companyTitle.length < 2) {
     return { field: 'companyTitle', message: 'Fatura için şirketin ticari unvanını girin.' };

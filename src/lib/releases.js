@@ -1,10 +1,22 @@
 import { issueSignedToken, presignUrl } from '@vercel/blob';
 import { prisma } from '@/lib/db';
+import {
+  fetchGithubLatestRelease,
+  GITHUB_RELEASE_OWNER,
+  GITHUB_RELEASE_REPO
+} from './github-release.mjs';
 
-export const GITHUB_RELEASE_OWNER = 'zerdemkartal';
-export const GITHUB_RELEASE_REPO = 'hermes-yayin';
+export { GITHUB_RELEASE_OWNER, GITHUB_RELEASE_REPO } from './github-release.mjs';
 
 export async function getLatestRelease(application = 'hermes', platform = 'windows') {
+  if (application === 'hermes' && platform === 'windows') {
+    try {
+      return await fetchGithubLatestRelease();
+    } catch (error) {
+      console.warn('[release] GitHub Latest okunamadı; Neon yedeği kullanılıyor.', String(error?.message || error));
+    }
+  }
+
   const row = await prisma.releaseArtifact.findFirst({
     where: { application, platform, active: true },
     orderBy: [{ publishedAt: 'desc' }, { createdAt: 'desc' }]

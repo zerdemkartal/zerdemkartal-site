@@ -4,6 +4,7 @@ export const LICENSE_ACTIONS = Object.freeze([
   'siparis.eft_onayla',
   'siparis.kalici_sil',
   'indirme.davet_gonder',
+  'paytr.bildirim_gonder',
   'posta.goruntule',
   'posta.duzenle',
   'posta.gonder',
@@ -25,7 +26,7 @@ export const LICENSE_ACTIONS = Object.freeze([
 export const LICENSE_ROLE_ACTIONS = Object.freeze({
   sahip: new Set(LICENSE_ACTIONS),
   lisans_yoneticisi: new Set([
-    'siparis.listele', 'siparis.eft_onayla', 'indirme.davet_gonder', 'yonetim.masaustu_bagla', 'lisans.esitle',
+    'siparis.listele', 'siparis.eft_onayla', 'indirme.davet_gonder', 'paytr.bildirim_gonder', 'yonetim.masaustu_bagla', 'lisans.esitle',
     'lisans.listele', 'lisans.gecmis', 'lisans.askiya_al', 'lisans.etkinlestir',
     'lisans.cihaz_transferi', 'lisans.yetki_azalt', 'lisans.yeni_imzala'
   ]),
@@ -34,9 +35,9 @@ export const LICENSE_ROLE_ACTIONS = Object.freeze({
 });
 
 const MFA_ROLES = new Set(['sahip', 'lisans_yoneticisi']);
-const REAUTH_ACTIONS = new Set(['siparis.eft_onayla', 'siparis.kalici_sil', 'indirme.davet_gonder', 'lisans.esitle', 'lisans.kalici_iptal', 'lisans.yaptirim_modu', 'yonetim.kullanici_yonet', 'anahtar.dondur']);
+const REAUTH_ACTIONS = new Set(['siparis.eft_onayla', 'siparis.kalici_sil', 'indirme.davet_gonder', 'paytr.bildirim_gonder', 'lisans.esitle', 'lisans.kalici_iptal', 'lisans.yaptirim_modu', 'yonetim.kullanici_yonet', 'anahtar.dondur']);
 const REASON_ACTIONS = new Set([
-  'siparis.eft_onayla', 'siparis.kalici_sil', 'indirme.davet_gonder', 'lisans.esitle', 'lisans.askiya_al', 'lisans.cihaz_transferi', 'lisans.yetki_azalt', 'lisans.yaptirim_modu', 'lisans.kalici_iptal'
+  'siparis.eft_onayla', 'siparis.kalici_sil', 'indirme.davet_gonder', 'paytr.bildirim_gonder', 'lisans.esitle', 'lisans.askiya_al', 'lisans.cihaz_transferi', 'lisans.yetki_azalt', 'lisans.yaptirim_modu', 'lisans.kalici_iptal'
 ]);
 
 function deny(reason) { return { allowed: false, reason }; }

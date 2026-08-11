@@ -77,12 +77,25 @@ export async function GET(request) {
         createdAt: true,
         checkout: {
           select: {
+            id: true,
             name: true,
             email: true,
+            phone: true,
+            invoiceType: true,
+            companyTitle: true,
+            taxNumber: true,
+            taxOffice: true,
+            billingAddress: true,
+            billingDistrict: true,
+            billingCity: true,
             deliveryStatus: true,
             deliveryAttempts: true,
             deliverySentAt: true,
-            deliveryError: true
+            deliveryError: true,
+            salesNotificationStatus: true,
+            salesNotificationAttempts: true,
+            salesNotificationSentAt: true,
+            salesNotificationError: true
           }
         }
       }

@@ -49,6 +49,14 @@ function deliveryText(checkout) {
   return 'İndirme daveti bekliyor';
 }
 
+function salesNotificationText(checkout) {
+  if (!checkout) return 'Yönetici satış bildirimi yok';
+  if (checkout.salesNotificationStatus === 'sent') return `Yönetici bildirimi gönderildi · ${formatDate(checkout.salesNotificationSentAt)}`;
+  if (checkout.salesNotificationStatus === 'failed') return `Yönetici bildirimi bekliyor · ${checkout.salesNotificationAttempts} deneme`;
+  if (checkout.salesNotificationStatus === 'sending') return 'Yönetici bildirimi gönderiliyor';
+  return 'Yönetici bildirimi bekliyor';
+}
+
 function requestId() {
   return globalThis.crypto.randomUUID();
 }
@@ -299,6 +307,28 @@ export default function LisansClient({ mode = 'licenses' }) {
     }
   }
 
+  async function retryPaytrNotification(checkoutId) {
+    clearNotice(); setBusy(true);
+    try {
+      await api('/api/lisans/v1/yonetim/paytr-bildirimi', {
+        token,
+        method: 'POST',
+        body: {
+          checkoutId,
+          gerekce: 'Başarılı PayTR ödemesinin eksik teslimat veya yönetici bildirimi yeniden denendi.',
+          istekId: requestId()
+        }
+      });
+      await loadOrders();
+      setMessage('PayTR teslimatı ve yönetici satış bildirimi kontrol edildi; eksik olan posta güvenli biçimde yeniden denendi.');
+    } catch (err) {
+      setError(err.status === 403
+        ? 'Bildirimi yeniden denemeden önce aşağıdaki Authenticator alanından 10 dakikalık yeniden doğrulama yap.'
+        : errorText(err.message));
+      await loadOrders();
+    } finally { setBusy(false); }
+  }
+
   async function approveDesktopPairing() {
     if (!desktopPairing) return;
     clearNotice(); setBusy(true); setDesktopPairingStatus('');
@@ -474,6 +504,7 @@ export default function LisansClient({ mode = 'licenses' }) {
   const recentInvites = downloadInvites.slice(0, 12);
   const livePaytrReceipts = paytrReceipts.filter((receipt) => !receipt.testMode);
   const testPaytrReceipts = paytrReceipts.filter((receipt) => receipt.testMode);
+  const licenseRequestWaiting = livePaytrReceipts.filter((receipt) => receipt.status === 'paid' && receipt.checkout);
   const signedFeatures = selected && Array.isArray(selected.signedFeatures) ? selected.signedFeatures.filter((feature) => FEATURES.includes(feature)) : [];
 
   if (!token) {
@@ -534,13 +565,14 @@ export default function LisansClient({ mode = 'licenses' }) {
           <section className={styles.paytrMakbuzlar} aria-labelledby="paytr-makbuz-baslik">
             <div className={styles.altBaslik}>
               <div><span className={styles.kicker}>PAYTR · OTOMATİK TESLİM</span><strong id="paytr-makbuz-baslik">Kart ödemeleri</strong></div>
-              <span>Yalnız ad ve teslim e-postası tutulur; kart, telefon ve adres tutulmaz.</span>
+              <span>Teslimat ve fatura bilgileri burada görünür; kart numarası ve CVV hiçbir zaman tutulmaz.</span>
             </div>
-            <p className={styles.paytrAciklama}>Başarılı PayTR bildirimi ödeme kaydını oluşturur ve müşterinin doğruladığı e-posta adresine 72 saatlik kişisel indirme davetini otomatik gönderir. Aşağıdaki form yalnız istisnai durumlarda elle yeniden davet vermek içindir.</p>
+            <p className={styles.paytrAciklama}>Başarılı PayTR bildirimi ödeme kaydını oluşturur, müşteriye 72 saatlik kişisel indirme davetini ve tanımladığın yönetici adreslerine satış özetini otomatik gönderir. Ödenen kayıt burada <strong>programdan Lisans İste bekleniyor</strong> olarak izlenir; makine kimliği geldikten sonraki gerçek lisans talebi Kripto Yönetimi’nin Bekleyenler bölümüne düşer. Aşağıdaki form yalnız istisnai durumlarda elle yeniden davet vermek içindir.</p>
             <div className={styles.paytrOzet} aria-label="PayTR ödeme özeti">
               <article><span>Toplam kayıt</span><strong>{paytrReceipts.length}</strong></article>
               <article><span>Canlı ödeme</span><strong>{livePaytrReceipts.length}</strong></article>
               <article><span>Test kaydı</span><strong>{testPaytrReceipts.length}</strong></article>
+              <article><span>Lisans İste beklenen</span><strong>{licenseRequestWaiting.length}</strong></article>
             </div>
             {paytrReceipts.length === 0 ? <p className={styles.siparisBos}>Henüz PayTR kart ödeme bildirimi alınmadı.</p> : <div className={styles.paytrListe}>
               {paytrReceipts.map((receipt) => <article key={receipt.id}>
@@ -552,7 +584,16 @@ export default function LisansClient({ mode = 'licenses' }) {
                 </div>
                 <div><span>Ödenen tutar</span><strong>{formatMoney(receipt.totalAmountKurus, receipt.currency)}</strong><small>Tek çekim fiyatı {formatMoney(receipt.paymentAmountKurus, receipt.currency)}</small></div>
                 <div><span>Plan</span><strong>{receipt.deviceLimit} cihaz</strong><small>{receipt.planId} · EFT hedefi {formatMoney(receipt.netTargetKurus, receipt.currency)}</small></div>
-                <div><span>Durum ve teslimat</span><strong>{receipt.testMode ? 'Test' : 'Canlı'} · {receipt.status === 'paid' ? 'Ödendi' : receipt.status}</strong><small>{receipt.paymentType === 'card' ? 'Kart' : receipt.paymentType} · {formatDate(receipt.paidAt)}</small><small>{deliveryText(receipt.checkout)}</small></div>
+                <div><span>Durum ve teslimat</span><strong>{receipt.testMode ? 'Test' : 'Canlı'} · {receipt.status === 'paid' ? 'Ödendi' : receipt.status}</strong><small>{receipt.paymentType === 'card' ? 'Kart' : receipt.paymentType} · {formatDate(receipt.paidAt)}</small>{!receipt.testMode && receipt.checkout && <small>Ödendi · programdan Lisans İste bekleniyor</small>}<small>{deliveryText(receipt.checkout)}</small><small>{salesNotificationText(receipt.checkout)}</small>{!receipt.testMode && receipt.checkout && (receipt.checkout.deliveryStatus !== 'sent' || receipt.checkout.salesNotificationStatus !== 'sent') && <button type="button" className={styles.ikincil} onClick={() => retryPaytrNotification(receipt.checkout.id)} disabled={busy}>Teslimat ve bildirimi yeniden dene</button>}</div>
+                <div className={styles.paytrFatura}>
+                  <span>Fatura ve iletişim bilgileri</span>
+                  {receipt.checkout?.invoiceType ? <>
+                    <strong>{receipt.checkout.invoiceType === 'corporate' ? 'Kurumsal' : 'Bireysel'} · {receipt.checkout.invoiceType === 'corporate' ? receipt.checkout.companyTitle : receipt.checkout.name}</strong>
+                    <small>{receipt.checkout.invoiceType === 'corporate' ? 'VKN' : 'TCKN'}: {receipt.checkout.taxNumber}{receipt.checkout.taxOffice ? ` · Vergi dairesi: ${receipt.checkout.taxOffice}` : ''}</small>
+                    <small>Telefon: {receipt.checkout.phone}</small>
+                    <small>Adres: {receipt.checkout.billingAddress} · {receipt.checkout.billingDistrict} / {receipt.checkout.billingCity}</small>
+                  </> : <strong>Bu eski/test kayıtta fatura bilgisi bulunmuyor.</strong>}
+                </div>
               </article>)}
             </div>}
           </section>

@@ -181,6 +181,9 @@ await test('İndirme kapısı oturum istiyor; makine kimliği Vercel akışına 
   assert.ok(downloadRoute.includes('findDownloadSession'));
   assert.ok(downloadUi.includes("fetch('/api/indir/erisim'"));
   assert.ok(!downloadUi.includes('github.com'));
+  assert.ok(downloadRoute.includes('return new Response(upstream.body'));
+  assert.ok(downloadRoute.includes("'Content-Disposition'"));
+  assert.ok(!downloadRoute.includes('NextResponse.redirect(downloadUrl'));
   assert.ok(requestRoute.includes('status: 410'));
   assert.ok(!requestRoute.includes('request.json'));
   assert.ok(desktop.includes("op: 'istek'"));
@@ -208,7 +211,8 @@ await test('Birleşik yönetici EFT ve manuel daveti ayrı yetkiyle koruyor, sı
   assert.ok(!list.includes('callbackId: true'));
   assert.ok(panel.includes('İNDİRME YÖNETİCİSİ'));
   assert.ok(panel.includes('PAYTR · OTOMATİK TESLİM'));
-  assert.ok(panel.includes('Yalnız ad ve teslim e-postası tutulur; kart, telefon ve adres tutulmaz.'));
+  assert.ok(panel.includes('Teslimat ve fatura bilgileri burada görünür; kart numarası ve CVV hiçbir zaman tutulmaz.'));
+  assert.ok(panel.includes('Fatura ve iletişim bilgileri'));
   assert.ok(panel.includes('deliveryText(receipt.checkout)'));
   assert.ok(panel.includes('setPaytrReceipts(data.paytrMakbuzlari || [])'));
   assert.ok(panel.includes('İndirme linki gönder'));
@@ -221,7 +225,7 @@ await test('Birleşik yönetici EFT ve manuel daveti ayrı yetkiyle koruyor, sı
   assert.ok(deleteRoute.includes('appendLicenseEvent'));
 });
 
-await test('Satın alma akışı yalnız teslim kimliğiyle PayTR Link veya EFT seçtiriyor', () => {
+await test('Satın alma akışı teslim ve fatura bilgisiyle PayTR Link veya EFT seçtiriyor', () => {
   const form = fs.readFileSync(path.join(ROOT, 'src/app/satin-al/SatinAlForm.jsx'), 'utf8');
   const paytrRoute = fs.readFileSync(path.join(ROOT, 'src/app/api/pay/paytr/link/route.js'), 'utf8');
   const route = fs.readFileSync(path.join(ROOT, 'src/app/api/purchase-request/route.js'), 'utf8');
@@ -230,14 +234,15 @@ await test('Satın alma akışı yalnız teslim kimliğiyle PayTR Link veya EFT 
   assert.ok(form.includes('EFT/Havale bilgilerini iste'));
   assert.ok(form.includes('Ad soyad'));
   assert.ok(form.includes('E-postayı doğrula'));
-  assert.ok(!form.includes('name="taxNumber"'));
-  assert.ok(!form.includes('name="billingAddress"'));
+  assert.ok(form.includes('name="taxNumber"'));
+  assert.ok(form.includes('name="billingAddress"'));
+  assert.ok(form.includes('name="phone"'));
   assert.ok(!form.includes('firstName'));
-  assert.ok(route.includes('status: 410'));
-  assert.ok(!route.includes('request.json'));
+  assert.ok(route.includes('request.json'));
+  assert.ok(route.includes('ingestPurchaseRequest'));
   assert.ok(paytrRoute.includes('prisma.paytrCheckout.create'));
-  assert.ok(legal.includes('yalnız ad-soyad ve e-posta adresi ister'));
-  assert.ok(legal.includes('Kart bilgileri Hermes sunucularına girilmez'));
+  assert.ok(legal.includes('telefon, fatura türü, TCKN veya VKN'));
+  assert.ok(legal.includes('Kart numarası, son kullanma tarihi ve CVV'));
 });
 
 await test('Kripto Yönetimi elle verilen lisans numarasını koruyor', () => {

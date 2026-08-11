@@ -26,6 +26,7 @@ import {
   verifyTotp
 } from '../src/lib/license/mfa.mjs';
 import { LICENSE_AUTH_MAX_FAILURES, LICENSE_SESSION_MS } from '../src/lib/license/admin-auth.mjs';
+import { parseGithubLatestYaml } from '../src/lib/github-release.mjs';
 import {
   LICENSE_GOOGLE_CHALLENGE_MS,
   createLicenseGoogleChallenge,
@@ -131,7 +132,7 @@ await test('Çevrimiçi yetki yalnız çevrimdışı imzalı tavanın alt kümes
   }).reason, 'imzali-tavanda-bilinmeyen-ozellik');
 });
 
-await test('Pro seviyesi masaustu esitleme ve web yonetiminde ortak sozlesmeden aciliyor', () => {
+await test('Pro seviyesi masaüstü eşitleme ve web yönetiminde ortak sözleşmeden açılıyor', () => {
   const syncRoute = fs.readFileSync(path.join(ROOT, 'src/app/api/lisans/v1/yonetim/esitle/route.js'), 'utf8');
   const client = fs.readFileSync(path.join(ROOT, 'src/app/yonetim/lisans/LisansClient.jsx'), 'utf8');
   assert.ok(syncRoute.includes("import { LICENSE_FEATURES, LICENSE_LEVELS } from '@/lib/license/contract.mjs'"));
@@ -664,6 +665,7 @@ await test('Yayın beslemesi yalnız masaüstü eşleştirmesi, etkin lisans ve 
   const update = fs.readFileSync(path.join(ROOT, 'src/app/api/guncelleme/windows/route.js'), 'utf8');
   const download = fs.readFileSync(path.join(ROOT, 'src/app/api/indir/windows/route.js'), 'utf8');
   const release = fs.readFileSync(path.join(ROOT, 'src/lib/releases.js'), 'utf8');
+  const githubRelease = fs.readFileSync(path.join(ROOT, 'src/lib/github-release.mjs'), 'utf8');
   assert.ok(start.includes("x-hermes-desktop-client') !== 'kripto-yonetimi/1'"));
   assert.ok(start.includes("context: { path: ['ipHash'], equals: ipHash }"));
   assert.ok(poll.includes('LICENSE_DESKTOP_SESSION_MS'));
@@ -674,13 +676,46 @@ await test('Yayın beslemesi yalnız masaüstü eşleştirmesi, etkin lisans ve 
   assert.ok(update.includes("'Cache-Control': 'private, no-store'"));
   assert.ok(update.includes('githubReleaseAssetUrl(release)'));
   assert.ok(download.includes('githubReleaseAssetUrl(release)'));
-  assert.ok(release.includes("GITHUB_RELEASE_OWNER = 'zerdemkartal'"));
-  assert.ok(release.includes("GITHUB_RELEASE_REPO = 'hermes-yayin'"));
+  assert.ok(download.includes('return new Response(upstream.body'));
+  assert.ok(!download.includes('NextResponse.redirect(downloadUrl'));
+  assert.ok(githubRelease.includes("GITHUB_RELEASE_OWNER = 'zerdemkartal'"));
+  assert.ok(githubRelease.includes("GITHUB_RELEASE_REPO = 'hermes-yayin'"));
+  assert.ok(githubRelease.includes('/releases/latest/download/latest.yml'));
+  assert.ok(githubRelease.includes('next: { revalidate: GITHUB_RELEASE_REVALIDATE_SECONDS }'));
+  assert.ok(release.includes('fetchGithubLatestRelease()'));
+  assert.ok(release.includes('Neon yedeği kullanılıyor'));
   assert.ok(release.includes('/releases/download/v${version}/${encodeURIComponent(fileName)}'));
   assert.ok(release.includes('export function githubReleaseAssetUrl'));
   // Özel Blob kopyası geri dönüş yedeği olarak tutulur.
   assert.ok(release.includes("operations: ['get']"));
   assert.ok(release.includes("access: 'private'"));
+});
+
+await test('GitHub Latest metadata sürüm, dosya, SHA-512, boyut ve tarihi güvenli biçimde çözüyor', () => {
+  const sha512 = Buffer.alloc(64, 7).toString('base64');
+  const release = parseGithubLatestYaml([
+    'version: 1.7.5',
+    'files:',
+    '  - url: Hermes-Setup-1.7.5.exe',
+    `    sha512: ${sha512}`,
+    '    size: 138760664',
+    'path: Hermes-Setup-1.7.5.exe',
+    `sha512: ${sha512}`,
+    "releaseDate: '2026-08-10T10:06:13.412Z'"
+  ].join('\n'));
+  assert.equal(release.version, '1.7.5');
+  assert.equal(release.fileName, 'Hermes-Setup-1.7.5.exe');
+  assert.equal(release.sha512, sha512);
+  assert.equal(release.size, 138760664);
+  assert.equal(release.publishedAt, '2026-08-10T10:06:13.412Z');
+  assert.equal(release.source, 'github-latest');
+  assert.throws(() => parseGithubLatestYaml([
+    'version: 1.7.5',
+    'path: Hermes-Setup-1.7.4.exe',
+    `sha512: ${sha512}`,
+    '  size: 138760664',
+    "releaseDate: '2026-08-10T10:06:13.412Z'"
+  ].join('\n')), /github-release-file-invalid/);
 });
 
 await test('Lisans yönetim yüzeyi rol-duyarlı, erişilebilir ve yalnız tema tokenlarıyla çiziliyor', () => {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { COMPANY_OWNER, COMPANY_TRADE_NAME, WHATSAPP_DISPLAY } from '@/lib/site';
 import styles from './posta.module.css';
 
@@ -159,6 +159,14 @@ function readFile(file) {
   });
 }
 
+function attachmentContentType(file) {
+  const name = String(file?.name || '').toLowerCase();
+  if (name.endsWith('.pdf')) return 'application/pdf';
+  if (name.endsWith('.png')) return 'image/png';
+  if (name.endsWith('.jpg') || name.endsWith('.jpeg')) return 'image/jpeg';
+  return '';
+}
+
 export default function PostaClient() {
   const [token, setToken] = useState(null);
   const [credentials, setCredentials] = useState({ email: '', pass: '' });
@@ -182,6 +190,8 @@ export default function PostaClient() {
   const [replyAttachments, setReplyAttachments] = useState([]);
   const [template, setTemplate] = useState('');
   const [sending, setSending] = useState(false);
+  const [attachmentBusy, setAttachmentBusy] = useState(false);
+  const attachmentBusyRef = useRef(false);
   const [inviteBusy, setInviteBusy] = useState(false);
 
   useEffect(() => {
@@ -315,6 +325,10 @@ export default function PostaClient() {
 
   async function gonder(payload) {
     if (sending) return;
+    if (attachmentBusyRef.current) {
+      setError('Ek hazırlanıyor. Dosya gönderime hazır olduğunda yeniden deneyin.');
+      return;
+    }
     setSending(true); setError(''); setNotice('');
     try {
       const data = await api('/api/mail/send', { method: 'POST', body: JSON.stringify(payload) });
@@ -332,22 +346,30 @@ export default function PostaClient() {
   async function dosyaEkle(event, target) {
     const files = [...(event.target.files || [])];
     event.target.value = '';
-    if (!files.length) return;
+    if (!files.length || attachmentBusyRef.current || sending) return;
+    attachmentBusyRef.current = true;
+    setAttachmentBusy(true);
     setError('');
     try {
       const current = target === 'draft' ? draft.attachments : replyAttachments;
       const next = [...current];
       for (const file of files) {
-        const type = file.type || (file.name.toLowerCase().endsWith('.pdf') ? 'application/pdf' : '');
-        if (!['application/pdf', 'image/png', 'image/jpeg'].includes(type)) throw new Error('Yalnız PDF, PNG ve JPG dosyaları eklenebilir.');
+        const type = attachmentContentType(file);
+        if (!type) throw new Error('Yalnız PDF, PNG ve JPG dosyaları eklenebilir.');
         if (/\.(?:exe|msi|bat|cmd|ps1)$/i.test(file.name)) throw new Error('Kurulum dosyası ek yerine güvenli indirme davetiyle gönderilir.');
         const total = next.reduce((sum, item) => sum + item.size, 0) + file.size;
         if (total > MAX_ATTACHMENT_BYTES) throw new Error('Eklerin toplam boyutu 3 MB sınırını aşıyor.');
-        next.push({ filename: file.name, contentType: type, size: file.size, content: await readFile(file) });
+        const content = await readFile(file);
+        if (!content) throw new Error(`${file.name} dosyası okunamadı.`);
+        next.push({ filename: file.name, contentType: type, size: file.size, content });
       }
       if (target === 'draft') setDraft((currentDraft) => ({ ...currentDraft, attachments: next }));
       else setReplyAttachments(next);
     } catch (fileError) { setError(fileError.message); }
+    finally {
+      attachmentBusyRef.current = false;
+      setAttachmentBusy(false);
+    }
   }
 
   function ekKaldir(index, target) {
@@ -487,9 +509,9 @@ export default function PostaClient() {
                   <label>Konu<input required value={draft.subject} onChange={(event) => setDraft((current) => ({ ...current, subject: event.target.value }))} /></label>
                   <div className={styles.sablonSatiri}><label>Hazır mesaj<select value={template} onChange={(event) => setTemplate(event.target.value)}><option value="">Şablon seçin</option>{SABLONLAR.map((item) => <option key={item.id} value={item.id}>{item.grup} · {item.ad}</option>)}</select></label><button type="button" onClick={() => sablonUygula('draft')} disabled={!template}>Şablonu uygula</button></div>
                   <label>Mesaj<textarea required rows={12} value={draft.text} onChange={(event) => setDraft((current) => ({ ...current, text: event.target.value }))} placeholder="Merhaba…" /></label>
-                  <AttachmentPicker attachments={draft.attachments} onAdd={(event) => dosyaEkle(event, 'draft')} onRemove={(index) => ekKaldir(index, 'draft')} />
+                  <AttachmentPicker attachments={draft.attachments} busy={attachmentBusy} disabled={sending || attachmentBusy} onAdd={(event) => dosyaEkle(event, 'draft')} onRemove={(index) => ekKaldir(index, 'draft')} />
                   <DeliveryPanel busy={inviteBusy} onSend={() => kurulumDavetiGonder({ name: draft.recipientName, email: draft.to })} />
-                  <div className={styles.gonderSatiri}><span>Ek içeriği gönderimden sonra sunucuda saklanmaz.</span><button className={styles.birincil} disabled={sending}>{sending ? 'Gönderiliyor…' : 'İletiyi gönder'}</button></div>
+                  <div className={styles.gonderSatiri}><span>{attachmentBusy ? 'Ek güvenli biçimde hazırlanıyor…' : 'Ek içeriği gönderimden sonra sunucuda saklanmaz.'}</span><button className={styles.birincil} disabled={sending || attachmentBusy}>{attachmentBusy ? 'Ek hazırlanıyor…' : sending ? 'Gönderiliyor…' : 'İletiyi gönder'}</button></div>
                 </div>
               </form>
             ) : detail ? (
@@ -520,9 +542,9 @@ export default function PostaClient() {
                   <div className={styles.yanitBas}><div><strong>E-postayla cevap ver</strong><small>{selectedPurchase ? 'Satın alma bilgileri bu konuşmayla eşleşti.' : 'Yanıt aynı konuşmada tutulur.'}</small></div></div>
                   <div className={styles.sablonSatiri}><label>Hazır mesaj<select value={template} onChange={(event) => setTemplate(event.target.value)}><option value="">Şablon seçin</option>{SABLONLAR.map((item) => <option key={item.id} value={item.id}>{item.grup} · {item.ad}</option>)}</select></label><button type="button" onClick={() => sablonUygula('reply')} disabled={!template}>Şablonu uygula</button></div>
                   <textarea id="posta-yanit" required rows={7} value={reply} onChange={(event) => setReply(event.target.value)} placeholder={`${detail.participantName || detail.participantEmail} için yanıtınızı yazın…`} />
-                  <AttachmentPicker attachments={replyAttachments} onAdd={(event) => dosyaEkle(event, 'reply')} onRemove={(index) => ekKaldir(index, 'reply')} />
+                  <AttachmentPicker attachments={replyAttachments} busy={attachmentBusy} disabled={sending || attachmentBusy} onAdd={(event) => dosyaEkle(event, 'reply')} onRemove={(index) => ekKaldir(index, 'reply')} />
                   <DeliveryPanel busy={inviteBusy} onSend={() => kurulumDavetiGonder({ name: detail.participantName || detail.participantEmail?.split('@')[0], email: detail.participantEmail })} />
-                  <div className={styles.gonderSatiri}><span>{detail.mailbox} → {detail.participantEmail}</span><button className={styles.birincil} disabled={sending}>{sending ? 'Gönderiliyor…' : 'Yanıtı gönder'}</button></div>
+                  <div className={styles.gonderSatiri}><span>{attachmentBusy ? 'Ek güvenli biçimde hazırlanıyor…' : `${detail.mailbox} → ${detail.participantEmail}`}</span><button className={styles.birincil} disabled={sending || attachmentBusy}>{attachmentBusy ? 'Ek hazırlanıyor…' : sending ? 'Gönderiliyor…' : 'Yanıtı gönder'}</button></div>
                 </form> : <div className={styles.copNotu}>Çöpteki konuşmalar yanıtlanamaz. Yanıtlamak için önce Gelen’e taşıyın.</div>}
               </>
             ) : <div className={styles.detayBos}><span>POSTA</span><h2>Bir konuşma seçin</h2><p>İletiyi okumak, yanıtlamak veya düzenlemek için listeden bir konuşma açın.</p></div>}
@@ -533,11 +555,11 @@ export default function PostaClient() {
   );
 }
 
-function AttachmentPicker({ attachments, onAdd, onRemove }) {
+function AttachmentPicker({ attachments, busy, disabled, onAdd, onRemove }) {
   return <section className={styles.ekAlani} aria-label="Dosya ekleri">
-    <div><strong>Fatura veya belge ekle</strong><p>PDF, PNG veya JPG · toplam en fazla 3 MB</p></div>
-    <label className={styles.dosyaSec}>Dosya seç<input type="file" accept=".pdf,.png,.jpg,.jpeg,application/pdf,image/png,image/jpeg" multiple onChange={onAdd} /></label>
-    {attachments.length ? <div className={styles.secilenEkler}>{attachments.map((attachment, index) => <span key={`${attachment.filename}-${index}`}><b>{attachment.filename}</b><small>{dosyaBoyutu(attachment.size)}</small><button type="button" aria-label={`${attachment.filename} ekini kaldır`} onClick={() => onRemove(index)}>Kaldır</button></span>)}</div> : null}
+    <div><strong>Fatura veya belge ekle</strong><p aria-live="polite">{busy ? 'Dosya okunuyor ve gönderime hazırlanıyor…' : attachments.length ? `${attachments.length} ek gönderime hazır · toplam en fazla 3 MB` : 'PDF, PNG veya JPG · toplam en fazla 3 MB'}</p></div>
+    <label className={styles.dosyaSec} aria-disabled={disabled}>{busy ? 'Hazırlanıyor…' : 'Dosya seç'}<input type="file" accept=".pdf,.png,.jpg,.jpeg,application/pdf,image/png,image/jpeg" multiple disabled={disabled} onChange={onAdd} /></label>
+    {attachments.length ? <div className={styles.secilenEkler}>{attachments.map((attachment, index) => <span key={`${attachment.filename}-${index}`}><b>{attachment.filename}</b><small>{dosyaBoyutu(attachment.size)}</small><button type="button" disabled={disabled} aria-label={`${attachment.filename} ekini kaldır`} onClick={() => onRemove(index)}>Kaldır</button></span>)}</div> : null}
   </section>;
 }
 

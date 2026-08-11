@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/db';
 import { z } from 'zod';
+import { invoiceValidationIssue, normalizeInvoiceData } from '@/lib/purchase-invoice.mjs';
 import {
   PAYTR_LINK_TTL_MS,
   PAYTR_TERMS_VERSION,
@@ -14,6 +15,14 @@ const LinkRequest = z.object({
   planId: z.enum(['hermes-1', 'hermes-2']),
   adSoyad: z.string().trim().min(2).max(120),
   email: z.string().trim().email().max(254),
+  phone: z.string().trim().min(10).max(24),
+  invoiceType: z.enum(['individual', 'corporate']),
+  companyTitle: z.string().trim().max(200),
+  taxNumber: z.string().trim().min(10).max(11),
+  taxOffice: z.string().trim().max(120),
+  billingAddress: z.string().trim().min(10).max(500),
+  billingDistrict: z.string().trim().min(2).max(120),
+  billingCity: z.string().trim().min(2).max(120),
   requestId: z.string().uuid(),
   termsAccepted: z.literal(true),
   termsVersion: z.literal(PAYTR_TERMS_VERSION)
@@ -31,6 +40,14 @@ function sameRequest(checkout, request) {
   return checkout.planId === request.planId &&
     checkout.name === request.adSoyad &&
     checkout.email === request.email &&
+    checkout.phone === request.phone &&
+    checkout.invoiceType === request.invoiceType &&
+    checkout.companyTitle === (request.companyTitle || null) &&
+    checkout.taxNumber === request.taxNumber &&
+    checkout.taxOffice === (request.taxOffice || null) &&
+    checkout.billingAddress === request.billingAddress &&
+    checkout.billingDistrict === request.billingDistrict &&
+    checkout.billingCity === request.billingCity &&
     checkout.termsVersion === request.termsVersion;
 }
 
@@ -60,8 +77,13 @@ export async function POST(request) {
   const input = {
     ...parsed.data,
     adSoyad: cleanName(parsed.data.adSoyad),
-    email: cleanEmail(parsed.data.email)
+    email: cleanEmail(parsed.data.email),
+    ...normalizeInvoiceData(parsed.data)
   };
+  const invoiceIssue = invoiceValidationIssue(input);
+  if (invoiceIssue) {
+    return Response.json({ error: 'fatura_bilgileri_gecersiz', field: invoiceIssue.field }, { status: 400 });
+  }
   const prior = await prisma.paytrCheckout.findUnique({ where: { requestId: input.requestId } });
   if (prior) {
     if (!sameRequest(prior, input)) {
@@ -90,6 +112,14 @@ export async function POST(request) {
         callbackId,
         name: input.adSoyad,
         email: input.email,
+        phone: input.phone,
+        invoiceType: input.invoiceType,
+        companyTitle: input.companyTitle || null,
+        taxNumber: input.taxNumber,
+        taxOffice: input.taxOffice || null,
+        billingAddress: input.billingAddress,
+        billingDistrict: input.billingDistrict,
+        billingCity: input.billingCity,
         planId: plan.planId,
         termsVersion: pricing.termsVersion,
         deviceLimit: plan.deviceLimit,
