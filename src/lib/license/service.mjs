@@ -21,6 +21,19 @@ function jsonError(status, error) {
 function iso(date) { return date.toISOString(); }
 function addMs(date, ms) { return new Date(date.getTime() + ms); }
 
+/* Hermes 1.7.7–1.7.9, Pro/Yönetici kapsamındaki Analizlerim hakkını ayrı bir
+   özellik bayrağından değil lisans seviyesinden açar. Bu sürümlere `analizler`
+   bayrağını yeniden göndermek eski istemcinin çevrimdışı imzalı tavan kontrolünü
+   düşürür ve güncelleme belirtecine ulaşmasını engeller. Yalnız imzalanacak yanıtı
+   uyumlu hâle getir; veritabanındaki yetkiyi veya diğer istemcileri değiştirme. */
+export function desktopCompatibleRights({ application, applicationVersion, rights }) {
+  const current = rights && typeof rights === 'object' ? rights : { seviye: '', ozellikler: [] };
+  const features = Array.isArray(current.ozellikler) ? current.ozellikler : [];
+  const legacyLevelBasedHermes = application === 'hermes' && /^1\.7\.(7|8|9)$/.test(String(applicationVersion || ''));
+  if (!legacyLevelBasedHermes || !features.includes('analizler')) return current;
+  return { ...current, ozellikler: features.filter((feature) => feature !== 'analizler') };
+}
+
 export async function verifyLicenseRequest({
   raw,
   repository,
@@ -84,6 +97,11 @@ export async function verifyLicenseRequest({
   const accessContinues = effectiveStatus === 'aktif' || effectiveStatus === 'bakim';
   const nextCheckAt = accessContinues ? addMs(now, CHECK_INTERVAL_MS) : new Date(now);
   const graceUntil = accessContinues ? addMs(now, OFFLINE_GRACE_MS) : new Date(now);
+  const responseRights = desktopCompatibleRights({
+    application: request.uygulama,
+    applicationVersion: request.uygulamaSurumu,
+    rights: rightsResult.rights
+  });
   const payload = {
     protokol: LICENSE_PROTOCOL,
     lisansParmakIzi: request.lisansParmakIzi,
@@ -91,7 +109,7 @@ export async function verifyLicenseRequest({
     cihazKimligi: request.cihazKimligi,
     durum: effectiveStatus,
     yetki: {
-      ...rightsResult.rights,
+      ...responseRights,
       yetkiSurumu: license.authorizationVersion
     },
     sunucuZamani: iso(now),

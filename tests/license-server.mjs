@@ -11,7 +11,7 @@ import {
 } from '../src/lib/license/policy.mjs';
 import { LICENSE_LEVELS, LICENSE_PROTOCOL, effectiveLicenseRights } from '../src/lib/license/contract.mjs';
 import { verifyLicenseResponse } from '../src/lib/license/protocol.mjs';
-import { verifyLicenseRequest } from '../src/lib/license/service.mjs';
+import { desktopCompatibleRights, verifyLicenseRequest } from '../src/lib/license/service.mjs';
 import { authorizeLicenseRequest, licenseSessionTokenHash } from '../src/lib/license/access.mjs';
 import { canonicalJson, canonicalLicenseEvent, createLicenseEvent } from '../src/lib/license/events.mjs';
 import {
@@ -131,6 +131,36 @@ await test('Çevrimiçi yetki yalnız çevrimdışı imzalı tavanın alt kümes
     signedLevel: 'tam', signedFeatures: ['dereceler', 'gelecek'],
     remoteLevel: 'tam', remoteFeatures: ['dereceler']
   }).reason, 'imzali-tavanda-bilinmeyen-ozellik');
+});
+
+await test('Hermes 1.7.7–1.7.9 güncelleme kurtarması Analizlerim hakkını seviyede koruyor', () => {
+  const rights = { seviye: 'yonetici', ozellikler: ['dereceler', 'analizler', 'egitim'] };
+  for (const applicationVersion of ['1.7.7', '1.7.8', '1.7.9']) {
+    assert.deepEqual(desktopCompatibleRights({ application: 'hermes', applicationVersion, rights }), {
+      seviye: 'yonetici', ozellikler: ['dereceler', 'egitim']
+    });
+  }
+  assert.strictEqual(desktopCompatibleRights({ application: 'hermes', applicationVersion: '1.7.6', rights }), rights);
+  assert.strictEqual(desktopCompatibleRights({ application: 'hermes', applicationVersion: '1.7.10', rights }), rights);
+  assert.strictEqual(desktopCompatibleRights({ application: 'astropen', applicationVersion: '1.7.7', rights }), rights);
+});
+
+await test('Hermes 1.7.7 sunucu cevabı İdari seviyeyi koruyup eski istemcide doğrulanabilir kalıyor', async () => {
+  const now = new Date('2026-08-12T15:00:00.000Z');
+  const repo = new FakeRepository(baseLicense({
+    signedLevel: 'yonetici',
+    signedFeatures: ['dereceler', 'analizler', 'egitim'],
+    remoteLevel: 'yonetici',
+    remoteFeatures: ['dereceler', 'analizler', 'egitim']
+  }));
+  const result = await verifyLicenseRequest({
+    raw: { ...baseRequest(now), uygulamaSurumu: '1.7.7' }, repository: repo, now, privateKey
+  });
+  assert.equal(result.status, 200);
+  assert.deepEqual(result.body.yetki, {
+    seviye: 'yonetici', ozellikler: ['dereceler', 'egitim'], yetkiSurumu: 3
+  });
+  assert.equal(verifyLicenseResponse(result.body, publicKey), true);
 });
 
 await test('Pro seviyesi masaüstü eşitleme ve web yönetiminde ortak sözleşmeden açılıyor', () => {
