@@ -303,10 +303,20 @@ export default function PostaClient() {
 
   async function topluIslem(action) {
     if (!selectedIds.length) return;
+    const confirmation = action === 'delete'
+      ? globalThis.prompt(`Seçili ${selectedIds.length} konuşma ve bütün iletileri kalıcı olarak silinecek. Devam etmek için SİL yaz:`)
+      : null;
+    if (action === 'delete' && confirmation !== 'SİL') return;
     setError(''); setNotice('');
     try {
-      const data = await api('/api/mail/bulk', { method: 'POST', body: JSON.stringify({ ids: selectedIds, action }) });
-      setNotice(`${data.updated} konuşma güncellendi.`); setSelectedIds([]); setSelected(null); setDetail(null);
+      const data = await api('/api/mail/bulk', {
+        method: 'POST',
+        body: JSON.stringify({ ids: selectedIds, action, ...(action === 'delete' ? { confirm: 'SİL' } : {}) })
+      });
+      setNotice(action === 'delete'
+        ? `${data.deleted} konuşma kalıcı olarak silindi.`
+        : `${data.updated} konuşma güncellendi.`);
+      setSelectedIds([]); setSelected(null); setDetail(null);
       await listeYukle();
     } catch (bulkError) { setError(bulkError.message); }
   }
@@ -471,9 +481,14 @@ export default function PostaClient() {
               <label className={styles.hepsiniSec}><input type="checkbox" checked={allSelected} onChange={(event) => setSelectedIds(event.target.checked ? threads.map((thread) => thread.id) : [])} /><span className={styles.srOnly}>Tümünü seç</span></label>
               {selectedIds.length ? <div className={styles.toplu}>
                 <strong>{selectedIds.length} seçili</strong>
-                <button type="button" onClick={() => topluIslem('archive')}>Arşivle</button>
-                <button type="button" onClick={() => topluIslem(folder === 'spam' || folder === 'trash' ? 'inbox' : 'spam')}>{folder === 'spam' || folder === 'trash' ? 'Gelen’e taşı' : 'Spam'}</button>
-                <button type="button" onClick={() => topluIslem('trash')}>Çöpe taşı</button>
+                {folder === 'trash' ? <>
+                  <button type="button" onClick={() => topluIslem('inbox')}>Gelen’e taşı</button>
+                  <button type="button" className={styles.tehlike} onClick={() => topluIslem('delete')}>Kalıcı sil</button>
+                </> : <>
+                  <button type="button" onClick={() => topluIslem('archive')}>Arşivle</button>
+                  <button type="button" onClick={() => topluIslem(folder === 'spam' ? 'inbox' : 'spam')}>{folder === 'spam' ? 'Gelen’e taşı' : 'Spam'}</button>
+                  <button type="button" onClick={() => topluIslem('trash')}>Çöpe taşı</button>
+                </>}
               </div> : <div className={styles.listeBas}><strong>{KLASORLER.find((item) => item[0] === folder)?.[1]}</strong><span>{activeCount} konuşma</span></div>}
             </div>
             <div className={styles.threadler}>

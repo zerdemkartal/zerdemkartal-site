@@ -1,5 +1,5 @@
-.sayfa{height:100vh;overflow:hidden;background:var(--h-bg);color:var(--h-ink)}
-.kabuk{height:100vh;display:flex;flex-direction:column;padding:12px}
+.sayfa{height:100vh;height:100dvh;overflow:hidden;background:var(--h-bg);color:var(--h-ink)}
+.kabuk{box-sizing:border-box;height:100vh;height:100dvh;min-height:0;display:flex;flex-direction:column;padding:12px}
 .detayEylem{display:flex;align-items:center;justify-content:flex-end;gap:7px;flex-wrap:wrap}
 .birincil,.hafif,.detayEylem button,.detayBas>button,.toplu button,.sablonSatiri>button,.teslimatAlani button{min-height:40px;border-radius:999px;padding:0 16px;font:650 12.5px 'Hanken Grotesk',sans-serif;cursor:pointer;transition:background .2s ease,border-color .2s ease,color .2s ease,opacity .2s ease}
 .birincil{border:1px solid var(--h-accent);background:var(--h-accent-text);color:var(--h-accent-ink)}
@@ -7,7 +7,7 @@
 .hafif,.detayEylem button,.detayBas>button,.toplu button,.sablonSatiri>button,.teslimatAlani button{border:1px solid var(--h-border);background:var(--h-card);color:var(--h-ink)}
 .hafif:hover,.detayEylem button:hover,.detayBas>button:hover,.toplu button:hover,.sablonSatiri>button:hover,.teslimatAlani button:hover{border-color:var(--h-accent);background:var(--h-accentbg)}
 .birincil:disabled,.hafif:disabled,.sablonSatiri>button:disabled,.teslimatAlani button:disabled{opacity:.5;cursor:not-allowed}
-.detayEylem .tehlike{border-color:var(--h-error);color:var(--h-error)}
+.detayEylem .tehlike,.toplu .tehlike{border-color:var(--h-error);color:var(--h-error)}
 .whatsapp{min-height:40px;display:inline-flex;align-items:center;border:1px solid var(--h-whatsapp);border-radius:999px;padding:0 13px;background:color-mix(in srgb,var(--h-whatsapp) 10%,var(--h-card));color:var(--h-whatsapp-dark);font-size:11.5px;font-weight:700;text-decoration:none}
 .hata,.bildirim{margin:0 0 12px;padding:11px 14px;border:1px solid var(--h-border);border-radius:11px;font-size:13px;line-height:1.5}
 .hata{border-color:var(--h-error);background:color-mix(in srgb,var(--h-error) 8%,var(--h-card));color:var(--h-error)}
@@ -26,7 +26,7 @@
 .guvenlikNotu{margin:18px 6px 0;padding:11px;border:1px solid var(--h-border);border-radius:10px;background:var(--h-card)}.guvenlikNotu strong{font-size:10.5px}.guvenlikNotu p{margin:5px 0 0;color:var(--h-muted);font-size:9.5px;line-height:1.5}
 .oturumAraclari{margin-top:auto;padding:14px 6px 0;border-top:1px solid var(--h-border)}.oturumAraclari button{width:100%;min-height:36px;border:1px solid var(--h-border);border-radius:9px;background:var(--h-card);color:var(--h-ink);font:650 10.5px 'Hanken Grotesk',sans-serif;cursor:pointer}.oturumAraclari button:hover{border-color:var(--h-accent);background:var(--h-accentbg)}
 
-.liste{min-width:0;display:grid;grid-template-rows:auto auto 1fr;border-right:1px solid var(--h-border);background:var(--h-card)}
+.liste{min-width:0;min-height:0;overflow:hidden;display:grid;grid-template-rows:auto auto minmax(0,1fr);border-right:1px solid var(--h-border);background:var(--h-card)}
 .arama{display:flex;gap:7px;padding:11px;border-bottom:1px solid var(--h-border)}
 .arama input,.yazim input,.yazim select,.yazim textarea,.yanit textarea,.yanit select{width:100%;border:1px solid var(--h-border);border-radius:10px;background:var(--h-bg);color:var(--h-ink);font:500 13px 'Hanken Grotesk',sans-serif;outline:none}
 .arama input{min-width:0;padding:10px 12px}.arama button{border:1px solid var(--h-border);border-radius:9px;background:var(--h-card);color:var(--h-ink);padding:0 10px;font-size:11px;cursor:pointer}
@@ -35,7 +35,7 @@
 .hepsiniSec,.threadSec{display:grid;place-items:center;flex:0 0 auto;cursor:pointer}.hepsiniSec input,.threadSec input{width:16px;height:16px;accent-color:var(--h-accent-text)}
 .listeBas{min-width:0;display:flex;align-items:center;justify-content:space-between;flex:1;color:var(--h-muted);font-size:10.5px}.listeBas strong{color:var(--h-ink);font-size:12px}
 .toplu{min-width:0;display:flex;align-items:center;gap:5px;overflow:auto}.toplu strong{flex:0 0 auto;margin-right:3px;font-size:10.5px}.toplu button{min-height:30px;padding:0 9px;font-size:9.5px;white-space:nowrap}
-.threadler{min-height:0;overflow:auto}.bos{padding:46px 20px;color:var(--h-muted);font-size:12px;text-align:center}
+.threadler{min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable}.bos{padding:46px 20px;color:var(--h-muted);font-size:12px;text-align:center}
 .thread{position:relative;display:grid;grid-template-columns:22px 26px 1fr;align-items:start;border-bottom:1px solid var(--h-border);background:transparent;color:var(--h-ink);transition:background .2s ease,box-shadow .2s ease}
 .thread:hover,.threadAktif{background:var(--h-cream)}.okunmadi{box-shadow:inset 3px 0 var(--h-accent);background:color-mix(in srgb,var(--h-accentbg) 45%,var(--h-card))}
 .threadSec{margin:18px 0 0 8px}.yildiz{margin-top:14px;border:0;background:transparent;color:var(--h-gold);font-size:19px;line-height:1;cursor:pointer}
@@ -43,7 +43,7 @@
 .avatar{width:34px;height:34px;flex:0 0 34px;display:grid;place-items:center;border:1px solid var(--h-border);border-radius:50%;background:var(--h-accentbg);color:var(--h-accent-text);font:650 15px 'Newsreader',serif}
 .threadGovde{min-width:0;display:block;flex:1}.threadUst{display:flex;align-items:center;justify-content:space-between;gap:7px}.threadUst strong,.konu,.onizleme,.meta{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.threadUst strong{font-size:12.5px}.threadUst time{flex:0 0 auto;color:var(--h-muted);font-size:9px}.konu{margin-top:3px;color:var(--h-ink2);font-size:11.5px;font-weight:650}.onizleme{margin-top:3px;color:var(--h-muted);font-size:10.5px}.meta{margin-top:6px;color:var(--h-accent-text);font-size:9px;font-weight:650}
 
-.detay{min-width:0;overflow:auto;background:var(--h-bg)}
+.detay{min-width:0;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;background:var(--h-bg)}
 .detayBas{position:sticky;top:0;z-index:3;display:flex;align-items:flex-start;justify-content:space-between;gap:15px;padding:16px 18px;border-bottom:1px solid var(--h-border);background:color-mix(in srgb,var(--h-bg) 92%,transparent);backdrop-filter:blur(14px)}
 .detayBas>div:first-child{min-width:0}.detayBas span{color:var(--h-accent-text);font-size:9px;font-weight:750;letter-spacing:.1em}.detayBas h2{margin:4px 0 0;overflow-wrap:anywhere;font:540 22px/1.15 'Newsreader',serif}.detayBas p{margin:5px 0 0;color:var(--h-muted);font-size:10.5px}
 .detayEylem{max-width:54%}.detayEylem button{min-height:34px;padding:0 10px;font-size:10px}.whatsapp{min-height:34px;padding:0 10px;font-size:10px}

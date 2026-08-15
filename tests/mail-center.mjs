@@ -93,7 +93,9 @@ test('Fatura bilgileri ödeme öncesinde normalize edilip eksik alanlar reddedil
 
 test('Posta UI çöp, toplu işlem, şablon, fatura eki ve güvenli kurulumu birlikte sunuyor', () => {
   const client = fs.readFileSync(path.join(ROOT, 'src/app/yonetim/posta/PostaClient.jsx'), 'utf8');
+  const css = fs.readFileSync(path.join(ROOT, 'src/app/yonetim/posta/posta.module.css'), 'utf8');
   const route = fs.readFileSync(path.join(ROOT, 'src/app/api/mail/[id]/route.js'), 'utf8');
+  const bulkRoute = fs.readFileSync(path.join(ROOT, 'src/app/api/mail/bulk/route.js'), 'utf8');
   const leads = fs.readFileSync(path.join(ROOT, 'src/app/api/leads/route.js'), 'utf8');
   assert.ok(client.includes("['trash', 'Çöp'"));
   assert.ok(client.includes('Güvenli kurulum erişimi gönder'));
@@ -102,7 +104,17 @@ test('Posta UI çöp, toplu işlem, şablon, fatura eki ve güvenli kurulumu bir
   assert.ok(!client.includes("import { Nav }"));
   assert.ok(!client.includes('<header className={styles.ust}>'));
   assert.ok(client.includes("document.body.classList.add('h-posta-app')"));
+  assert.match(css, /\.kabuk\{[^}]*box-sizing:border-box[^}]*height:100dvh[^}]*min-height:0/);
+  assert.match(css, /\.liste\{[^}]*min-height:0[^}]*overflow:hidden[^}]*grid-template-rows:auto auto minmax\(0,1fr\)/);
+  assert.match(css, /\.threadler\{[^}]*overflow-y:auto[^}]*scrollbar-gutter:stable/);
+  assert.match(css, /\.detay\{[^}]*min-height:0[^}]*overflow-y:auto[^}]*scrollbar-gutter:stable/);
   assert.ok(route.includes('export async function DELETE'));
+  assert.ok(client.includes("topluIslem('delete')"));
+  assert.ok(client.includes("action === 'delete' ? { confirm: 'SİL' }"));
+  assert.ok(bulkRoute.includes("'unstar', 'delete'"));
+  assert.ok(bulkRoute.includes("confirm: z.literal('SİL').optional()"));
+  assert.ok(bulkRoute.includes("folder: 'trash'"));
+  assert.ok(bulkRoute.includes('prisma.mailThread.deleteMany'));
   assert.ok(route.includes('blockSender'));
   assert.ok(leads.includes('formStartedAt'));
   assert.ok(leads.includes('recent >= 5'));
