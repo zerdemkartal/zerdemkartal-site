@@ -399,17 +399,17 @@ export default function PostaClient() {
     if (!name || !email || inviteBusy) {
       setError('Kurulum daveti için alıcı adı ve e-posta adresi gerekli.'); return;
     }
-    if (!globalThis.confirm(`${email} adresine 72 saatlik kişisel Hermes kurulum erişimi gönderilsin mi?`)) return;
+    if (!globalThis.confirm(`Ödemeyi doğruladıysanız ${email} adresine 72 saatlik kişisel Hermes indirme bağlantısı ve geçici şifre gönderilsin mi?`)) return;
     setInviteBusy(true); setError(''); setNotice('');
     try {
       await api('/api/lisans/v1/yonetim/indirme-daveti', {
         method: 'POST', body: JSON.stringify({
           adSoyad: name, email,
-          gerekce: 'Posta Merkezi üzerinden güvenli kurulum erişimi gönderildi.',
+          gerekce: 'Posta Merkezi hazır indirme e-postası üzerinden güvenli kurulum erişimi gönderildi.',
           istekId: globalThis.crypto.randomUUID()
         })
       });
-      setNotice('72 saatlik kişisel kurulum bağlantısı ve geçici şifre e-postalandı.');
+      setNotice('Hazır indirme e-postası gönderildi: kişisel bağlantı ve geçici şifre 72 saat geçerli.');
     } catch (inviteError) {
       setError(inviteError.status === 403
         ? 'Kurulum daveti için sahip oturumunda 10 dakikalık Authenticator yeniden doğrulaması gerekli.'
@@ -580,8 +580,8 @@ function AttachmentPicker({ attachments, busy, disabled, onAdd, onRemove }) {
 
 function DeliveryPanel({ busy, onSend }) {
   return <section className={styles.teslimatAlani}>
-    <div><strong>Hermes Windows kurulumu</strong><p>Büyük ve çalıştırılabilir dosyalar e-posta eki olarak engellenebilir. Müşteriye 72 saatlik kişisel bağlantı ve geçici şifre gönderilir.</p></div>
-    <button type="button" onClick={onSend} disabled={busy}>{busy ? 'Gönderiliyor…' : 'Güvenli kurulum erişimi gönder'}</button>
+    <div><strong>Hazır e-posta · Kişisel indirme bağlantısı</strong><p>Kart ödemesinde otomatik gider. Havale ödemesini hesabınızda doğruladıktan sonra aynı 72 saatlik kişisel bağlantı ve geçici şifreyi buradan gönderebilirsiniz.</p></div>
+    <button type="button" aria-label="Güvenli kurulum erişimi gönder" onClick={onSend} disabled={busy}>{busy ? 'Gönderiliyor…' : 'Hazır indirme e-postasını gönder'}</button>
   </section>;
 }
 
