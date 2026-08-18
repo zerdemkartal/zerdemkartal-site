@@ -1,24 +1,43 @@
-// Blog fallback — DB'de blog yoksa kütüphane seed-data/library.json'dan basılır.
-// (Diğer sayfaların code-default deseninin blog karşılığı; DB dolunca DB kazanır.)
-// library.json düz bir düğüm dizisidir ([...]); {v:2, nodes:[...]} biçimi de desteklenir.
+// Kamusal blog sözleşmesi — çalışma kütüphanesindeki yüzlerce başlık kendiliğinden
+// yayına açılmaz. Yalnız tarihli, içerikli ve published sayfalar ile bunların klasörleri görünür.
 import { flattenTree } from '@/lib/blog';
-import libraryTree from '../../seed-data/library.json';
+import { PUBLIC_BLOG_TREE } from '@/content/blogArticles';
 
 let _rows = null;
 function rows() {
-  if (!_rows) {
-    const nodes = Array.isArray(libraryTree) ? libraryTree : (libraryTree?.nodes || []);
-    _rows = flattenTree(nodes);
-  }
+  if (!_rows) _rows = flattenTree(PUBLIC_BLOG_TREE);
   return _rows;
 }
 
-/** Kütüphanenin tüm düğümleri (klasör + yazı) düz satırlar hâlinde. */
-export function libraryRows() {
-  return rows();
+export function isPublishedBlogPage(row) {
+  return row?.type === 'page'
+    && row.status !== 'draft'
+    && /^\d{4}-\d{2}-\d{2}$/.test(row.date || '')
+    && Boolean(String(row.body || row.md || '').trim());
 }
 
-/** Tek bir yazıyı id ile getir (yalnız yayınlanmış sayfa). */
-export function libraryById(id) {
-  return rows().find((r) => r.id === id && r.type === 'page') || null;
+/** Kod içeriği + DB satırlarını birleştirir; DB'deki aynı kimlik kod içeriğini geçersiz kılar. */
+export function publishedBlogRows(databaseRows = []) {
+  const merged = new Map(rows().map((row) => [row.id, row]));
+  for (const row of databaseRows || []) merged.set(row.id, row);
+
+  const all = [...merged.values()];
+  const byId = new Map(all.map((row) => [row.id, row]));
+  const keptFolders = new Set();
+
+  for (const page of all.filter(isPublishedBlogPage)) {
+    let parentId = page.parentId;
+    while (parentId && !keptFolders.has(parentId)) {
+      keptFolders.add(parentId);
+      parentId = byId.get(parentId)?.parentId || null;
+    }
+  }
+
+  return all.filter((row) => isPublishedBlogPage(row) || (row.type === 'folder' && keptFolders.has(row.id)));
+}
+
+/** DB satırı varsa onun yayın durumuna uyar; yoksa kod içeriğine döner. */
+export function publishedBlogById(id, databaseRow = null) {
+  if (databaseRow) return isPublishedBlogPage(databaseRow) ? databaseRow : null;
+  return rows().find((row) => row.id === id && isPublishedBlogPage(row)) || null;
 }

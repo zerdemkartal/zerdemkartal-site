@@ -1,28 +1,35 @@
 // BLOG YAZISI — /blog/yazi/[id] (Blog.dc.html #/yazi rotasının SSR karşılığı).
 // Gövde: page.body (WYSIWYG HTML) varsa o, yoksa md → HTML (lib/md). JSON-LD: BlogPosting (page.seo'dan).
 import { notFound } from 'next/navigation';
+import { cache } from 'react';
 import { prisma } from '@/lib/db';
 import { SITE, ORG, WEBSITE, pageMeta } from '@/lib/site';
 import { JsonLd } from '@/components/JsonLd';
 import { Nav, Footer, T, kickerStyle, h1Style, sectionStyle } from '@/components/Chrome';
 import { mdToHtml } from '@/lib/md';
-import { libraryById } from '@/lib/blogData';
+import { publishedBlogById } from '@/lib/blogData';
 
 export const revalidate = 300;
 
-async function load(id) {
+const load = cache(async (id) => {
   const row = await prisma.blogNode.findUnique({ where: { id } }).catch(() => null);
-  if (row) return row.type === 'page' && row.status !== 'draft' ? row : null;
-  return libraryById(id); // DB'de yoksa kütüphaneden (fallback)
-}
+  return publishedBlogById(id, row);
+});
 
 export async function generateMetadata(props) {
   const params = await props.params;
-  return pageMeta({
-    title: 'Yazı yayında değil — Hermes',
-    description: 'Hermes blog yazıları şu anda kamusal erişime kapalı.',
+  const p = await load(params.id);
+  if (!p) return pageMeta({
+    title: 'Yazı bulunamadı | Hermes',
+    description: 'Aradığınız blog yazısı bulunamadı.',
     path: `/blog/yazi/${params.id}`,
     noindex: true
+  });
+  return pageMeta({
+    title: p.seoTitle || `${p.title} | Hermes`,
+    description: p.seoDesc || p.excerpt || '',
+    path: `/blog/yazi/${p.id}`,
+    ogType: 'article'
   });
 }
 
@@ -41,15 +48,15 @@ const ARTICLE_CSS = `
 
 export default async function Yazi(props) {
   const params = await props.params;
-  notFound();
   const p = await load(params.id);
   if (!p) notFound();
   const url = `${SITE}/blog/yazi/${p.id}`;
   const html = p.body || (p.md ? mdToHtml(p.md) : '');
+  const tarih = new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${p.date}T00:00:00Z`));
 
   const jsonld = { '@context': 'https://schema.org', '@graph': [
     ORG, WEBSITE,
-    { '@type': 'BlogPosting', '@id': url + '#yazi', headline: p.seoTitle || p.title, description: p.seoDesc || p.excerpt || '', url, mainEntityOfPage: url, datePublished: p.date || undefined, dateModified: p.updatedAt, inLanguage: 'tr-TR', author: { '@type': 'Person', '@id': SITE + '/#astrolog', name: 'zerdemkartal' }, publisher: { '@id': SITE + '/#org' }, isPartOf: { '@id': SITE + '/blog#blog' } },
+    { '@type': 'BlogPosting', '@id': url + '#yazi', headline: p.seoTitle || p.title, description: p.seoDesc || p.excerpt || '', url, mainEntityOfPage: url, datePublished: p.date || undefined, dateModified: p.updatedAt || p.date || undefined, inLanguage: 'tr-TR', author: { '@type': 'Person', '@id': SITE + '/#astrolog', name: 'zerdemkartal' }, publisher: { '@id': SITE + '/#org' }, isPartOf: { '@id': SITE + '/blog#blog' } },
     { '@type': 'BreadcrumbList', itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Ana Sayfa', item: SITE + '/' },
       { '@type': 'ListItem', position: 2, name: 'Blog', item: SITE + '/blog' },
@@ -69,7 +76,7 @@ export default async function Yazi(props) {
           <span aria-hidden="true">·</span>
           <a href="/blog" style={{ color: T.muted, textDecoration: 'none' }}>Kütüphane</a>
         </nav>
-        <div style={{ ...kickerStyle, marginTop: 26 }}>{p.date}</div>
+        <div style={{ ...kickerStyle, marginTop: 26 }}>{tarih} · ZERDEM KARTAL</div>
         <h1 style={{ ...h1Style, fontSize: 'clamp(32px, 4.4vw, 48px)' }}>{p.title}</h1>
         {p.excerpt && <p style={{ fontFamily: T.serif, fontStyle: 'italic', fontSize: 20, lineHeight: 1.6, color: T.ink2, marginTop: 18 }}>{p.excerpt}</p>}
         <div className="zk-yazi" style={{ marginTop: 30 }} dangerouslySetInnerHTML={{ __html: html }} />

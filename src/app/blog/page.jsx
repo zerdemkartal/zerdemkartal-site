@@ -5,18 +5,17 @@ import { SITE, ORG, WEBSITE, pageMeta } from '@/lib/site';
 import { JsonLd } from '@/components/JsonLd';
 import { Nav, Footer } from '@/components/Chrome';
 import { buildTree } from '@/lib/blog';
-import { libraryRows } from '@/lib/blogData';
+import { publishedBlogRows } from '@/lib/blogData';
 import BlogExplorer from './BlogExplorer';
-import { notFound } from 'next/navigation';
 
 export const revalidate = 300;
 
 const URL_ = SITE + '/blog';
 const SEO = {
   title: 'Blog — Gökyüzü Günlüğü & Astroloji Kütüphanesi | Hermes',
-  description: 'Transit notları, retro rehberleri ve burçlardan evlere uzanan astroloji kütüphanesi — sade bir Türkçeyle.'
+  description: 'Astroloji, harita okuma yöntemleri ve astroloji programları üzerine açık, teknik ve insanı merkeze alan yazılar.'
 };
-export const metadata = pageMeta({ ...SEO, path: '/blog', noindex: true });
+export const metadata = pageMeta({ ...SEO, path: '/blog' });
 
 const PALETTE = [
   { bg: '#F6E9E3', fg: '#C0562F' }, { bg: '#E9F0E4', fg: '#5C7A4A' }, { bg: '#E7EEF5', fg: '#3F6D96' },
@@ -34,9 +33,8 @@ function trimNodes(list, color, catTitle) {
 }
 
 export default async function Blog() {
-  notFound();
-  let rows = await prisma.blogNode.findMany({ where: { OR: [{ status: 'published' }, { type: 'folder' }] } }).catch(() => []);
-  if (!rows.length) rows = libraryRows();
+  const databaseRows = await prisma.blogNode.findMany().catch(() => []);
+  const rows = publishedBlogRows(databaseRows);
   const tree = buildTree(rows);
 
   const nodes = (tree.nodes || []).map((n, i) => {

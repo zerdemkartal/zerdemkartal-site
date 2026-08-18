@@ -19,6 +19,7 @@
     "test:paytr": "node tests/paytr-link.mjs && node tests/paytr-delivery.mjs",
     "test:site-license-copy": "node tests/site-license-copy.mjs",
     "test:site-feature-inventory": "node tests/site-feature-inventory.mjs",
+    "test:blog": "node tests/blog-public.mjs",
     "test:mail": "node tests/mail-center.mjs",
     "postinstall": "prisma generate"
   },

@@ -1,6 +1,6 @@
 # zerdemkartal — Faz 2 Backend
 
-> Prototipin (localStorage) gerçek sunucu karşılığı. **Çalıştırılmaya hazır**: şema, seed, API uçları, auth, `zk-data.js` API adaptörü + **tüm public sayfaların SSR portu** (meta + JSON-LD + içerik sunucuda). Blog ve üyelik arayüzü geçici olarak kamusal yayına kapalıdır; satın alma CTA’sı iyzico etkinleştirilene kadar WhatsApp’a gider.
+> Prototipin (localStorage) gerçek sunucu karşılığı. **Çalıştırılmaya hazır**: şema, seed, API uçları, auth, `zk-data.js` API adaptörü + **tüm public sayfaların SSR portu** (meta + JSON-LD + içerik sunucuda). Blog kamusal ve indekslenebilir; üyelik arayüzü geçici olarak kamusal yayına kapalıdır.
 
 ## Kurulum
 
@@ -28,7 +28,7 @@ npm run dev                   # http://localhost:3000
 
 ## SSR rotaları (Faz 2.7 — tamamlandı)
 
-`/` · `/ozellikler` · `/fiyat` · `/indir` · `/sss` · `/hakkimda` · `/iletisim` (form → `POST /api/leads`) · `/yasal/[slug]` (4 metin) · `/cok-yakinda` (noindex). `/uye`, geçici olarak `/cok-yakinda` rotasına yönlenir. `/blog` ve `/blog/yazi/[id]` kodu/verisi korunur ancak kamusal isteklere 404 verir.
+`/` · `/ozellikler` · `/fiyat` · `/indir` · `/blog` · `/blog/yazi/[id]` · `/sss` · `/hakkimda` · `/iletisim` (form → `POST /api/leads`) · `/yasal/[slug]` (6 metin) · `/cok-yakinda` (noindex). `/uye`, geçici olarak `/indir` rotasına yönlenir. Blogda yalnız tarihli, içerikli ve `published` yazılar kamusaldır; çalışma kütüphanesindeki hazırlık başlıkları kendiliğinden yayımlanmaz.
 
 - İçerik DB'den (`PageContent`), meşhur alanlar boşsa güvenli varsayılanlar; **generateMetadata + JSON-LD prototipteki `_buildJsonLd`'lerin birebir portu**, ISR `revalidate: 300`.
 - Görsel parite: sayfalar marka tipografi/renkleriyle semantik port'tır; piksel referansı `.dc.html` dosyalarıdır (her page.jsx başındaki not).

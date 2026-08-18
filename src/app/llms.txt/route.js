@@ -3,6 +3,7 @@ import { HERMES_SITE } from '@/lib/defaults';
 import { migrateHermesPricing } from '@/lib/hermesPricing';
 import { migrateHermesFeatures, countHermesFeatures } from '@/lib/hermesFeatures.mjs';
 import { CONTACT_EMAIL } from '@/lib/site';
+import { publishedBlogRows } from '@/lib/blogData';
 
 // llms.txt — HERMES sitesi AI indeksi (GEO katmanının çekirdeği; H1 dönüşümü).
 // Gövde 'hermes_site' içerik modelinden ÜRETİLİR (MCP ile içerik değişince burası da değişir)
@@ -11,9 +12,14 @@ const SITE = (process.env.SITE_URL || 'https://hermesastroloji.com').replace(/\/
 
 export async function GET() {
   let model = HERMES_SITE;
+  let blogRows = publishedBlogRows();
   try {
-    const row = await prisma.pageContent.findUnique({ where: { key: 'hermes_site' } });
+    const [row, databaseBlogRows] = await Promise.all([
+      prisma.pageContent.findUnique({ where: { key: 'hermes_site' } }),
+      prisma.blogNode.findMany()
+    ]);
     if (row?.data) model = { ...HERMES_SITE, ...row.data };
+    blogRows = publishedBlogRows(databaseBlogRows);
   } catch { /* DB yoksa varsayılanlarla devam */ }
   model = migrateHermesPricing(migrateHermesFeatures(model));
 
@@ -26,6 +32,11 @@ export async function GET() {
 
   const sss = (model.sss?.items || [])
     .map((x) => `- S: ${x.q}\n  C: ${x.a}`)
+    .join('\n');
+
+  const blog = blogRows
+    .filter((row) => row.type === 'page')
+    .map((row) => `- [${row.title}](${SITE}/blog/yazi/${row.id}): ${row.excerpt || ''}`)
     .join('\n');
 
   const txt = `# Hermes — Profesyonel Masaüstü Astroloji Programı
@@ -50,12 +61,16 @@ Temel gerçekler:
 - [Fiyat](${SITE}/fiyat): EFT/Havale ve PayTR kart fiyatlandırması, tek seferlik lisans.
 - [Satın Al](${SITE}/satin-al): lisans ve ödeme yöntemi seçimi; ödeme öncesinde teslimat, iletişim ve fatura bilgilerinin güvenli biçimde alınması.
 - [İndir](${SITE}/indir): kurulum adımları ve sistem gereksinimleri.
+- [Blog](${SITE}/blog): astroloji, harita okuma yöntemleri ve astroloji programları üzerine yazılar.
 - [SSS](${SITE}/sss): sık sorulan sorular (aşağıda tam liste).
 - [İletişim](${SITE}/iletisim): iletişim formu — ${CONTACT_EMAIL}
 - [Geliştirici hakkında](${SITE}/hakkimda)
 
 ## Modüller
 ${moduller}
+
+## Blog yazıları
+${blog}
 
 ## Sık sorulan sorular (tam metin)
 ${sss}

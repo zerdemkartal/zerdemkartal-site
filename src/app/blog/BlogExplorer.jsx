@@ -1,7 +1,7 @@
 'use client';
 // Blog kütüphanesi — ORTALI başlık + "Kütüphane ağacı" tam ekran menü + ÖNE ÇIKANLAR carousel (görselli, otomatik dönen,
-// noktalı) + görsel/illüstrasyon merkezli editöryal kart ızgarası + arama. Görseller şimdilik glifli tonlu placeholder;
-// kapak eklenince yerini alır. Veri sunucudan (blog/page.jsx): nodes + featured (color/snippet dahil).
+// noktalı) + astroloji glifli editöryal kart ızgarası + arama.
+// Veri sunucudan (blog/page.jsx): nodes + featured (color/snippet dahil).
 import { useState, useEffect, useRef } from 'react';
 
 const INK = 'var(--h-ink)', INK2 = 'var(--h-ink2)', MUTED = 'var(--h-muted)', BORDER = 'var(--h-border)', PURPLE = 'var(--h-accent)', CREAM = 'var(--h-cream)', PTINT = 'var(--h-tint)', PINK_INK = 'var(--h-tint-ink)';
@@ -37,7 +37,6 @@ function HeroCarousel({ slides }) {
         <div key={idx} className="zk-herofade">
           <div style={{ height: 'clamp(300px, 34vw, 400px)', borderRadius: 20, background: (s.color && s.color.bg) || CREAM, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
             <span aria-hidden="true" style={{ fontFamily: SERIF, fontSize: 200, lineHeight: 1, color: (s.color && s.color.fg) || PURPLE, opacity: 0.3 }}>{s.glyph}</span>
-            <div style={{ position: 'absolute', left: 12, top: 12, background: 'rgba(251,250,247,0.9)', color: MUTED, fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase', padding: '4px 10px', borderRadius: 999 }}>görsel · sonra eklenecek</div>
           </div>
           <div style={{ textAlign: 'center', maxWidth: 640, margin: '0 auto' }}>
             {s.catTitle && <div style={{ fontSize: 11, letterSpacing: '0.16em', textTransform: 'uppercase', fontWeight: 700, color: PURPLE, margin: '18px 0 7px' }}>{s.catTitle}</div>}

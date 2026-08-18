@@ -33,6 +33,7 @@ const SABIT = [
   { g: 'Sayfalar', t: 'Fiyat', h: '/fiyat', k: 'ücret lisans satın al eft paytr kart' },
   { g: 'Sayfalar', t: 'Satın Al', h: '/satin-al', k: 'lisans eft havale paytr kart ödeme' },
   { g: 'Sayfalar', t: 'İndir', h: '/indir', k: 'kurulum sürüm windows' },
+  { g: 'Sayfalar', t: 'Blog', h: '/blog', k: 'makale astroloji programı yazılar kütüphane' },
   { g: 'Sayfalar', t: 'Sık Sorulan Sorular', h: '/sss', k: 'sss soru cevap' },
   { g: 'Sayfalar', t: 'İletişim', h: '/iletisim', k: 'mail yaz destek' },
   { g: 'Sayfalar', t: 'Geliştiricisi hakkında', h: '/hakkimda', k: 'zerdem kartal astrolog' },

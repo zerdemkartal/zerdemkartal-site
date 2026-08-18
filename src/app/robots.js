@@ -5,7 +5,7 @@ const SITE = (process.env.SITE_URL || 'https://hermesastroloji.com').replace(/\/
 export default function robots() {
   return {
     rules: [
-      { userAgent: '*', allow: '/', disallow: ['/yonetim', '/admin', '/api/', '/uye', '/cok-yakinda', '/blog'] },
+      { userAgent: '*', allow: '/', disallow: ['/yonetim', '/admin', '/api/', '/uye', '/cok-yakinda'] },
       { userAgent: 'OAI-SearchBot', allow: '/' },
       { userAgent: 'GPTBot', allow: '/' },
       { userAgent: 'ClaudeBot', allow: '/' },

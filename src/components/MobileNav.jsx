@@ -7,6 +7,7 @@ const LINKS = [
   ['/ozellikler', 'Özellikler'],
   ['/fiyat', 'Fiyat'],
   ['/indir', 'İndir'],
+  ['/blog', 'Blog'],
   ['/sss', 'SSS']
 ];
 
