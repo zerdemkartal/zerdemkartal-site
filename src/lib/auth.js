@@ -40,6 +40,22 @@ export async function requireMailAccess(request, database, action = 'posta.gorun
   }
 }
 
+/** Başarılı requireMailAccess sonrasında denetim/kayıt künyesi için kullanılır. */
+export function mailAccessActor(request) {
+  const token = bearerToken(request);
+  if (!token) return null;
+  if (process.env.ADMIN_TOKEN && token === process.env.ADMIN_TOKEN) {
+    return { email: 'admin-token', role: 'admin_token' };
+  }
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    if (!['admin', 'mail_operator', 'license_admin'].includes(payload.role) || !payload.sub) return null;
+    return { email: String(payload.sub).toLowerCase(), role: payload.role };
+  } catch {
+    return null;
+  }
+}
+
 export function signMailOperatorJwt(email) {
   return jwt.sign({ sub: email, role: 'mail_operator' }, process.env.JWT_SECRET, { expiresIn: '12h' });
 }

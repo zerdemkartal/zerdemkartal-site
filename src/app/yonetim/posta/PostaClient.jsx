@@ -245,7 +245,7 @@ export default function PostaClient() {
       ...requestOptions,
       headers: {
         ...(requestOptions.body ? { 'Content-Type': 'application/json' } : {}),
-        Authorization: `Bearer ${authToken}`,
+        ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
         ...(requestOptions.headers || {})
       },
       cache: 'no-store'
@@ -412,19 +412,10 @@ export default function PostaClient() {
     }
     setInviteBusy(true); setError(''); setNotice('');
     try {
-      const licenseToken = sessionStorage.getItem(LICENSE_TOKEN_KEY) || '';
-      if (!licenseToken) {
-        const authError = new Error('İndirme bağlantısı için önce Lisans Yönetimi’nde sahip oturumunu açıp yeniden doğrulayın.');
-        authError.status = 401;
-        throw authError;
-      }
-      const data = await api('/api/lisans/v1/yonetim/indirme-daveti', {
-        authToken: licenseToken,
+      const data = await api('/api/mail/indirme-baglantisi', {
         method: 'POST', body: JSON.stringify({
           adSoyad: name, email,
-          gerekce: 'Posta Merkezi üzerinden 6 saatlik müşteri indirme bağlantısı oluşturuldu.',
-          istekId: globalThis.crypto.randomUUID(),
-          mod: 'olustur'
+          istekId: globalThis.crypto.randomUUID()
         })
       });
       setDownloadDialog((current) => current ? {
@@ -433,10 +424,8 @@ export default function PostaClient() {
       setNotice('6 saatlik kişisel indirme bağlantısı oluşturuldu. Henüz müşteriye gönderilmedi.');
     } catch (inviteError) {
       setError(inviteError.status === 401
-        ? 'İndirme bağlantısı için önce Lisans Yönetimi’nde sahip oturumunu açıp yeniden doğrulayın.'
-        : inviteError.status === 403
-          ? 'İndirme bağlantısı oluşturmak için sahip oturumunda 10 dakikalık Authenticator yeniden doğrulaması gerekli.'
-          : inviteError.message);
+        ? 'Posta oturumu sona erdi. Yeniden giriş yapıp bağlantıyı tekrar oluşturun.'
+        : inviteError.message);
     } finally { setInviteBusy(false); }
   }
 
@@ -634,7 +623,8 @@ export default function PostaClient() {
       {downloadDialog ? <DownloadLinkDialog
         value={downloadDialog}
         busy={inviteBusy}
-        onChange={(next) => setDownloadDialog((current) => current ? { ...current, ...next } : null)}
+        error={error}
+        onChange={(next) => { setError(''); setDownloadDialog((current) => current ? { ...current, ...next } : null); }}
         onCreate={indirmeBaglantisiOlustur}
         onCopy={indirmeBaglantisiniKopyala}
         onInsert={indirmeBaglantisiniMesajaEkle}
@@ -659,7 +649,7 @@ function DeliveryPanel({ busy, onCreate }) {
   </section>;
 }
 
-function DownloadLinkDialog({ value, busy, onChange, onCreate, onCopy, onInsert, onClose }) {
+function DownloadLinkDialog({ value, busy, error, onChange, onCreate, onCopy, onInsert, onClose }) {
   return <div className={styles.modalArka} role="presentation">
     <section className={styles.modal} role="dialog" aria-modal="true" aria-labelledby="indirme-linki-baslik">
       <header className={styles.modalBaslik}>
@@ -668,6 +658,7 @@ function DownloadLinkDialog({ value, busy, onChange, onCreate, onCopy, onInsert,
       </header>
       <form className={styles.modalGovde} onSubmit={onCreate}>
         <p>Bağlantı oluşturulduğu anda süre başlar. Aynı e-posta için önceki açık bağlantı iptal edilir; link yalnız bu ekranda bir kez gösterilir.</p>
+        {error ? <p className={styles.modalHata} role="alert">{error}</p> : null}
         <div className={styles.ikiAlan}>
           <label>Müşteri adı<input required value={value.name} onChange={(event) => onChange({ name: event.target.value })} disabled={Boolean(value.url)} /></label>
           <label>E-posta<input required type="email" value={value.email} onChange={(event) => onChange({ email: event.target.value })} disabled={Boolean(value.url)} /></label>

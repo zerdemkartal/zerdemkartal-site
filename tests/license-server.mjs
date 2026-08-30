@@ -688,6 +688,7 @@ await test('Google + Authenticator lisans oturumu Posta Merkezi erişiminde yeni
   assert.ok(auth.includes("payload.role === 'license_admin'"));
   assert.ok(auth.includes('authorizeLicenseRequest'));
   assert.ok(mail.includes("const LICENSE_TOKEN_KEY = 'h_license_jwt'"));
+  assert.ok(mail.includes("'/api/mail/indirme-baglantisi'"));
   assert.ok(list.includes("await requireMailAccess(request, prisma, 'posta.goruntule')"));
   assert.ok(send.includes("await requireMailAccess(request, prisma, 'posta.gonder')"));
 });
