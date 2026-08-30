@@ -95,7 +95,7 @@ const DOCS = {
           <li><B>Taksit:</B> kart ve vade seçimine göre nihai toplam PayTR ödeme sayfasında gösterilir. Sipariş, bu toplam onaylandıktan sonra tamamlanır.</li>
         </ul>
         <h2 style={h3}>4. Ödeme, teslimat ve ek masraflar</h2>
-        <p style={p}>Kartlı ödeme PayTR’nin güvenli ödeme sayfasında; EFT/Havale satıcının bildirdiği banka hesabına yapılır. Dijital teslim nedeniyle kargo ücreti yoktur. Başarılı kart ödemesi bildirildiğinde 72 saat geçerli kişisel indirme daveti satın alma sayfasında doğruladığınız e-posta adresine otomatik gönderilir. Programdaki <B>Lisans İste</B> kaydınızın ardından satın alınan cihaz sınırına uygun imzalı lisans en geç iki iş günü içinde hazırlanır.</p>
+        <p style={p}>Kartlı ödeme PayTR’nin güvenli ödeme sayfasında; EFT/Havale satıcının bildirdiği banka hesabına yapılır. Dijital teslim nedeniyle kargo ücreti yoktur. Başarılı kart ödemesi bildirildiğinde 6 saat geçerli kişisel indirme daveti satın alma sayfasında doğruladığınız e-posta adresine otomatik gönderilir. Programdaki <B>Lisans İste</B> kaydınızın ardından satın alınan cihaz sınırına uygun imzalı lisans en geç iki iş günü içinde hazırlanır.</p>
         <h2 style={h3}>5. Cayma ve iade</h2>
         <p style={p}>Tüketici kural olarak sözleşmenin kurulmasından itibaren 14 gün içinde cayabilir. Ancak açık onayınızla elektronik ortamda ifasına başlanan ve tarafınıza teslim edilen dijital içerik/lisans için Mesafeli Sözleşmeler Yönetmeliği m.15/1-ğ kapsamındaki cayma hakkı istisnası uygulanabilir. Lisans ve indirme erişimi teslim edilmeden önce iptal talebinde bulunabilirsiniz. Ayıplı hizmete ilişkin kanuni haklarınız saklıdır.</p>
         <h2 style={h3}>6. Başvuru ve uyuşmazlık</h2>
@@ -113,7 +113,7 @@ const DOCS = {
         <h2 style={h3}>1. Dijital teslimat</h2>
         <p style={p}>Hermes fiziksel ürün değildir. Kargo veya kurye gönderimi yapılmaz; bu nedenle kargo ücreti yoktur. Teslimat, Windows kurulumuna erişim ve satın alınan cihaz sınırına uygun lisansın hazırlanmasıyla dijital olarak tamamlanır.</p>
         <h2 style={h3}>2. Teslim süresi ve kanalı</h2>
-        <p style={p}>Başarılı kart ödemesi PayTR tarafından bildirildiğinde 72 saat geçerli kişisel indirme daveti, satın alma sayfasında iki kez doğruladığınız e-posta adresine otomatik gönderilir. EFT/Havale ödemesinde davet banka hareketinin yönetici tarafından onaylanmasından sonra gönderilir. İmzalı lisans, programdaki <B>Lisans İste</B> kaydınızdan sonra satın alınan cihaz sınırına uygun biçimde <B>en geç iki iş günü içinde</B> hazırlanır.</p>
+        <p style={p}>Başarılı kart ödemesi PayTR tarafından bildirildiğinde 6 saat geçerli kişisel indirme daveti, satın alma sayfasında iki kez doğruladığınız e-posta adresine otomatik gönderilir. EFT/Havale ödemesinde davet banka hareketinin yönetici tarafından onaylanmasından sonra gönderilir. İmzalı lisans, programdaki <B>Lisans İste</B> kaydınızdan sonra satın alınan cihaz sınırına uygun biçimde <B>en geç iki iş günü içinde</B> hazırlanır.</p>
         <h2 style={h3}>3. Alıcının kontrolü</h2>
         <p style={p}>Satın alma sayfasında verdiğiniz e-posta adresinin doğru olması teslim için gereklidir. Ödeme başarılı olduğu hâlde indirme daveti ulaşmazsa gereksiz/spam klasörünü kontrol edip işlem referansınızla {CONTACT_EMAIL} adresine yazabilirsiniz. Kart bilgilerinizi hiçbir zaman e-postayla göndermeyin; fatura bilgisinde düzeltme gerekiyorsa işlem referansınızla destek isteyin.</p>
         <h2 style={h3}>4. Teknik sorun</h2>
@@ -135,7 +135,7 @@ const DOCS = {
         <h2 style={h3}>3. Fiyat ve ödeme</h2>
         <p style={p}>Vergiler dâhil EFT/Havale fiyatı 1 cihaz için ₺6.000, 2 cihaz için ₺8.500’dür. Kartla tek çekim fiyatı PayTR’nin güncel mağaza oranıyla otomatik hesaplanarak satın alma sayfasında gösterilir. Taksitte kart/vade kaynaklı toplam PayTR ekranında değişebilir. Alıcının PayTR’de onayladığı nihai tutar sipariş bedelidir. Kart bilgileri Hermes sunucularına girilmez.</p>
         <h2 style={h3}>4. Sözleşmenin kurulması ve teslimat</h2>
-        <p style={p}>Alıcı ön bilgilendirme ve sözleşme koşullarını onaylayıp ödemeyi tamamladığında sözleşme kurulur. Ürün yalnız dijital teslim edilir; kargo yoktur. Başarılı kart ödemesi bildirildiğinde 72 saatlik indirme daveti doğrulanan e-posta adresine otomatik gönderilir. İmzalı lisans, programdaki <B>Lisans İste</B> kaydından sonra en geç iki iş günü içinde hazırlanır.</p>
+        <p style={p}>Alıcı ön bilgilendirme ve sözleşme koşullarını onaylayıp ödemeyi tamamladığında sözleşme kurulur. Ürün yalnız dijital teslim edilir; kargo yoktur. Başarılı kart ödemesi bildirildiğinde 6 saatlik indirme daveti doğrulanan e-posta adresine otomatik gönderilir. İmzalı lisans, programdaki <B>Lisans İste</B> kaydından sonra en geç iki iş günü içinde hazırlanır.</p>
         <h2 style={h3}>5. Cayma hakkı</h2>
         <p style={p}>Alıcı kural olarak 14 gün içinde cayabilir. Alıcının açık onayıyla elektronik ortamda ifasına başlanan ve teslim edilen gayri maddi ürünlerde Yönetmelik m.15/1-ğ uyarınca cayma hakkı istisnası uygulanır. Dijital teslim tamamlanmadan önce iptal talebi kabul edilir. Ayıplı mal veya hizmete ilişkin emredici kanuni haklar saklıdır.</p>
         <h2 style={h3}>6. İade ve uyuşmazlık</h2>

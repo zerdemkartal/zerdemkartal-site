@@ -1,7 +1,7 @@
 import crypto from 'node:crypto';
 import bcrypt from 'bcryptjs';
 
-export const DOWNLOAD_INVITE_MS = 72 * 60 * 60 * 1000;
+export const DOWNLOAD_INVITE_MS = 6 * 60 * 60 * 1000;
 export const DOWNLOAD_SESSION_MS = 30 * 60 * 1000;
 export const DOWNLOAD_LOCK_MS = 15 * 60 * 1000;
 export const DOWNLOAD_MAX_FAILURES = 5;

@@ -360,7 +360,7 @@ export default function LisansClient({ mode = 'licenses' }) {
       });
       setOrderRefs((current) => ({ ...current, [order.id]: '' }));
       await loadOrders();
-      setMessage('EFT ödemesi onaylandı; teşekkür mesajı, kişisel bağlantı ve 72 saatlik geçici şifre müşteriye e-postalandı.');
+      setMessage('EFT ödemesi onaylandı; teşekkür mesajı, kişisel bağlantı ve 6 saatlik geçici şifre müşteriye e-postalandı.');
     } catch (err) {
       setError(err.status === 403
         ? 'EFT onayından önce aşağıdaki Authenticator alanından 10 dakikalık yeniden doğrulama yap.'
@@ -411,7 +411,7 @@ export default function LisansClient({ mode = 'licenses' }) {
       });
       setInviteName(''); setInviteEmail('');
       await loadOrders();
-      setMessage('Kişisel indirme bağlantısı ve 72 saatlik geçici şifre müşteriye e-postalandı.');
+      setMessage('Kişisel indirme bağlantısı ve 6 saatlik geçici şifre müşteriye e-postalandı.');
     } catch (err) {
       setError(err.status === 403
         ? 'İndirme daveti göndermeden önce bu bölümde Authenticator ile 10 dakikalık yeniden doğrulama yap.'
@@ -557,7 +557,7 @@ export default function LisansClient({ mode = 'licenses' }) {
             <div>
               <span className={styles.kicker}>İNDİRME YÖNETİCİSİ</span>
               <h2 id="indirme-yonetici-baslik">Satın alma ve indirme erişimi</h2>
-              <p>EFT ödemesini burada onayla veya siteden başvurmayan müşteriye doğrudan davet gönder. Müşteriye kişisel bağlantı ile 72 saatlik rastgele şifre gider; asıl imzalı lisansı programdaki <strong>Lisans İste</strong> kaydı geldikten sonra Kripto Yönetimi’nden sen verirsin.</p>
+              <p>EFT ödemesini burada onayla veya siteden başvurmayan müşteriye doğrudan davet gönder. Müşteriye kişisel bağlantı ile 6 saatlik rastgele şifre gider; asıl imzalı lisansı programdaki <strong>Lisans İste</strong> kaydı geldikten sonra Kripto Yönetimi’nden sen verirsin.</p>
             </div>
             <button className={styles.ikincil} onClick={() => loadOrders()} disabled={busy}>Yöneticiyi yenile</button>
           </div>
@@ -567,7 +567,7 @@ export default function LisansClient({ mode = 'licenses' }) {
               <div><span className={styles.kicker}>PAYTR · OTOMATİK TESLİM</span><strong id="paytr-makbuz-baslik">Kart ödemeleri</strong></div>
               <span>Teslimat ve fatura bilgileri burada görünür; kart numarası ve CVV hiçbir zaman tutulmaz.</span>
             </div>
-            <p className={styles.paytrAciklama}>Başarılı PayTR bildirimi ödeme kaydını oluşturur, müşteriye 72 saatlik kişisel indirme davetini ve tanımladığın yönetici adreslerine satış özetini otomatik gönderir. Ödenen kayıt burada <strong>programdan Lisans İste bekleniyor</strong> olarak izlenir; makine kimliği geldikten sonraki gerçek lisans talebi Kripto Yönetimi’nin Bekleyenler bölümüne düşer. Aşağıdaki form yalnız istisnai durumlarda elle yeniden davet vermek içindir.</p>
+            <p className={styles.paytrAciklama}>Başarılı PayTR bildirimi ödeme kaydını oluşturur, müşteriye 6 saatlik kişisel indirme davetini ve tanımladığın yönetici adreslerine satış özetini otomatik gönderir. Ödenen kayıt burada <strong>programdan Lisans İste bekleniyor</strong> olarak izlenir; makine kimliği geldikten sonraki gerçek lisans talebi Kripto Yönetimi’nin Bekleyenler bölümüne düşer. Aşağıdaki form yalnız istisnai durumlarda elle yeniden davet vermek içindir.</p>
             <div className={styles.paytrOzet} aria-label="PayTR ödeme özeti">
               <article><span>Toplam kayıt</span><strong>{paytrReceipts.length}</strong></article>
               <article><span>Canlı ödeme</span><strong>{livePaytrReceipts.length}</strong></article>

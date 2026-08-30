@@ -138,7 +138,7 @@ function sablonIcerigi(id, { name = '', detail = null, purchase = null } = {}) {
   };
   if (id === 'sonrasi') return {
     subject: 'Hermes kurulum ve lisans adımları',
-    text: [greeting, '', 'Ödemeniz alınmıştır, teşekkür ederiz.', '', 'Kurulum erişiminiz ayrı bir güvenli e-posta ile gönderilecektir. Bu erişim 72 saatlik kişisel bağlantı ve geçici şifre içerir. Kurulumdan sonra programdaki Lisans İste alanını kullanabilirsiniz.', '', 'Kurulum sırasında desteğe ihtiyaç duyarsanız bu e-postayı yanıtlamanız yeterlidir.', '', 'Saygılarımızla,', 'Hermes Astroloji Programı'].join('\n')
+    text: [greeting, '', 'Ödemeniz alınmıştır, teşekkür ederiz.', '', 'Kurulum erişiminiz ayrı bir güvenli e-posta ile gönderilecektir. Bu erişim 6 saatlik kişisel bağlantı ve geçici şifre içerir. Kurulumdan sonra programdaki Lisans İste alanını kullanabilirsiniz.', '', 'Kurulum sırasında desteğe ihtiyaç duyarsanız bu e-postayı yanıtlamanız yeterlidir.', '', 'Saygılarımızla,', 'Hermes Astroloji Programı'].join('\n')
   };
   if (id === 'destek') return {
     subject: detail?.subject || 'Hermes teknik destek',
@@ -193,6 +193,7 @@ export default function PostaClient() {
   const [attachmentBusy, setAttachmentBusy] = useState(false);
   const attachmentBusyRef = useRef(false);
   const [inviteBusy, setInviteBusy] = useState(false);
+  const [downloadDialog, setDownloadDialog] = useState(null);
 
   useEffect(() => {
     document.body.classList.add('h-posta-app');
@@ -239,12 +240,13 @@ export default function PostaClient() {
   }
 
   async function api(path, options = {}) {
+    const { authToken = token, ...requestOptions } = options;
     const response = await fetch(path, {
-      ...options,
+      ...requestOptions,
       headers: {
-        ...(options.body ? { 'Content-Type': 'application/json' } : {}),
-        Authorization: `Bearer ${token}`,
-        ...(options.headers || {})
+        ...(requestOptions.body ? { 'Content-Type': 'application/json' } : {}),
+        Authorization: `Bearer ${authToken}`,
+        ...(requestOptions.headers || {})
       },
       cache: 'no-store'
     });
@@ -395,26 +397,88 @@ export default function PostaClient() {
     else setReply(content.text);
   }
 
-  async function kurulumDavetiGonder({ name, email }) {
-    if (!name || !email || inviteBusy) {
-      setError('Kurulum daveti için alıcı adı ve e-posta adresi gerekli.'); return;
+  function indirmeBaglantisiAc({ name = '', email = '', target }) {
+    setError('');
+    setDownloadDialog({ name: String(name || ''), email: String(email || ''), target, url: '', expiresAt: '', copied: false });
+  }
+
+  async function indirmeBaglantisiOlustur(event) {
+    event.preventDefault();
+    if (!downloadDialog || inviteBusy) return;
+    const name = downloadDialog.name.trim();
+    const email = downloadDialog.email.trim();
+    if (!name || !email) {
+      setError('İndirme bağlantısı için müşteri adı ve e-posta adresi gerekli.'); return;
     }
-    if (!globalThis.confirm(`Ödemeyi doğruladıysanız ${email} adresine 72 saatlik kişisel Hermes indirme bağlantısı ve geçici şifre gönderilsin mi?`)) return;
     setInviteBusy(true); setError(''); setNotice('');
     try {
-      await api('/api/lisans/v1/yonetim/indirme-daveti', {
+      const licenseToken = sessionStorage.getItem(LICENSE_TOKEN_KEY) || '';
+      if (!licenseToken) {
+        const authError = new Error('İndirme bağlantısı için önce Lisans Yönetimi’nde sahip oturumunu açıp yeniden doğrulayın.');
+        authError.status = 401;
+        throw authError;
+      }
+      const data = await api('/api/lisans/v1/yonetim/indirme-daveti', {
+        authToken: licenseToken,
         method: 'POST', body: JSON.stringify({
           adSoyad: name, email,
-          gerekce: 'Posta Merkezi hazır indirme e-postası üzerinden güvenli kurulum erişimi gönderildi.',
-          istekId: globalThis.crypto.randomUUID()
+          gerekce: 'Posta Merkezi üzerinden 6 saatlik müşteri indirme bağlantısı oluşturuldu.',
+          istekId: globalThis.crypto.randomUUID(),
+          mod: 'olustur'
         })
       });
-      setNotice('Hazır indirme e-postası gönderildi: kişisel bağlantı ve geçici şifre 72 saat geçerli.');
+      setDownloadDialog((current) => current ? {
+        ...current, name, email, url: data.baglanti, expiresAt: data.sonGecerlilik, copied: false
+      } : null);
+      setNotice('6 saatlik kişisel indirme bağlantısı oluşturuldu. Henüz müşteriye gönderilmedi.');
     } catch (inviteError) {
-      setError(inviteError.status === 403
-        ? 'Kurulum daveti için sahip oturumunda 10 dakikalık Authenticator yeniden doğrulaması gerekli.'
-        : inviteError.message);
+      setError(inviteError.status === 401
+        ? 'İndirme bağlantısı için önce Lisans Yönetimi’nde sahip oturumunu açıp yeniden doğrulayın.'
+        : inviteError.status === 403
+          ? 'İndirme bağlantısı oluşturmak için sahip oturumunda 10 dakikalık Authenticator yeniden doğrulaması gerekli.'
+          : inviteError.message);
     } finally { setInviteBusy(false); }
+  }
+
+  async function indirmeBaglantisiniKopyala() {
+    if (!downloadDialog?.url) return;
+    try {
+      if (!globalThis.navigator?.clipboard?.writeText) throw new Error('clipboard-unavailable');
+      await globalThis.navigator.clipboard.writeText(downloadDialog.url);
+      setDownloadDialog((current) => current ? { ...current, copied: true } : null);
+      setNotice('İndirme bağlantısı panoya kopyalandı.');
+    } catch {
+      setError('Bağlantı panoya kopyalanamadı. Metni seçip elle kopyalayın.');
+    }
+  }
+
+  function indirmeBaglantisiniMesajaEkle() {
+    if (!downloadDialog?.url) return;
+    const greeting = downloadDialog.name ? `Merhaba ${downloadDialog.name},` : 'Merhaba,';
+    const expiry = tarih(downloadDialog.expiresAt, true);
+    const text = [
+      greeting, '',
+      'Hermes Windows kurulum bağlantınız:',
+      downloadDialog.url, '',
+      `Bu kişisel bağlantı 6 saat süreyle${expiry ? `, ${expiry} tarihine kadar` : ''} geçerlidir. Açılan sayfada güncel kurulum dosyası ve adım adım kurulum protokolü yer alır.`, '',
+      'Kurulum tamamlandıktan sonra programdaki Lisans İste alanını aynı ad ve e-posta bilgileriyle kullanabilirsiniz.', '',
+      'Yardıma ihtiyaç duyarsanız bu e-postayı yanıtlamanız yeterlidir.', '',
+      'Saygılarımızla,',
+      'Hermes Astroloji Programı'
+    ].join('\n');
+    if (downloadDialog.target === 'draft') {
+      setDraft((current) => ({
+        ...current,
+        recipientName: downloadDialog.name,
+        to: downloadDialog.email,
+        subject: current.subject || 'Hermes kurulum bağlantınız',
+        text: current.text.trim() ? `${current.text.trim()}\n\n${text}` : text
+      }));
+    } else {
+      setReply((current) => current.trim() ? `${current.trim()}\n\n${text}` : text);
+    }
+    setNotice('6 saatlik bağlantı mesaja eklendi. İletiyi kontrol edip normal şekilde gönderebilirsiniz.');
+    setDownloadDialog(null);
   }
 
   async function ekAc(messageId, attachmentId) {
@@ -456,6 +520,7 @@ export default function PostaClient() {
         <div className={styles.grid}>
           <aside className={styles.klasorler} aria-label="Posta klasörleri">
             <button type="button" className={styles.yeniKisa} onClick={() => { setCompose(true); setSelected(null); setDetail(null); }}>Yeni ileti</button>
+            <button type="button" className={styles.indirmeKisa} onClick={() => indirmeBaglantisiAc({ target: 'draft' })}>İndirme linki oluştur</button>
             <nav>
               {KLASORLER.map(([id, label, description]) => (
                 <button key={id} type="button" className={folder === id ? styles.klasorAktif : ''}
@@ -525,7 +590,7 @@ export default function PostaClient() {
                   <div className={styles.sablonSatiri}><label>Hazır mesaj<select value={template} onChange={(event) => setTemplate(event.target.value)}><option value="">Şablon seçin</option>{SABLONLAR.map((item) => <option key={item.id} value={item.id}>{item.grup} · {item.ad}</option>)}</select></label><button type="button" onClick={() => sablonUygula('draft')} disabled={!template}>Şablonu uygula</button></div>
                   <label>Mesaj<textarea required rows={12} value={draft.text} onChange={(event) => setDraft((current) => ({ ...current, text: event.target.value }))} placeholder="Merhaba…" /></label>
                   <AttachmentPicker attachments={draft.attachments} busy={attachmentBusy} disabled={sending || attachmentBusy} onAdd={(event) => dosyaEkle(event, 'draft')} onRemove={(index) => ekKaldir(index, 'draft')} />
-                  <DeliveryPanel busy={inviteBusy} onSend={() => kurulumDavetiGonder({ name: draft.recipientName, email: draft.to })} />
+                  <DeliveryPanel busy={inviteBusy} onCreate={() => indirmeBaglantisiAc({ name: draft.recipientName, email: draft.to, target: 'draft' })} />
                   <div className={styles.gonderSatiri}><span>{attachmentBusy ? 'Ek güvenli biçimde hazırlanıyor…' : 'Ek içeriği gönderimden sonra sunucuda saklanmaz.'}</span><button className={styles.birincil} disabled={sending || attachmentBusy}>{attachmentBusy ? 'Ek hazırlanıyor…' : sending ? 'Gönderiliyor…' : 'İletiyi gönder'}</button></div>
                 </div>
               </form>
@@ -558,7 +623,7 @@ export default function PostaClient() {
                   <div className={styles.sablonSatiri}><label>Hazır mesaj<select value={template} onChange={(event) => setTemplate(event.target.value)}><option value="">Şablon seçin</option>{SABLONLAR.map((item) => <option key={item.id} value={item.id}>{item.grup} · {item.ad}</option>)}</select></label><button type="button" onClick={() => sablonUygula('reply')} disabled={!template}>Şablonu uygula</button></div>
                   <textarea id="posta-yanit" required rows={7} value={reply} onChange={(event) => setReply(event.target.value)} placeholder={`${detail.participantName || detail.participantEmail} için yanıtınızı yazın…`} />
                   <AttachmentPicker attachments={replyAttachments} busy={attachmentBusy} disabled={sending || attachmentBusy} onAdd={(event) => dosyaEkle(event, 'reply')} onRemove={(index) => ekKaldir(index, 'reply')} />
-                  <DeliveryPanel busy={inviteBusy} onSend={() => kurulumDavetiGonder({ name: detail.participantName || detail.participantEmail?.split('@')[0], email: detail.participantEmail })} />
+                  <DeliveryPanel busy={inviteBusy} onCreate={() => indirmeBaglantisiAc({ name: detail.participantName || detail.participantEmail?.split('@')[0], email: detail.participantEmail, target: 'reply' })} />
                   <div className={styles.gonderSatiri}><span>{attachmentBusy ? 'Ek güvenli biçimde hazırlanıyor…' : `${detail.mailbox} → ${detail.participantEmail}`}</span><button className={styles.birincil} disabled={sending || attachmentBusy}>{attachmentBusy ? 'Ek hazırlanıyor…' : sending ? 'Gönderiliyor…' : 'Yanıtı gönder'}</button></div>
                 </form> : <div className={styles.copNotu}>Çöpteki konuşmalar yanıtlanamaz. Yanıtlamak için önce Gelen’e taşıyın.</div>}
               </>
@@ -566,6 +631,15 @@ export default function PostaClient() {
           </section>
         </div>
       </section>
+      {downloadDialog ? <DownloadLinkDialog
+        value={downloadDialog}
+        busy={inviteBusy}
+        onChange={(next) => setDownloadDialog((current) => current ? { ...current, ...next } : null)}
+        onCreate={indirmeBaglantisiOlustur}
+        onCopy={indirmeBaglantisiniKopyala}
+        onInsert={indirmeBaglantisiniMesajaEkle}
+        onClose={() => setDownloadDialog(null)}
+      /> : null}
     </main>
   );
 }
@@ -578,11 +652,40 @@ function AttachmentPicker({ attachments, busy, disabled, onAdd, onRemove }) {
   </section>;
 }
 
-function DeliveryPanel({ busy, onSend }) {
+function DeliveryPanel({ busy, onCreate }) {
   return <section className={styles.teslimatAlani}>
-    <div><strong>Hazır e-posta · Kişisel indirme bağlantısı</strong><p>Kart ödemesinde otomatik gider. Havale ödemesini hesabınızda doğruladıktan sonra aynı 72 saatlik kişisel bağlantı ve geçici şifreyi buradan gönderebilirsiniz.</p></div>
-    <button type="button" aria-label="Güvenli kurulum erişimi gönder" onClick={onSend} disabled={busy}>{busy ? 'Gönderiliyor…' : 'Hazır indirme e-postasını gönder'}</button>
+    <div><strong>Müşteriye özel kurulum erişimi</strong><p>6 saat geçerli tek bağlantı üretir. Müşteri, güncel kurulumu ve kurulum protokolünü açılan sayfada görür.</p></div>
+    <button type="button" onClick={onCreate} disabled={busy}>İndirme linki oluştur</button>
   </section>;
+}
+
+function DownloadLinkDialog({ value, busy, onChange, onCreate, onCopy, onInsert, onClose }) {
+  return <div className={styles.modalArka} role="presentation">
+    <section className={styles.modal} role="dialog" aria-modal="true" aria-labelledby="indirme-linki-baslik">
+      <header className={styles.modalBaslik}>
+        <div><span>GÜVENLİ TESLİMAT</span><h2 id="indirme-linki-baslik">6 saatlik indirme linki</h2></div>
+        <button type="button" onClick={onClose} aria-label="İndirme linki penceresini kapat">Kapat</button>
+      </header>
+      <form className={styles.modalGovde} onSubmit={onCreate}>
+        <p>Bağlantı oluşturulduğu anda süre başlar. Aynı e-posta için önceki açık bağlantı iptal edilir; link yalnız bu ekranda bir kez gösterilir.</p>
+        <div className={styles.ikiAlan}>
+          <label>Müşteri adı<input required value={value.name} onChange={(event) => onChange({ name: event.target.value })} disabled={Boolean(value.url)} /></label>
+          <label>E-posta<input required type="email" value={value.email} onChange={(event) => onChange({ email: event.target.value })} disabled={Boolean(value.url)} /></label>
+        </div>
+        {value.url ? <div className={styles.linkSonuc}>
+          <div className={styles.linkDurum}><span>BAĞLANTI HAZIR</span><strong>6 saat geçerli</strong><small>Son erişim: {tarih(value.expiresAt, true)}</small></div>
+          <label>Kişisel indirme bağlantısı<textarea readOnly rows={4} value={value.url} onFocus={(event) => event.target.select()} /></label>
+          <div className={styles.modalEylemler}>
+            <button type="button" onClick={onCopy}>{value.copied ? 'Kopyalandı' : 'Bağlantıyı kopyala'}</button>
+            <button type="button" className={styles.birincil} onClick={onInsert}>Mesaja ekle</button>
+          </div>
+        </div> : <div className={styles.linkOnay}>
+          <div><strong>Bağlantıda neler olacak?</strong><ul><li>Güncel Certum imzalı Windows kurulumu</li><li>Adım adım kurulum ve lisans protokolü</li><li>6 saat sonunda otomatik erişim reddi</li></ul></div>
+          <button type="submit" className={styles.birincil} disabled={busy}>{busy ? 'Oluşturuluyor…' : '6 saatlik bağlantıyı oluştur'}</button>
+        </div>}
+      </form>
+    </section>
+  </div>;
 }
 
 function InvoiceCard({ invoice }) {

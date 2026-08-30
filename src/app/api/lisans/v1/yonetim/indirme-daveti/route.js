@@ -6,6 +6,7 @@ import {
 } from '@/lib/download-invite.mjs';
 import { authorizeLicenseRequest } from '@/lib/license/access.mjs';
 import { appendLicenseEvent } from '@/lib/license/events.mjs';
+import { SITE } from '@/lib/site';
 import { z } from 'zod';
 
 export const dynamic = 'force-dynamic';
@@ -14,7 +15,8 @@ const Input = z.object({
   adSoyad: z.string().trim().min(2).max(120),
   email: z.string().trim().email().max(254),
   gerekce: z.string().trim().min(3).max(1000),
-  istekId: z.string().uuid()
+  istekId: z.string().uuid(),
+  mod: z.enum(['gonder', 'olustur']).default('gonder')
 }).strict();
 
 export async function POST(request) {
@@ -50,6 +52,39 @@ export async function POST(request) {
       email: q.email,
       createdByRef: access.actor.id
     });
+
+    if (q.mod === 'olustur') {
+      const now = new Date();
+      const baglanti = `${SITE}/indir#d=${encodeURIComponent(created.linkToken)}&p=${encodeURIComponent(created.temporaryPassword)}`;
+      await prisma.$transaction(async (tx) => {
+        await appendLicenseEvent(tx, {
+          licenseId: null,
+          actorId: access.actor.id,
+          actorRole: access.actor.role,
+          action: 'indirme.davet_gonder',
+          outcome: 'baglanti-olusturuldu',
+          reason: q.gerekce,
+          beforeState: null,
+          afterState: {
+            davetId: created.invite.id,
+            eposta: created.invite.email,
+            uygulama: created.invite.application,
+            sonGecerlilik: created.passwordExpiresAt.toISOString()
+          },
+          requestId: q.istekId,
+          createdAt: now
+        });
+      });
+      return Response.json({
+        tamam: true,
+        mod: q.mod,
+        eposta: created.invite.email,
+        baglanti,
+        sonGecerlilik: created.passwordExpiresAt,
+        istekId: q.istekId
+      }, { headers: { 'Cache-Control': 'no-store' } });
+    }
+
     const sent = await downloadInvitationEmail({
       recipient: { name: q.adSoyad, email: q.email },
       access: created

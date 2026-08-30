@@ -63,10 +63,18 @@ export async function POST(request) {
     request: { name, email, deviceLimit, price, ...invoice },
     idempotencyKey: `eft-request-${result.lead.id}`
   });
+  if (!notification.ok) {
+    console.error('[purchase-request] yönetici bildirimi gönderilemedi', {
+      leadId: result.lead.id,
+      skipped: Boolean(notification.skipped),
+      error: String(notification.error || 'bilinmeyen-hata').slice(0, 500)
+    });
+  }
 
   return Response.json({
     ok: true,
     id: result.lead.id,
-    notificationSent: notification.ok === true
+    notificationSent: notification.ok === true,
+    notificationError: notification.ok ? null : 'yonetici-bildirimi-gonderilemedi'
   }, { status: 201, headers: { 'Cache-Control': 'no-store' } });
 }

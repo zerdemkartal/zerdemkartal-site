@@ -16,7 +16,9 @@ import {
 } from '../src/lib/download-invite.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const HERMES = path.resolve(ROOT, '..', '..', '..');
+const HERMES = process.env.HERMES_ROOT
+  ? path.resolve(process.env.HERMES_ROOT)
+  : path.resolve(ROOT, '..', '..', '..');
 const passed = [];
 async function test(name, fn) {
   await fn();
@@ -97,13 +99,14 @@ function fakeDatabase(initialInvites = []) {
   return { database, invites, sessions };
 }
 
-await test('72 saatlik davet kişisel veriden türemeyen sırlar üretip yalnız özetlerini saklıyor', async () => {
+await test('6 saatlik davet kişisel veriden türemeyen sırlar üretip yalnız özetlerini saklıyor', async () => {
   const now = new Date('2026-08-02T09:00:00.000Z');
   const { database, invites } = fakeDatabase();
   const created = await createDownloadInvite({
     database, name: 'Zerdem Kartal', email: 'ZERDEM@EXAMPLE.COM', now
   });
   assert.match(created.temporaryPassword, /^[A-HJ-NP-Za-km-z2-9]{4}(?:-[A-HJ-NP-Za-km-z2-9]{4}){3}$/);
+  assert.equal(DOWNLOAD_INVITE_MS, 6 * 60 * 60 * 1000);
   assert.equal(created.passwordExpiresAt.getTime() - now.getTime(), DOWNLOAD_INVITE_MS);
   assert.equal(invites[0].email, 'zerdem@example.com');
   assert.notEqual(invites[0].passwordHash, created.temporaryPassword);
@@ -175,11 +178,13 @@ await test('İndirme kapısı oturum istiyor; makine kimliği Vercel akışına 
   assert.ok(schema.includes('linkTokenHash'));
   assert.ok(!schema.includes('temporaryPassword String'));
   assert.ok(email.includes('/indir#d='));
-  assert.ok(email.includes('72 saatlik geçici indirme şifren'));
+  assert.ok(email.includes('6 saatlik geçici indirme şifren'));
   assert.ok(accessRoute.includes('httpOnly: true'));
   assert.ok(accessRoute.includes("sameSite: 'lax'"));
   assert.ok(downloadRoute.includes('findDownloadSession'));
   assert.ok(downloadUi.includes("fetch('/api/indir/erisim'"));
+  assert.ok(downloadUi.includes("params.get('p')"));
+  assert.ok(downloadUi.includes("replaceState?.({}, '', '/indir')"));
   assert.ok(!downloadUi.includes('github.com'));
   assert.ok(downloadRoute.includes('return new Response(upstream.body'));
   assert.ok(downloadRoute.includes("'Content-Disposition'"));
@@ -200,6 +205,9 @@ await test('Birleşik yönetici EFT ve manuel daveti ayrı yetkiyle koruyor, sı
   const deleteRoute = fs.readFileSync(path.join(ROOT, 'src/app/api/lisans/v1/yonetim/siparisler/[id]/route.js'), 'utf8');
   assert.ok(policy.includes("'indirme.davet_gonder'"));
   assert.ok(manual.includes("action: 'indirme.davet_gonder'"));
+  assert.ok(manual.includes("mod: z.enum(['gonder', 'olustur'])"));
+  assert.ok(manual.includes("q.mod === 'olustur'"));
+  assert.ok(manual.includes('/indir#d=${encodeURIComponent(created.linkToken)}&p=${encodeURIComponent(created.temporaryPassword)}'));
   assert.ok(manual.indexOf("LICENSE_V1_ENABLED !== '1'") < manual.indexOf('request.json()'));
   assert.ok(eft.includes("action: 'siparis.eft_onayla'"));
   assert.ok(eft.includes('createDownloadInvite'));
@@ -255,14 +263,16 @@ await test('Kripto Yönetimi elle verilen lisans numarasını koruyor', () => {
   assert.ok(manager.includes("lisansNo: b.lisansNo || ''"));
 });
 
-await test('Kripto Yönetimi başarısız sunucu eşitlemesini aktif lisans gibi bırakmıyor', () => {
+await test('Kripto Yönetimi başarısız sunucu eşitlemesini bekleyen aynı kayıt olarak koruyor', () => {
   const core = fs.readFileSync(path.join(HERMES, 'YARDIMCI PROGRAMLAR', '13- Kripto Yönetim Dosyası', 'lisans-cekirdek.js'), 'utf8');
   const main = fs.readFileSync(path.join(HERMES, 'YARDIMCI PROGRAMLAR', '13- Kripto Yönetim Dosyası', 'main.js'), 'utf8');
   const manager = fs.readFileSync(path.join(HERMES, 'YARDIMCI PROGRAMLAR', '13- Kripto Yönetim Dosyası', 'index.html'), 'utf8');
+  assert.ok(core.includes('function canliDurumYaz'));
   assert.ok(core.includes('function ayniMakineDigerleriniArsivle'));
-  assert.ok(main.includes("cekirdek.sil(result.anahtar, 'Canlı lisans sunucusu eşitlemesi başarısız: ' + sync.hata)"));
-  assert.ok(main.includes('cekirdek.ayniMakineDigerleriniArsivle(result.kayit'));
-  assert.ok(manager.includes('Başarısız deneme yerel arşive taşındı; mevcut lisans korundu.'));
+  assert.ok(main.includes("cekirdek.canliDurumYaz(kayit.lisansNo, 'bekliyor', sync.hata)"));
+  assert.ok(main.includes('cekirdek.ayniMakineDigerleriniArsivle(kayit'));
+  assert.ok(manager.includes('Anahtar geçerlidir ve yeniden üretilmeyecektir'));
+  assert.ok(manager.includes('Anahtar arşive taşınmadı ve yeniden üretilmeyecek.'));
 });
 
 console.log(`\nSONUÇ: ${passed.length}/${passed.length} güvenli indirme daveti kapısı geçti.`);

@@ -258,7 +258,7 @@ await test('Makbuz kart verisi tutmuyor; checkout teslim ve fatura alanlarını 
   }
   assert.ok(legal.includes("'on-bilgilendirme'"));
   assert.ok(legal.includes('teslimat:'));
-  assert.ok(legal.includes('72 saat geçerli kişisel indirme daveti'));
+  assert.ok(legal.includes('6 saat geçerli kişisel indirme daveti'));
   assert.ok(legal.includes('telefon, fatura türü, TCKN veya VKN'));
   assert.ok(!legal.includes('[kullanılan analitik aracı]'));
   assert.ok(!legal.includes('yayımdan önce'));

@@ -18,11 +18,16 @@ export function emailConfigured() {
 }
 
 export function salesNotificationRecipients(env = process.env) {
-  const unique = new Set(String(env.SALES_NOTIFICATION_EMAILS || '')
+  const configured = [
+    env.SALES_NOTIFICATION_EMAILS,
+    env.MAILBOX_ADDRESSES,
+    env.ADMIN_EMAIL
+  ].filter(Boolean).join(',');
+  const unique = new Set(String(configured)
     .split(',')
     .map((value) => value.trim().toLocaleLowerCase('en-US'))
     .filter((value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)));
-  return Array.from(unique).slice(0, 2);
+  return Array.from(unique).slice(0, 8);
 }
 
 function supportReplyAddress(env = process.env) {
@@ -128,7 +133,7 @@ export async function downloadInvitationEmail({ recipient, access, paymentConfir
 <p style="font-size:15px;line-height:1.7;color:#3a2d20;margin:0 0 14px">Merhaba ${safeName},</p>
 <p style="font-size:15px;line-height:1.7;color:#3a2d20;margin:0 0 14px">${opening}</p>
 <div style="margin:0 0 18px;padding:16px 18px;border:1px solid #e8e3d6;border-radius:12px;background:#f4f1e8">
-  <div style="font-size:12px;color:#6b675e;margin-bottom:7px">72 saatlik geçici indirme şifren</div>
+  <div style="font-size:12px;color:#6b675e;margin-bottom:7px">6 saatlik geçici indirme şifren</div>
   <div style="font-family:Consolas,'Courier New',monospace;font-size:19px;font-weight:700;letter-spacing:.06em;color:#241a12">${safePassword}</div>
   <div style="font-size:12px;color:#6b675e;margin-top:8px">Son kullanım: ${safeExpiry}</div>
 </div>
@@ -145,7 +150,7 @@ ${safeOrderId ? `<p style="font-size:12.5px;line-height:1.7;color:#6b675e;margin
     `Merhaba ${recipient.name},`,
     paymentConfirmed ? 'Ödemen alındı, teşekkür ederiz.' : 'Hermes indirme erişimin hazır.',
     `Kişisel indirme bağlantın: ${downloadUrl}`,
-    `72 saatlik geçici şifren: ${access.temporaryPassword}`,
+    `6 saatlik geçici şifren: ${access.temporaryPassword}`,
     `Son kullanım: ${invitationExpiry(access.passwordExpiresAt)}`,
     'Program açıldığında Lisans İste bölümüne ad, soyad ve e-posta bilgilerini yaz. İmzalı lisans anahtarın ayrıca e-postayla gönderilecek.',
     recipient.id ? `Sipariş no: ${recipient.id}` : ''

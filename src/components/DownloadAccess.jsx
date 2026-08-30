@@ -5,7 +5,7 @@ import styles from './CustomerLicense.module.css';
 
 const ERROR_TEXT = {
   'indirme-erisimi-dogrulanamadi': 'Geçici şifre doğrulanamadı.',
-  'indirme-daveti-suresi-doldu': 'Bu indirme davetinin 72 saatlik süresi dolmuş.',
+  'indirme-daveti-suresi-doldu': 'Bu indirme bağlantısının 6 saatlik süresi dolmuş.',
   'indirme-daveti-iptal': 'Bu indirme daveti iptal edilmiş.',
   'indirme-daveti-kilitli': 'Çok sayıda yanlış deneme nedeniyle erişim 15 dakika kilitlendi.',
   'gecersiz-istek': 'Geçici şifre geçerli biçimde gönderilemedi.'
@@ -21,20 +21,54 @@ export default function DownloadAccess({ version, inviteToken = '', accessRequir
 
   useEffect(() => {
     let cancelled = false;
-    let fragment = '';
+    let fragmentToken = '';
+    let fragmentPassword = '';
     try {
-      fragment = globalThis.location?.hash?.startsWith('#d=')
-        ? decodeURIComponent(globalThis.location.hash.slice(3))
-        : '';
+      const params = new URLSearchParams(globalThis.location?.hash?.replace(/^#/, '') || '');
+      fragmentToken = params.get('d') || '';
+      fragmentPassword = params.get('p') || '';
     } catch {
-      fragment = '';
+      fragmentToken = '';
+      fragmentPassword = '';
     }
-    if (fragment) setToken(fragment);
-    fetch('/api/indir/erisim', { cache: 'no-store' })
-      .then((response) => response.json())
-      .then((data) => { if (!cancelled) setReady(Boolean(data.tamam)); })
-      .catch(() => {})
-      .finally(() => { if (!cancelled) setChecking(false); });
+    if (fragmentToken) setToken(fragmentToken);
+
+    async function checkAccess() {
+      try {
+        const response = await fetch('/api/indir/erisim', { cache: 'no-store' });
+        const data = await response.json().catch(() => ({}));
+        if (cancelled) return;
+        if (data.tamam) {
+          setReady(true);
+          if (fragmentToken || fragmentPassword) globalThis.history?.replaceState?.({}, '', '/indir');
+          return;
+        }
+        if (!fragmentToken || !fragmentPassword) return;
+
+        setBusy(true);
+        const unlockResponse = await fetch('/api/indir/erisim', {
+          method: 'POST',
+          cache: 'no-store',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: fragmentToken, password: fragmentPassword })
+        });
+        const unlockData = await unlockResponse.json().catch(() => ({}));
+        if (!unlockResponse.ok) throw new Error(unlockData.error || 'gecici-hata');
+        if (!cancelled) {
+          setReady(true);
+          globalThis.history?.replaceState?.({}, '', '/indir');
+        }
+      } catch (requestError) {
+        if (!cancelled) setError(ERROR_TEXT[requestError.message] || 'Erişim doğrulanamadı. Biraz sonra yeniden dene.');
+      } finally {
+        if (!cancelled) {
+          setBusy(false);
+          setChecking(false);
+        }
+      }
+    }
+
+    checkAccess();
     return () => { cancelled = true; };
   }, []);
 

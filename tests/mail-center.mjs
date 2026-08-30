@@ -8,6 +8,7 @@ import {
   prepareOutboundAttachments
 } from '../src/lib/mail-security.mjs';
 import { invoiceValidationIssue, normalizeInvoiceData } from '../src/lib/purchase-invoice.mjs';
+import { salesNotificationRecipients } from '../src/lib/email.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 let passed = 0;
@@ -91,6 +92,15 @@ test('Fatura bilgileri ödeme öncesinde normalize edilip eksik alanlar reddedil
   assert.equal(invoiceValidationIssue({ ...invoice, billingAddress: '' }).field, 'billingAddress');
 });
 
+test('Satış bildirimi alıcıları satış, posta kutusu ve yönetici adreslerini tekilleştiriyor', () => {
+  const recipients = salesNotificationRecipients({
+    SALES_NOTIFICATION_EMAILS: 'sales@example.com,OWNER@example.com',
+    MAILBOX_ADDRESSES: 'info@example.com,sales@example.com',
+    ADMIN_EMAIL: 'owner@example.com'
+  });
+  assert.deepEqual(recipients, ['sales@example.com', 'owner@example.com', 'info@example.com']);
+});
+
 test('Posta UI çöp, toplu işlem, şablon, fatura eki ve güvenli kurulumu birlikte sunuyor', () => {
   const client = fs.readFileSync(path.join(ROOT, 'src/app/yonetim/posta/PostaClient.jsx'), 'utf8');
   const css = fs.readFileSync(path.join(ROOT, 'src/app/yonetim/posta/posta.module.css'), 'utf8');
@@ -98,7 +108,17 @@ test('Posta UI çöp, toplu işlem, şablon, fatura eki ve güvenli kurulumu bir
   const bulkRoute = fs.readFileSync(path.join(ROOT, 'src/app/api/mail/bulk/route.js'), 'utf8');
   const leads = fs.readFileSync(path.join(ROOT, 'src/app/api/leads/route.js'), 'utf8');
   assert.ok(client.includes("['trash', 'Çöp'"));
-  assert.ok(client.includes('Güvenli kurulum erişimi gönder'));
+  assert.ok(client.includes('İndirme linki oluştur'));
+  assert.ok(client.includes('className={styles.indirmeKisa}'));
+  assert.ok(client.includes("mod: 'olustur'"));
+  assert.ok(client.includes('authToken: licenseToken'));
+  assert.ok(client.includes("sessionStorage.getItem(LICENSE_TOKEN_KEY)"));
+  assert.ok(client.includes('önce Lisans Yönetimi’nde sahip oturumunu açıp yeniden doğrulayın'));
+  assert.ok(client.includes('6 saatlik bağlantıyı oluştur'));
+  assert.ok(client.includes('Bağlantıyı kopyala'));
+  assert.ok(client.includes('Mesaja ekle'));
+  assert.ok(css.includes('.modalArka'));
+  assert.ok(css.includes('.linkSonuc'));
   assert.ok(client.includes('Fatura veya belge ekle'));
   assert.ok(client.includes('Hazır mesaj'));
   assert.ok(!client.includes("import { Nav }"));
@@ -118,6 +138,12 @@ test('Posta UI çöp, toplu işlem, şablon, fatura eki ve güvenli kurulumu bir
   assert.ok(route.includes('blockSender'));
   assert.ok(leads.includes('formStartedAt'));
   assert.ok(leads.includes('recent >= 5'));
+});
+
+test('Havale talebi bildirim hatasını sessizce yutmuyor', () => {
+  const route = fs.readFileSync(path.join(ROOT, 'src/app/api/purchase-request/route.js'), 'utf8');
+  assert.ok(route.includes("console.error('[purchase-request] yönetici bildirimi gönderilemedi'"));
+  assert.ok(route.includes("notificationError: notification.ok ? null : 'yonetici-bildirimi-gonderilemedi'"));
 });
 
 test('Ek hazırlanırken yeni ileti ve yanıt gönderimi kilitleniyor', () => {

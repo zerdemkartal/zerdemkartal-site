@@ -223,7 +223,7 @@ export default function SatinAlForm() {
                 <input type="email" value={emailTekrar} onChange={(event) => setEmailTekrar(event.target.value)} maxLength={254} autoComplete="off" inputMode="email" placeholder="E-posta adresinizi tekrar yazın" required />
               </label>
             </div>
-            <p>Bu bilgiler PayTR işlem referansını sana gönderilecek 72 saatlik kişisel indirme davetiyle eşleştirmek için kullanılır.</p>
+            <p>Bu bilgiler PayTR işlem referansını sana gönderilecek 6 saatlik kişisel indirme davetiyle eşleştirmek için kullanılır.</p>
           </section>
 
           <section className={styles.fatura} aria-labelledby="fatura-bilgileri-baslik">
