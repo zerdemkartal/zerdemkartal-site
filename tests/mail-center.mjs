@@ -113,6 +113,7 @@ test('Posta UI çöp, toplu işlem, şablon, fatura eki ve güvenli kurulumu bir
   assert.ok(client.includes('className={styles.indirmeKisa}'));
   assert.ok(client.includes("api('/api/mail/indirme-baglantisi'"));
   assert.ok(client.includes('Posta oturumu sona erdi'));
+  assert.ok(client.indexOf('sessionStorage.getItem(MAIL_TOKEN_KEY)') < client.indexOf('sessionStorage.getItem(LICENSE_TOKEN_KEY)'));
   assert.ok(client.includes('className={styles.modalHata}'));
   assert.ok(client.includes('6 saatlik bağlantıyı oluştur'));
   assert.ok(client.includes('Bağlantıyı kopyala'));

@@ -202,7 +202,7 @@ export default function PostaClient() {
 
   useEffect(() => {
     try {
-      setToken(sessionStorage.getItem(LICENSE_TOKEN_KEY) || sessionStorage.getItem(MAIL_TOKEN_KEY) || sessionStorage.getItem(ADMIN_TOKEN_KEY) || '');
+      setToken(sessionStorage.getItem(MAIL_TOKEN_KEY) || sessionStorage.getItem(ADMIN_TOKEN_KEY) || sessionStorage.getItem(LICENSE_TOKEN_KEY) || '');
       const saved = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null');
       if (saved && typeof saved === 'object') setDraft({ ...bosTaslak(), ...saved, attachments: [] });
     } catch {}
