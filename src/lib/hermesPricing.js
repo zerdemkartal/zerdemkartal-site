@@ -10,7 +10,7 @@ const PRICE_FAQ = [
 ];
 
 const POLICY_FAQ = {
-  'Lisans nasıl çalışıyor?': 'Program lisansı tek seferlik satın alınır ve yalnız etkinleştirildiği bir cihazda geçerlidir. Farklı veya ikinci cihaz için ayrı lisans gerekir. 1 cihaz EFT/Havale fiyatı ₺6.000; ikinci cihaz lisansı +₺2.500, iki cihaz toplam ₺8.500’dür. Aynı cihaz için yayımlanan güncellemeler dahildir.',
+  'Lisans nasıl çalışıyor?': 'Program lisansı tek seferlik satın alınır ve yalnız etkinleştirildiği bir cihazda geçerlidir. Farklı veya ikinci cihaz için ayrı lisans gerekir. 1 cihaz EFT/Havale fiyatı ₺8.500; ikinci cihaz lisansı +₺3.000, iki cihaz toplam ₺11.500’dür. Aynı cihaz için yayımlanan güncellemeler dahildir.',
   'Verilerim nerede tutuluyor?': 'Varsayılan olarak cihazında. Danışan kayıtların ve haritaların bilgisayarından çıkmaz; bulut zorunluluğu yoktur. İnternet yalnız lisans doğrulama ve güncelleme için kullanılır.',
   'Hangi platformlarda çalışıyor?': 'Hermes şu an Windows 10/11 (64-bit) bilgisayarlarda kullanılabilir. macOS sürümü 17 Ağustos 2026’da sunulacaktır. Android, iPhone ve iPad sürümleri daha sonra gelecektir.',
   'Cihazlar arasında veri senkronizasyonu olacak mı?': 'Evet, ileride isteğe bağlı bir hizmet olarak sunulması planlanıyor. Senkronizasyon program lisansına dahil değildir ve ayrı abonelik gerektirecektir.'
@@ -48,20 +48,20 @@ function migratePlatformGroup(groups = []) {
 
 /**
  * Canlı içerik kaynağındaki eski fiyat, platform ve lisans metinlerini güncel
- * ticari sözleşmeye taşır. Fiyat alanlarına yalnız bilinen 5.000/6.000 kümelerinde
+ * ticari sözleşmeye taşır. Fiyat alanlarına yalnız bilinen 5.000/6.000/8.500 kümelerinde
  * dokunur; tek-cihaz ve senkronizasyon kapsamı ise eski DB metinlerini de ezer.
  */
 export function migrateHermesPricing(model) {
   const box = model?.fiyat?.kutu || {};
-  const knownPricing = ['5000', '6000'].includes(digits(box.price));
+  const knownPricing = ['5000', '6000', '8500'].includes(digits(box.price));
   const currentBox = knownPricing
     ? {
         ...box,
         kicker: 'EFT / HAVALE FİYATI',
-        price: '₺6.000',
+        price: '₺8.500',
         oldPrice: '',
-        secondLicensePrice: '₺2.500',
-        secondPrice: '₺8.500',
+        secondLicensePrice: '₺3.000',
+        secondPrice: '₺11.500',
         vatNote: 'Fiyatlara KDV dahildir.',
         rows: [
           '☿︎ Tüm modüller — sınırsız harita ve danışan',
@@ -87,7 +87,7 @@ export function migrateHermesPricing(model) {
         ...model.seo?.fiyat,
         title: 'Fiyat — Hermes | Tek seferlik cihaz lisansı',
         description: knownPricing
-          ? 'Hermes 1 cihaz EFT/Havale fiyatı ₺6.000; farklı veya ikinci cihaz için ayrı lisans gerekir. İkinci cihaz lisansı +₺2.500, iki cihaz toplam ₺8.500’dür.'
+          ? 'Hermes 1 cihaz EFT/Havale fiyatı ₺8.500; farklı veya ikinci cihaz için ayrı lisans gerekir. İkinci cihaz lisansı +₺3.000, iki cihaz toplam ₺11.500’dür.'
           : model.seo?.fiyat?.description
       },
       sss: {
@@ -102,8 +102,8 @@ export function migrateHermesPricing(model) {
         ? {
             ...model.home?.fiyatBand,
             kicker: 'TEK SEFERLİK CİHAZ LİSANSI',
-            title: '1 cihaz EFT/Havale ₺6.000.',
-            p: 'Her lisans yalnız bir cihazda geçerlidir. İkinci cihaz için ayrı lisans +₺2.500; iki cihaz toplam ₺8.500’dür. Aynı cihaz için yayımlanan güncellemeler dahildir. Cihazlar arası veri senkronizasyonu ileride ayrı abonelik hizmeti olarak sunulacaktır.'
+            title: '1 cihaz EFT/Havale ₺8.500.',
+            p: 'Her lisans yalnız bir cihazda geçerlidir. İkinci cihaz için ayrı lisans +₺3.000; iki cihaz toplam ₺11.500’dür. Aynı cihaz için yayımlanan güncellemeler dahildir. Cihazlar arası veri senkronizasyonu ileride ayrı abonelik hizmeti olarak sunulacaktır.'
           }
         : model.home?.fiyatBand
     },

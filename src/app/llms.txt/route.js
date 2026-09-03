@@ -48,7 +48,7 @@ export async function GET() {
 > Geliştirici: zerdemkartal (bağımsız astroloji atölyesi, İstanbul). Dil: Türkçe.
 
 Temel gerçekler:
-- Fiyat: EFT/Havale ile 1 cihaz ₺6.000; ikinci cihaz +₺2.500, iki cihaz toplam ₺8.500. Kartla tek çekim fiyatı PayTR’nin güncel mağaza oranına göre otomatik hesaplanır. Taksitli toplam PayTR ekranında karta ve vadeye göre değişebilir. Fiyatlara KDV dahildir.
+- Fiyat: EFT/Havale ile 1 cihaz ₺8.500; ikinci cihaz +₺3.000, iki cihaz toplam ₺11.500. Kartla tek çekim fiyatı PayTR’nin güncel mağaza oranına göre otomatik hesaplanır. Taksitli toplam PayTR ekranında karta ve vadeye göre değişebilir. Fiyatlara KDV dahildir.
 - Lisans: Program lisansı tek seferliktir. Her lisans yalnız etkinleştirildiği bir cihazda geçerlidir; farklı veya ikinci cihaz ayrı lisans gerektirir. Aynı cihaz için yayımlanan güncellemeler dahildir.
 - Satın alma: Hermes satın alma sayfası teslimat, iletişim ve fatura bilgilerini ödeme öncesinde alır. Kart numarası, son kullanma tarihi ve CVV yalnız PayTR’nin güvenli sayfasına girilir; Hermes sunucularından geçmez. Başarılı ödeme sonrası müşteriye 6 saatlik kişisel indirme daveti, yetkili yönetici adreslerine satış ve fatura özeti otomatik e-postalanır. EFT/Havale talebi Posta Merkezi’ne kaydedilir ve yöneticilere bildirilir.
 - Platformlar: Windows 10/11 (64-bit) şimdi kullanılabilir. macOS sürümü 17 Ağustos 2026’da sunulacaktır. Android, iPhone ve iPad sürümleri daha sonra gelecektir.

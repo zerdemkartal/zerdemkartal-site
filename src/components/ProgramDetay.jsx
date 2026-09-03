@@ -4,6 +4,7 @@
 // için /iletisim'e gider; ödeme entegre edilince buton POST /api/orders akışına bağlanır.
 import { getContent } from '@/lib/content';
 import { SITE, ORG, pageMeta, priceNum } from '@/lib/site';
+import { LICENSE_DEVICE_PRICES } from '@/lib/licensePricing';
 import { JsonLd } from '@/components/JsonLd';
 import { Nav, Footer, T, kickerStyle, h1Style, h2Style, pStyle, sectionStyle } from '@/components/Chrome';
 
@@ -23,7 +24,7 @@ export function makeProgramPage({ key, path, name, seoDef, paid, def = {} }) {
       '@type': 'SoftwareApplication', name, operatingSystem: 'Windows 10/11, macOS 12+', applicationCategory: 'LifestyleApplication',
       description: desc, featureList: (oz.cards || []).map((x) => x.title), publisher: { '@id': SITE + '/#org' },
       offers: paid
-        ? { '@type': 'Offer', price: priceNum(fi.price) || '6000', priceCurrency: 'TRY', availability: 'https://schema.org/PreOrder', priceValidUntil: '2026-12-31', url: URL_ }
+        ? { '@type': 'Offer', price: priceNum(fi.price) || String(LICENSE_DEVICE_PRICES[1]), priceCurrency: 'TRY', availability: 'https://schema.org/PreOrder', priceValidUntil: '2026-12-31', url: URL_ }
         : { '@type': 'Offer', price: '0', priceCurrency: 'TRY', availability: 'https://schema.org/InStock' }
     };
     if (paid) { app.softwareVersion = '1.0'; app.aggregateRating = { '@type': 'AggregateRating', ratingValue: '4.9', reviewCount: '128', bestRating: '5' }; }
@@ -55,7 +56,7 @@ export function makeProgramPage({ key, path, name, seoDef, paid, def = {} }) {
           <p style={pStyle}>{hero.p || hero.paragraph}</p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 24, alignItems: 'center' }}>
             {paid
-              ? <a href="/satin-al" style={{ background: T.purple, color: '#F5F1E6', borderRadius: 999, padding: '14px 28px', textDecoration: 'none', fontWeight: 600 }}>Satın al — {fi.price || '₺6.000'}</a>
+              ? <a href="/satin-al" style={{ background: T.purple, color: '#F5F1E6', borderRadius: 999, padding: '14px 28px', textDecoration: 'none', fontWeight: 600 }}>Satın al — {fi.price || '₺8.500'}</a>
               : (
                 <>
                   <a href="/iletisim" style={{ background: T.dark, color: '#F5F1E6', borderRadius: 999, padding: '14px 28px', textDecoration: 'none', fontWeight: 600 }}>Windows için indir</a>

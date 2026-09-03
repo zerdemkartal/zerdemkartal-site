@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "npm run test:site-license-copy && node tests/paytr-link.mjs",
     "build": "next build --webpack",
     "start": "next start",
     "seed": "node --env-file-if-exists=.env prisma/seed.mjs",

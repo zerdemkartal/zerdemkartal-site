@@ -3,6 +3,7 @@
 // Ödeme sağlayıcısı (iyzico/PayTR) 🔴 kullanıcıda; bağlanınca bu adım ödeme sayfasına yönlendirir.
 // Şimdilik dürüst ÖN SİPARİŞ: kayıt oluşur, ödeme bağlantısı e-postayla iletilir (sahte kart adımı YOK).
 import { useState, useEffect } from 'react';
+import { LICENSE_DEVICE_PRICES, LICENSE_SECOND_DEVICE_PRICE } from '@/lib/licensePricing';
 
 const overlay = { position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(0,0,0,0.55)', display: 'grid', placeItems: 'center', padding: 20 };
 const modal = { background: 'var(--h-card)', border: '1px solid var(--h-border)', borderRadius: 22, padding: '30px 30px 34px', width: 'min(460px, 100%)', maxHeight: '90vh', overflowY: 'auto' };
@@ -14,12 +15,12 @@ const planButton = { minWidth: 0, padding: '13px 14px', borderRadius: 13, border
 
 const tryLabel = (value) => `₺${Number(value).toLocaleString('tr-TR')}`;
 
-export default function OnSiparis({ label: cta = 'Ön sipariş ver', price = 6000, secondPrice = 8500 }) {
+export default function OnSiparis({ label: cta = 'Ön sipariş ver', price = LICENSE_DEVICE_PRICES[1], secondPrice = LICENSE_DEVICE_PRICES[2] }) {
   const [open, setOpen] = useState(false);
   const [f, setF] = useState({ name: '', email: '', kvkk: false, deviceLimit: 1 });
   const [state, setState] = useState('form'); // form | sending | done | error
   const [errMsg, setErrMsg] = useState('');
-  const selectedPrice = f.deviceLimit === 2 ? Number(secondPrice) || 8500 : Number(price) || 6000;
+  const selectedPrice = f.deviceLimit === 2 ? Number(secondPrice) || LICENSE_DEVICE_PRICES[2] : Number(price) || LICENSE_DEVICE_PRICES[1];
 
   useEffect(() => {
     if (!open) return;
@@ -107,8 +108,8 @@ export default function OnSiparis({ label: cta = 'Ön sipariş ver', price = 600
                 <p style={{ fontSize: 14, color: 'var(--h-muted)', marginTop: 6 }}>Hermes program lisansı tek seferliktir ve seçilen cihaz sayısı için düzenlenir. Farklı cihaz ayrı lisans gerektirir.</p>
                 <div role="group" aria-label="Cihaz sayısı" style={planGrid}>
                   {[
-                    { limit: 1, title: '1 cihaz', amount: Number(price) || 6000 },
-                    { limit: 2, title: '2 cihaz (+₺2.500)', amount: Number(secondPrice) || 8500 }
+                    { limit: 1, title: '1 cihaz', amount: Number(price) || LICENSE_DEVICE_PRICES[1] },
+                    { limit: 2, title: `2 cihaz (+₺${LICENSE_SECOND_DEVICE_PRICE.toLocaleString('tr-TR')})`, amount: Number(secondPrice) || LICENSE_DEVICE_PRICES[2] }
                   ].map((plan) => {
                     const active = f.deviceLimit === plan.limit;
                     return (

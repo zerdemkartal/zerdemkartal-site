@@ -18,6 +18,11 @@ import {
   resetPaytrRateCacheForTests,
   verifyPaytrCallbackHash
 } from '../src/lib/paytr.mjs';
+import {
+  LICENSE_DEVICE_PRICES,
+  PURCHASE_TERMS_VERSION,
+  licensePlanNameFor
+} from '../src/lib/licensePricing.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const passed = [];
@@ -41,6 +46,7 @@ async function test(name, fn) {
 await test('PayTR uçları yalnız resmî HTTPS adreslerini kullanıyor', () => {
   assert.equal(PAYTR_LINK_CREATE_URL, 'https://www.paytr.com/odeme/api/link/create');
   assert.equal(PAYTR_RATES_URL, 'https://www.paytr.com/odeme/taksit-oranlari');
+  assert.equal(PAYTR_TERMS_VERSION, PURCHASE_TERMS_VERSION);
 });
 
 await test('Tek çekim oranı farklı resmî yanıt yazımlarından okunuyor', () => {
@@ -50,10 +56,10 @@ await test('Tek çekim oranı farklı resmî yanıt yazımlarından okunuyor', (
 });
 
 await test('Kart fiyatı PayTR kesintisinden sonra EFT hedefini koruyacak şekilde yukarı yuvarlanıyor', () => {
-  const gross = calculateGrossKurus(6000, 4.5);
-  assert.equal(gross, Math.ceil(600000 / 0.955));
-  assert.ok(gross * 0.955 >= 600000);
-  assert.throws(() => calculateGrossKurus(6000, 100));
+  const gross = calculateGrossKurus(8500, 4.5);
+  assert.equal(gross, Math.ceil(850000 / 0.955));
+  assert.ok(gross * 0.955 >= 850000);
+  assert.throws(() => calculateGrossKurus(8500, 100));
 });
 
 await test('Boş oran yedeği sıfır sayılmıyor ve ilk servis hatasında ödeme kapalı kalıyor', async () => {
@@ -69,7 +75,29 @@ await test('Boş oran yedeği sıfır sayılmıyor ve ilk servis hatasında öde
 await test('Eksik yapılandırma yalnız değişken adlarını bildiriyor, gizli değer döndürmüyor', async () => {
   const pricing = await getPaytrPricing({ env: { PAYTR_MERCHANT_ID: '123', PAYTR_MERCHANT_KEY: '', PAYTR_MERCHANT_SALT: '' } });
   assert.deepEqual(pricing.missingConfig, ['PAYTR_MERCHANT_KEY', 'PAYTR_MERCHANT_SALT']);
+  assert.equal(pricing.maxInstallment, 12);
+  assert.deepEqual(pricing.plans.map(({ planId, eftPrice }) => ({ planId, eftPrice })), [
+    { planId: 'hermes-1', eftPrice: LICENSE_DEVICE_PRICES[1] },
+    { planId: 'hermes-2', eftPrice: LICENSE_DEVICE_PRICES[2] }
+  ]);
   assert.ok(!JSON.stringify(pricing).includes('123'));
+});
+
+await test('Yeni havale fiyatları PayTR tek çekim oranı üzerine eksiksiz brütleniyor', async () => {
+  resetPaytrRateCacheForTests();
+  const pricing = await getPaytrPricing({
+    env,
+    now: 1_500,
+    fetchImpl: async () => ({
+      ok: true,
+      json: async () => ({ status: 'success', single_ratio: '4.5' })
+    })
+  });
+  assert.equal(pricing.maxInstallment, 12);
+  assert.deepEqual(pricing.plans.map(({ planId, eftPrice, cardKurus }) => ({ planId, eftPrice, cardKurus })), [
+    { planId: 'hermes-1', eftPrice: 8500, cardKurus: 890053 },
+    { planId: 'hermes-2', eftPrice: 11500, cardKurus: 1204189 }
+  ]);
 });
 
 await test('Oran sorgusu PII göndermeden imzalı single_ratio isteği yapıyor', async () => {
@@ -112,8 +140,8 @@ await test('PayTR oran reddi güvenli hata kodunu taşıyor', async () => {
 await test('Callback kimliği yalnız plan/tutar/sözleşme sürümü ve rastgele değer taşıyor', () => {
   const callbackId = createPaytrCallbackId({
     deviceLimit: 1,
-    netKurus: 600000,
-    paymentKurus: 628273,
+    netKurus: 850000,
+    paymentKurus: 890053,
     nonce: 'A1B2C3D4E5F6A7B8'
   });
   assert.match(callbackId, /^[a-zA-Z0-9]{1,64}$/);
@@ -122,8 +150,8 @@ await test('Callback kimliği yalnız plan/tutar/sözleşme sürümü ve rastgel
     callbackId,
     planId: 'hermes-1',
     deviceLimit: 1,
-    netKurus: 600000,
-    paymentKurus: 628273,
+    netKurus: 850000,
+    paymentKurus: 890053,
     termsVersion: PAYTR_TERMS_VERSION,
     testMode: false
   });
@@ -151,14 +179,19 @@ await test('10 TL test linki callback kimliginde test olarak isaretleniyor', () 
 
 await test('Link Create gövdesinde müşteri, fatura, kart veya pft alanı bulunmuyor', () => {
   const callbackId = createPaytrCallbackId({
-    deviceLimit: 2, netKurus: 850000, paymentKurus: 890053, nonce: 'B1C2D3E4F5A6B7C8'
+    deviceLimit: 2, netKurus: 1150000, paymentKurus: 1204189, nonce: 'B1C2D3E4F5A6B7C8'
   });
-  const body = buildPaytrLinkRequest({ deviceLimit: 2, paymentKurus: 890053, callbackId, env, now: 0 });
+  const body = buildPaytrLinkRequest({ deviceLimit: 2, paymentKurus: 1204189, callbackId, env, now: 0 });
   const keys = [...body.keys()];
   for (const forbidden of ['email', 'user_name', 'name_surname', 'phone', 'address', 'identity_number', 'card_number', 'pft']) {
     assert.ok(!keys.includes(forbidden), `${forbidden} gönderilmemeli`);
   }
   assert.equal(body.get('link_type'), 'product');
+  assert.equal(body.get('name'), licensePlanNameFor(2));
+  assert.equal(body.get('price'), '1204189');
+  assert.equal(body.get('currency'), 'TL');
+  assert.equal(body.get('max_installment'), '12');
+  assert.equal(body.get('lang'), 'tr');
   assert.equal(body.get('min_count'), '1');
   assert.equal(body.get('max_count'), '1');
   assert.equal(body.get('callback_link'), 'https://hermesastroloji.com/api/pay/paytr/callback');
@@ -229,6 +262,12 @@ await test('Kamusal satın alma akışı ödeme öncesi teslim ve fatura bilgisi
   assert.ok(form.includes('requestId: globalThis.crypto.randomUUID()'));
   assert.ok(form.includes("fetch('/api/pay/paytr/link'"));
   assert.ok(form.includes('termsVersion: pricing.termsVersion'));
+  assert.ok(form.includes('PAYTR EKRANINDA GÖRECEĞİN'));
+  assert.ok(form.includes('Tek çekim tutarı'));
+  assert.ok(form.includes('Kartın uygunsa en fazla'));
+  assert.ok(form.includes('PayTR güvenli ödeme ekranına geç'));
+  assert.ok(form.includes('licensePlanNameFor(deviceLimit)'));
+  assert.ok(form.includes('pricing?.maxInstallment'));
   assert.ok(link.includes('adSoyad: z.string().trim().min(2).max(120)'));
   assert.ok(link.includes('email: z.string().trim().email().max(254)'));
   assert.ok(link.includes("invoiceType: z.enum(['individual', 'corporate'])"));

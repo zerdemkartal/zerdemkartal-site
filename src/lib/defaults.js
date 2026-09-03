@@ -20,7 +20,7 @@ export const HERMES_SITE = {
     },
     fiyat: {
       title: 'Fiyat — Hermes | Tek seferlik cihaz lisansı',
-      description: 'Hermes 1 cihaz EFT/Havale fiyatı ₺6.000; farklı veya ikinci cihaz için ayrı lisans gerekir. İkinci cihaz lisansı +₺2.500, iki cihaz toplam ₺8.500’dür.'
+      description: 'Hermes 1 cihaz EFT/Havale fiyatı ₺8.500; farklı veya ikinci cihaz için ayrı lisans gerekir. İkinci cihaz lisansı +₺3.000, iki cihaz toplam ₺11.500’dür.'
     },
     indir: {
       title: 'İndir — Hermes Astroloji Programı (Windows)',
@@ -98,8 +98,8 @@ export const HERMES_SITE = {
     },
     fiyatBand: {
       kicker: 'TEK SEFERLİK CİHAZ LİSANSI',
-      title: '1 cihaz EFT/Havale ₺6.000.',
-      p: 'Her lisans yalnız bir cihazda geçerlidir. İkinci cihaz için ayrı lisans +₺2.500; iki cihaz toplam ₺8.500’dür. Aynı cihaz için yayımlanan güncellemeler dahildir. Cihazlar arası veri senkronizasyonu ileride ayrı abonelik hizmeti olarak sunulacaktır.',
+      title: '1 cihaz EFT/Havale ₺8.500.',
+      p: 'Her lisans yalnız bir cihazda geçerlidir. İkinci cihaz için ayrı lisans +₺3.000; iki cihaz toplam ₺11.500’dür. Aynı cihaz için yayımlanan güncellemeler dahildir. Cihazlar arası veri senkronizasyonu ileride ayrı abonelik hizmeti olarak sunulacaktır.',
       btn: 'Fiyat ayrıntıları'
     }
   },
@@ -122,9 +122,9 @@ export const HERMES_SITE = {
     },
     kutu: {
       kicker: 'EFT / HAVALE FİYATI',
-      price: '₺6.000', oldPrice: '',
-      secondLicensePrice: '₺2.500',
-      secondPrice: '₺8.500',
+      price: '₺8.500', oldPrice: '',
+      secondLicensePrice: '₺3.000',
+      secondPrice: '₺11.500',
       vatNote: 'Fiyatlara KDV dahildir.',
       rows: [
         '☿︎ Tüm modüller — sınırsız harita ve danışan',
@@ -189,7 +189,7 @@ export const HERMES_SITE = {
       { q: 'Hermes nedir?', a: 'Hermes, profesyonel kullanım için geliştirilmiş Türkçe masaüstü astroloji programıdır: doğum haritası, transit, ilerletme, dönem teknikleri, tutulmalar, sinastri, horary, elektif tarama, rektifikasyon, astrokartografi, Uranyen dial ve danışan yönetimi tek uygulamada.' },
       { q: 'Kimler için?', a: 'Danışmanlık veren astrologlar, ciddi öğrenciler ve araştırmacılar için tasarlandı. Günlük burç yorumu uygulaması değildir.' },
       { q: 'Hesaplar ne kadar hassas?', a: 'Hesap motoru Swiss Ephemeris kullanır; gezegen konumları, evler, asteroidler ve sabit yıldızlar efemeris kaynağıyla birebir hesaplanır. Efemeris dosyaları programla birlikte gelir, hesap için internet gerekmez.' },
-      { q: 'Lisans nasıl çalışıyor?', a: 'Program lisansı tek seferlik satın alınır ve yalnız etkinleştirildiği bir cihazda geçerlidir. Farklı veya ikinci cihaz için ayrı lisans gerekir. 1 cihaz EFT/Havale fiyatı ₺6.000; ikinci cihaz lisansı +₺2.500, iki cihaz toplam ₺8.500’dür. Aynı cihaz için yayımlanan güncellemeler dahildir.' },
+      { q: 'Lisans nasıl çalışıyor?', a: 'Program lisansı tek seferlik satın alınır ve yalnız etkinleştirildiği bir cihazda geçerlidir. Farklı veya ikinci cihaz için ayrı lisans gerekir. 1 cihaz EFT/Havale fiyatı ₺8.500; ikinci cihaz lisansı +₺3.000, iki cihaz toplam ₺11.500’dür. Aynı cihaz için yayımlanan güncellemeler dahildir.' },
       { q: 'Android, iPhone ve iPad sürümleri olacak mı?', a: 'Evet. Android, iPhone ve iPad sürümleri yol haritasındadır ve daha sonra yayımlanacaktır. Her cihaz için ayrı lisans gerekir.' },
       { q: 'Verilerim nerede tutuluyor?', a: 'Varsayılan olarak cihazında. Danışan kayıtların ve haritaların bilgisayarından çıkmaz; bulut zorunluluğu yoktur. İnternet yalnız lisans doğrulama ve güncelleme için kullanılır.' },
       { q: 'Hangi platformlarda çalışıyor?', a: 'Hermes şu an Windows 10/11 (64-bit) bilgisayarlarda kullanılabilir. macOS sürümü 17 Ağustos 2026’da sunulacaktır. Android, iPhone ve iPad sürümleri daha sonra gelecektir.' },

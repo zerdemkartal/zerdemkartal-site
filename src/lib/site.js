@@ -1,5 +1,7 @@
 // Ortak site sabitleri + SEO/GEO yardımcıları — HERMES sitesi (H1 dönüşümü).
 // Alan adı henüz kesinleşmedi → SITE_URL env ile değişir (docs/HERMES-SITE-PLANI.md "Açık konular").
+import { LICENSE_DEVICE_PRICES } from './licensePricing.js';
+
 export const SITE = (process.env.SITE_URL || 'https://hermesastroloji.com').replace(/\/$/, '');
 export const OG_IMAGE = SITE + '/assets/og-image.png';
 export const LOGO = SITE + '/assets/hermes-mark.svg';
@@ -40,7 +42,7 @@ export const WEBSITE = {
 
 /** Ürünün tek gerçek JSON-LD düğümü — her sayfa aynı @id'yi kullanır (GEO: tutarlı varlık).
  *  featureList çağıran sayfadan gelir (içerik modelinden). Uydurma puan/yorum YOK. */
-export function appNode({ description, featureList = [], price = '6000' } = {}) {
+export function appNode({ description, featureList = [], price = String(LICENSE_DEVICE_PRICES[1]) } = {}) {
   return {
     '@type': 'SoftwareApplication', '@id': SITE + '/#hermes', name: 'Hermes',
     alternateName: 'Hermes Astroloji Programı',

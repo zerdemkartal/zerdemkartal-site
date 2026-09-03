@@ -1,9 +1,14 @@
 import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
-import { LICENSE_DEVICE_PRICES, normalizeDeviceLimit } from './licensePricing.js';
+import {
+  LICENSE_DEVICE_PRICES,
+  PURCHASE_TERMS_VERSION,
+  licensePlanNameFor,
+  normalizeDeviceLimit
+} from './licensePricing.js';
 
 export const PAYTR_LINK_CREATE_URL = 'https://www.paytr.com/odeme/api/link/create';
 export const PAYTR_RATES_URL = 'https://www.paytr.com/odeme/taksit-oranlari';
-export const PAYTR_TERMS_VERSION = '20260810';
+export const PAYTR_TERMS_VERSION = PURCHASE_TERMS_VERSION;
 export const PAYTR_RATE_CACHE_MS = 60 * 60 * 1000;
 export const PAYTR_STALE_RATE_MS = 24 * 60 * 60 * 1000;
 export const PAYTR_LINK_TTL_MS = 30 * 60 * 1000;
@@ -170,6 +175,7 @@ export async function getPaytrPricing(options = {}) {
       configured: false,
       missingConfig,
       termsVersion: PAYTR_TERMS_VERSION,
+      maxInstallment: config.maxInstallment,
       plans: Object.entries(LICENSE_DEVICE_PRICES).map(([deviceLimit, eftPrice]) => ({
         planId: `hermes-${deviceLimit}`,
         deviceLimit: Number(deviceLimit),
@@ -183,6 +189,7 @@ export async function getPaytrPricing(options = {}) {
   return {
     configured: true,
     termsVersion: PAYTR_TERMS_VERSION,
+    maxInstallment: config.maxInstallment,
     ratio: rate.ratio,
     rateSource: rate.source,
     rateStale: rate.stale,
@@ -265,7 +272,7 @@ export function buildPaytrLinkRequest({
   const config = getPaytrConfig(env);
   if (!config.configured) throw new Error('PayTR yapılandırılmadı.');
   const device = normalizeDeviceLimit(deviceLimit);
-  const name = testMode ? 'Hermes callback testi - lisans degildir' : `Hermes ${device} cihaz lisansı`;
+  const name = testMode ? 'Hermes callback testi - lisans degildir' : licensePlanNameFor(device);
   const price = String(paymentKurus);
   const currency = 'TL';
   const maxInstallment = testMode ? '1' : String(config.maxInstallment);

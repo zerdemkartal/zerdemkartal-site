@@ -8,6 +8,7 @@ import { Nav, Footer, T, btnPrimary, kickerStyle, h1Style, h2Style, pStyle, sect
 // Faz 2 (27 Tem 2026) — fiyat kutusunda imleç parıltısı.
 import Spotlight from '@/components/Spotlight';
 import PaytrCardPrice from '@/components/PaytrCardPrice';
+import { LICENSE_DEVICE_PRICES } from '@/lib/licensePricing';
 
 export const revalidate = 300;
 const PATH = '/fiyat';
@@ -26,7 +27,7 @@ function buildJsonLd(c) {
       { '@type': 'ListItem', position: 1, name: 'Ana Sayfa', item: SITE + '/' },
       { '@type': 'ListItem', position: 2, name: 'Fiyat', item: SITE + PATH }
     ] },
-    appNode({ description: seo.description, price: priceNum(c.fiyat.kutu.price) || '6000' }),
+    appNode({ description: seo.description, price: priceNum(c.fiyat.kutu.price) || String(LICENSE_DEVICE_PRICES[1]) }),
     { '@type': 'FAQPage', mainEntity: (c.fiyat.sss || []).map((x) => ({ '@type': 'Question', name: x.q, acceptedAnswer: { '@type': 'Answer', text: x.a } })) }
   ] };
 }
@@ -59,8 +60,8 @@ export default async function Fiyat() {
             <span style={{ fontFamily: T.serif, fontSize: 46 }} data-he data-path="fiyat.kutu.price">{kutu.price}</span>
           </div>
           <div className="h-device-pricing">
-            <span>İkinci cihaz lisansı: <b data-he data-path="fiyat.kutu.secondLicensePrice">+{kutu.secondLicensePrice || '₺2.500'}</b></span>
-            <span>İki cihaz toplam: <b data-he data-path="fiyat.kutu.secondPrice">{kutu.secondPrice || '₺8.500'}</b></span>
+            <span>İkinci cihaz lisansı: <b data-he data-path="fiyat.kutu.secondLicensePrice">+{kutu.secondLicensePrice || '₺3.000'}</b></span>
+            <span>İki cihaz toplam: <b data-he data-path="fiyat.kutu.secondPrice">{kutu.secondPrice || '₺11.500'}</b></span>
             <span data-he data-path="fiyat.kutu.vatNote">{kutu.vatNote || 'Fiyatlara KDV dahildir.'}</span>
           </div>
           <div className="h-device-pricing"><PaytrCardPrice /></div>

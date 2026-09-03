@@ -84,13 +84,13 @@ const DOCS = {
     body: (
       <>
         <h1 style={h2}>Ön Bilgilendirme Formu</h1>
-        <div style={sub}>6502 sayılı Kanun ve Mesafeli Sözleşmeler Yönetmeliği uyarınca · Yürürlük: 10 Ağustos 2026</div>
+        <div style={sub}>6502 sayılı Kanun ve Mesafeli Sözleşmeler Yönetmeliği uyarınca · Yürürlük: 3 Eylül 2026</div>
         <h2 style={h3}>1. Satıcı</h2><p style={p}>{SELLER}</p>
         <h2 style={h3}>2. Ürünün temel nitelikleri</h2>
         <p style={p}>Hermes, şu an Windows 10/11 bilgisayarlar için sunulan profesyonel astroloji yazılımının tek seferlik program lisansıdır. Her lisans yalnız etkinleştirildiği bir cihazda geçerlidir; farklı veya ikinci cihaz için ayrı lisans gerekir. Aynı cihaz için yayımlanan güncellemeler lisansa dahildir. macOS sürümü 17 Ağustos 2026’da, Android, iPhone ve iPad sürümleri ise daha sonra sunulacaktır. Cihazlar arası veri senkronizasyonu program lisansına dahil değildir; yayımlandığında ayrı abonelik koşullarına tabi olacaktır. Ürün gayri maddi/dijital olarak teslim edilir; fiziksel kargo yapılmaz.</p>
         <h2 style={h3}>3. Vergiler dâhil fiyat</h2>
         <ul style={ul}>
-          <li><B>EFT/Havale:</B> 1 cihaz ₺6.000; 2 cihaz ₺8.500.</li>
+          <li><B>EFT/Havale:</B> 1 cihaz ₺8.500; ikinci cihaz lisansı +₺3.000; 2 cihaz toplam ₺11.500.</li>
           <li><B>Kartla tek çekim:</B> EFT hedef tutarı ve PayTR’nin güncel mağaza tek çekim oranına göre satın alma sayfasında otomatik hesaplanan tutardır.</li>
           <li><B>Taksit:</B> kart ve vade seçimine göre nihai toplam PayTR ödeme sayfasında gösterilir. Sipariş, bu toplam onaylandıktan sonra tamamlanır.</li>
         </ul>
@@ -127,13 +127,13 @@ const DOCS = {
     body: (
       <>
         <h1 style={h2}>Mesafeli Satış Sözleşmesi</h1>
-        <div style={sub}>6502 sayılı Kanun ve Mesafeli Sözleşmeler Yönetmeliği uyarınca · Yürürlük: 11 Ağustos 2026</div>
+        <div style={sub}>6502 sayılı Kanun ve Mesafeli Sözleşmeler Yönetmeliği uyarınca · Yürürlük: 3 Eylül 2026</div>
         <h2 style={h3}>1. Taraflar</h2>
         <p style={p}><B>Satıcı:</B> {SELLER}<br /><B>Alıcı:</B> Hermes satın alma sayfasında teslimat, iletişim ve fatura bilgilerini verip PayTR ödeme sayfasında veya EFT/Havale yoluyla siparişi tamamlayan kişi ya da kurum.</p>
         <h2 style={h3}>2. Konu ve ürün</h2>
         <p style={p}>Sözleşme, satın alma sayfasında seçilen 1 veya 2 cihazlık Hermes Astroloji Programı dijital lisansının satışı, ödemesi ve teslimine ilişkin tarafların hak ve yükümlülüklerini düzenler. Her cihaz için ayrı lisans düzenlenir; lisans farklı cihazlar arasında ortak kullanılamaz. Cihazlar arası veri senkronizasyonu bu lisansın kapsamında değildir ve ileride ayrı abonelik koşullarıyla sunulacaktır.</p>
         <h2 style={h3}>3. Fiyat ve ödeme</h2>
-        <p style={p}>Vergiler dâhil EFT/Havale fiyatı 1 cihaz için ₺6.000, 2 cihaz için ₺8.500’dür. Kartla tek çekim fiyatı PayTR’nin güncel mağaza oranıyla otomatik hesaplanarak satın alma sayfasında gösterilir. Taksitte kart/vade kaynaklı toplam PayTR ekranında değişebilir. Alıcının PayTR’de onayladığı nihai tutar sipariş bedelidir. Kart bilgileri Hermes sunucularına girilmez.</p>
+        <p style={p}>Vergiler dâhil EFT/Havale fiyatı 1 cihaz için ₺8.500, ikinci cihaz lisansı için +₺3.000 ve 2 cihaz için toplam ₺11.500’dür. Kartla tek çekim fiyatı PayTR’nin güncel mağaza oranıyla otomatik hesaplanarak satın alma sayfasında gösterilir. Taksitte kart/vade kaynaklı toplam PayTR ekranında değişebilir. Alıcının PayTR’de onayladığı nihai tutar sipariş bedelidir. Kart bilgileri Hermes sunucularına girilmez.</p>
         <h2 style={h3}>4. Sözleşmenin kurulması ve teslimat</h2>
         <p style={p}>Alıcı ön bilgilendirme ve sözleşme koşullarını onaylayıp ödemeyi tamamladığında sözleşme kurulur. Ürün yalnız dijital teslim edilir; kargo yoktur. Başarılı kart ödemesi bildirildiğinde 6 saatlik indirme daveti doğrulanan e-posta adresine otomatik gönderilir. İmzalı lisans, programdaki <B>Lisans İste</B> kaydından sonra en geç iki iş günü içinde hazırlanır.</p>
         <h2 style={h3}>5. Cayma hakkı</h2>

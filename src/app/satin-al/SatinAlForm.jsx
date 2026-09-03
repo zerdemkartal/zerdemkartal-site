@@ -4,10 +4,16 @@ import { useEffect, useMemo, useState } from 'react';
 import styles from './satin-al.module.css';
 import { whatsappUrl } from '@/lib/site';
 import { invoiceValidationIssue, normalizeInvoiceData } from '@/lib/purchase-invoice.mjs';
+import {
+  LICENSE_DEVICE_PRICES,
+  LICENSE_SECOND_DEVICE_PRICE,
+  PURCHASE_TERMS_VERSION,
+  licensePlanNameFor
+} from '@/lib/licensePricing';
 
 const PLANLAR = {
-  1: { planId: 'hermes-1', label: '1 cihaz lisansı', eftPrice: 6000, note: 'Tek kullanıcı · tek cihaz' },
-  2: { planId: 'hermes-2', label: '2 cihaz lisansı', eftPrice: 8500, note: 'İkinci cihaz +₺2.500' }
+  1: { planId: 'hermes-1', label: '1 cihaz lisansı', eftPrice: LICENSE_DEVICE_PRICES[1], note: 'Tek kullanıcı · tek cihaz' },
+  2: { planId: 'hermes-2', label: '2 cihaz lisansı', eftPrice: LICENSE_DEVICE_PRICES[2], note: `İkinci cihaz +₺${LICENSE_SECOND_DEVICE_PRICE.toLocaleString('tr-TR')}` }
 };
 
 const para = (value) => value == null
@@ -65,6 +71,15 @@ export default function SatinAlForm() {
   const invoice = normalizeInvoiceData(invoiceInput);
   const invoiceIssue = invoiceValidationIssue(invoiceInput);
   const cardReady = Boolean(pricing?.configured && cardPlan?.cardPrice);
+  const paytrProductName = licensePlanNameFor(deviceLimit);
+  const maxInstallment = Number(pricing?.maxInstallment) || 1;
+  const taksitOzeti = !pricing
+    ? 'Yükleniyor…'
+    : !pricing.configured
+      ? 'Kartlı ödeme şu anda kullanılamıyor'
+      : maxInstallment > 1
+        ? `Kartın uygunsa en fazla ${maxInstallment} taksit`
+        : 'Yalnız tek çekim';
 
   function sec(device) {
     setDeviceLimit(device);
@@ -106,7 +121,7 @@ export default function SatinAlForm() {
           email: temizEmail,
           ...invoice,
           termsAccepted: true,
-          termsVersion: pricing?.termsVersion || '20260810'
+          termsVersion: pricing?.termsVersion || PURCHASE_TERMS_VERSION
         }),
         cache: 'no-store'
       });
@@ -279,9 +294,17 @@ export default function SatinAlForm() {
             <article className={`${styles.odemeKart} ${styles.kartli}`}>
               <div className={styles.odemeBas}><span>KREDİ / BANKA KARTI</span><em>PayTR güvencesi</em></div>
               <strong className={styles.odemeFiyat}>{cardReady ? para(cardPlan.cardPrice) : '—'}</strong>
-              <p>Tek çekim fiyatı PayTR’nin güncel mağaza oranından otomatik hesaplanır. Taksit seçildiğinde toplam tutar PayTR ekranında kartınıza göre değişebilir.</p>
+              <div className={styles.paytrOnizleme} aria-label="PayTR ödeme ekranı özeti">
+                <span>PAYTR EKRANINDA GÖRECEĞİN</span>
+                <strong>{paytrProductName}</strong>
+                <dl>
+                  <div><dt>Tek çekim tutarı</dt><dd>{cardReady ? para(cardPlan.cardPrice) : 'Hesaplanıyor…'}</dd></div>
+                  <div><dt>Taksit</dt><dd>{taksitOzeti}</dd></div>
+                </dl>
+              </div>
+              <p>PayTR sayfasında ürün adı, tek çekim tutarı ve kartına açık taksit seçenekleri gösterilir. Taksitli toplam kart ve vadeye göre değişebilir; onaylamadan önce nihai tutarı PayTR’de görürsün.</p>
               <button type="button" onClick={kartBaslat} disabled={!cardReady || durum === 'sending'}>
-                {durum === 'sending' ? 'PayTR’ye yönlendiriliyor…' : cardReady ? 'PayTR ile güvenli öde' : 'Kartlı ödeme yapılandırılıyor'}
+                {durum === 'sending' ? 'PayTR’ye yönlendiriliyor…' : cardReady ? 'PayTR güvenli ödeme ekranına geç' : 'Kartlı ödeme yapılandırılıyor'}
               </button>
             </article>
           </div>
