@@ -7,6 +7,7 @@ const LINKS = [
   ['/ozellikler', 'Özellikler'],
   ['/fiyat', 'Fiyat'],
   ['/indir', 'İndir'],
+  ['/ucretsiz-programlar', 'Ücretsiz Programlar'],
   ['/blog', 'Blog'],
   ['/sss', 'SSS']
 ];

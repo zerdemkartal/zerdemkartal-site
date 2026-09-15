@@ -28,12 +28,13 @@ npm run dev                   # http://localhost:3000
 
 ## SSR rotaları (Faz 2.7 — tamamlandı)
 
-`/` · `/ozellikler` · `/fiyat` · `/indir` · `/blog` · `/blog/yazi/[id]` · `/sss` · `/hakkimda` · `/iletisim` (form → `POST /api/leads`) · `/yasal/[slug]` (6 metin) · `/cok-yakinda` (noindex). `/uye`, geçici olarak `/indir` rotasına yönlenir. Blogda yalnız tarihli, içerikli ve `published` yazılar kamusaldır; çalışma kütüphanesindeki hazırlık başlıkları kendiliğinden yayımlanmaz.
+`/` · `/ozellikler` · `/fiyat` · `/indir` · `/ucretsiz-programlar` · `/blog` · `/blog/yazi/[id]` · `/sss` · `/hakkimda` · `/iletisim` (form → `POST /api/leads`) · `/yasal/[slug]` (6 metin) · `/cok-yakinda` (noindex). `/uye`, geçici olarak `/indir` rotasına yönlenir. Blogda yalnız tarihli, içerikli ve `published` yazılar kamusaldır; çalışma kütüphanesindeki hazırlık başlıkları kendiliğinden yayımlanmaz.
 
 - İçerik DB'den (`PageContent`), meşhur alanlar boşsa güvenli varsayılanlar; **generateMetadata + JSON-LD prototipteki `_buildJsonLd`'lerin birebir portu**, ISR `revalidate: 300`.
 - Görsel parite: sayfalar marka tipografi/renkleriyle semantik port'tır; piksel referansı `.dc.html` dosyalarıdır (her page.jsx başındaki not).
 - `/dogum-haritasi` aracı: form kabuğu hazır; çark/hesap motoru `Dogum Haritasi.dc.html`'den `HaritaAraci.jsx`'e port edilecek (dosya başında adım adım not).
 - `sitemap.xml` / `robots.txt` / `llms.txt` dinamik route'lar; **IndexNow**: content/blog yazmaları ping atar, anahtar `/indexnow.txt`'ten servis edilir.
+- `/ucretsiz-programlar`: AstroPen ve Hermes Asteroid Yardımcı için kamusal vitrin. Büyük kurulumlar kaynak/deploy paketine girmez; yalnız HTTPS indirme adresleri ortam değişkenlerinden gelir. Asteroid arşivi `ASTEROID_HELPER_DISTRIBUTION_CLEARED=1` olmadan indirmeye açılmaz.
 
 ## API sözleşmesi
 

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "prebuild": "npm run test:site-license-copy && node tests/paytr-link.mjs",
+    "prebuild": "npm run test:site-license-copy && node tests/paytr-link.mjs && npm run test:free-programs",
     "build": "next build --webpack",
     "start": "next start",
     "seed": "node --env-file-if-exists=.env prisma/seed.mjs",
@@ -20,6 +20,7 @@
     "test:paytr": "node tests/paytr-link.mjs && node tests/paytr-delivery.mjs",
     "test:site-license-copy": "node tests/site-license-copy.mjs",
     "test:site-feature-inventory": "node tests/site-feature-inventory.mjs",
+    "test:free-programs": "node tests/free-programs.mjs",
     "test:blog": "node tests/blog-public.mjs",
     "test:mail": "node tests/mail-center.mjs",
     "postinstall": "prisma generate"

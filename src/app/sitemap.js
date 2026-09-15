@@ -11,6 +11,7 @@ const STATIC = [
   ['/fiyat', 0.9, 'monthly'],
   ['/satin-al', 0.8, 'monthly'],
   ['/indir', 0.8, 'monthly'],
+  ['/ucretsiz-programlar', 0.8, 'monthly'],
   ['/blog', 0.8, 'weekly'],
   ['/sss', 0.8, 'monthly'],
   ['/hakkimda', 0.4, 'yearly'],

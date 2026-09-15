@@ -45,6 +45,7 @@ const LINKS = [
   ['/ozellikler', 'Özellikler'],
   ['/fiyat', 'Fiyat'],
   ['/indir', 'İndir'],
+  ['/ucretsiz-programlar', 'Ücretsiz'],
   ['/blog', 'Blog'],
   ['/sss', 'SSS']
 ];
@@ -97,6 +98,7 @@ export function Footer() {
           <a href="/ozellikler">Özellikler</a>
           <a href="/fiyat">Fiyat</a>
           <a href="/indir">İndir</a>
+          <a href="/ucretsiz-programlar">Ücretsiz programlar</a>
           <a href="/blog">Blog</a>
           <a href="/sss">Sık sorulan sorular</a>
           <a href="/hakkimda">Geliştiricisi hakkında</a>
