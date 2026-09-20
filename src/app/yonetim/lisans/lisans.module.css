@@ -74,6 +74,7 @@
 .ozet{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0 0 18px}
 .ozet>div,.eylemKart,.tehlike,.reauth,.gecmis{border:1px solid var(--h-border);border-radius:15px;background:var(--h-card);padding:15px}
 .ozet dt{color:var(--h-muted);font-size:10px}.ozet dd{margin:5px 0 0;font-size:13px}
+.ozet small{display:block;margin-top:6px;color:var(--h-muted);font-size:11px;line-height:1.4}
 .gerekce{display:block;margin-bottom:12px}.gerekce textarea{display:block;resize:vertical;line-height:1.5}
 .gerekceHata{margin:-5px 0 12px;color:var(--h-error);font-size:12px}
 .durumUyarisi{margin:0 0 12px;padding:11px 13px;border:1px solid var(--h-error);border-radius:12px;color:var(--h-ink);font-size:12px;line-height:1.6}

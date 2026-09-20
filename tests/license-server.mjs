@@ -833,6 +833,10 @@ await test('İptal edilmiş lisansın geçersiz işlemleri görünür biçimde k
   assert.ok(status.includes("if (from === 'iptal') return false"));
   assert.ok(transfer.includes("license.status === 'iptal'"));
   assert.ok(client.includes("const isRevoked = selected?.status === 'iptal'"));
+  assert.ok(client.includes("isRevoked ? 'Bağlı cihaz (iptal)' : 'Etkin cihaz'"));
+  assert.ok(client.includes('Bu sayı cihaz bağı kaydıdır; lisansı etkin yapmaz.'));
+  assert.ok(client.includes('Kalıcı iptal edilmiş lisansın cihazı transfer edilemez.'));
+  assert.ok(client.includes('isRevoked ? <p>Kalıcı iptal edilmiş'));
   assert.ok(client.includes('disabled={busy || !canSuspend}'));
   assert.ok(client.includes('disabled={busy || !canActivate}'));
   assert.ok(client.includes("selected.status === 'askida' ? 'Askıyı kaldır' : 'Etkinleştir'"));
