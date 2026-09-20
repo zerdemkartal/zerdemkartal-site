@@ -76,6 +76,10 @@
 .ozet dt{color:var(--h-muted);font-size:10px}.ozet dd{margin:5px 0 0;font-size:13px}
 .gerekce{display:block;margin-bottom:12px}.gerekce textarea{display:block;resize:vertical;line-height:1.5}
 .gerekceHata{margin:-5px 0 12px;color:var(--h-error);font-size:12px}
+.durumUyarisi{margin:0 0 12px;padding:11px 13px;border:1px solid var(--h-error);border-radius:12px;color:var(--h-ink);font-size:12px;line-height:1.6}
+.islemSonucu{margin:10px 0 0;padding:9px 12px;border:1px solid var(--h-border);border-radius:10px;font-size:12px;line-height:1.5}
+.islemBasari{color:var(--h-accent-text);border-color:var(--h-accent);background:var(--h-accentbg)}
+.islemHata{color:var(--h-error);border-color:var(--h-error)}
 .eylemKart,.tehlike,.reauth,.gecmis{margin-top:12px}
 .eylemKart h3,.tehlike h3,.gecmis h3{margin:0 0 10px;font:530 20px 'Newsreader',serif}
 .eylemKart select{max-width:220px;display:block}.eylemSatir label{width:110px}.eylemSatir input{margin-top:0}

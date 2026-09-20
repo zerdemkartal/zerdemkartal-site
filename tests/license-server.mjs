@@ -826,4 +826,23 @@ await test('Lisans yönetim yüzeyi rol-duyarlı, erişilebilir ve yalnız tema 
   assert.ok(!/#[0-9a-f]{3,8}/i.test(css));
 });
 
+await test('İptal edilmiş lisansın geçersiz işlemleri görünür biçimde kapanıyor ve işlem sonucu ilgili kartta kalıyor', () => {
+  const client = fs.readFileSync(path.join(ROOT, 'src/app/yonetim/lisans/LisansClient.jsx'), 'utf8');
+  const status = fs.readFileSync(path.join(ROOT, 'src/app/api/lisans/v1/yonetim/durum/route.js'), 'utf8');
+  const transfer = fs.readFileSync(path.join(ROOT, 'src/app/api/lisans/v1/yonetim/cihaz-transferi/route.js'), 'utf8');
+  assert.ok(status.includes("if (from === 'iptal') return false"));
+  assert.ok(transfer.includes("license.status === 'iptal'"));
+  assert.ok(client.includes("const isRevoked = selected?.status === 'iptal'"));
+  assert.ok(client.includes('disabled={busy || !canSuspend}'));
+  assert.ok(client.includes('disabled={busy || !canActivate}'));
+  assert.ok(client.includes("selected.status === 'askida' ? 'Askıyı kaldır' : 'Etkinleştir'"));
+  assert.ok(client.includes('disabled={busy || !canTransfer}'));
+  assert.ok(client.includes('disabled={busy || isRevoked}'));
+  assert.ok(client.includes('Aynı lisansı askıya alamaz, yeniden etkinleştiremez veya cihazını transfer edemezsin.'));
+  assert.ok(client.includes('<ActionNotice notice={operationNotice} licenseNo={selected.licenseNo} section="durum" />'));
+  assert.ok(client.includes('<ActionNotice notice={operationNotice} licenseNo={selected.licenseNo} section="cihaz" />'));
+  assert.ok(client.includes("setOperationNotice({ licenseNo: body.lisansNo, section, kind: 'success', text: success })"));
+  assert.ok(client.includes('setHistory([]); clearNotice();'));
+});
+
 console.log(`\nSONUÇ: ${passed.length}/${passed.length} lisans sunucusu kapısı geçti.`);
