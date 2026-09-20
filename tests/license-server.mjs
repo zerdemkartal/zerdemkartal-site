@@ -816,6 +816,11 @@ await test('Lisans yönetim yüzeyi rol-duyarlı, erişilebilir ve yalnız tema 
   assert.ok(client.includes('lisansNoOnayi: selected.licenseNo'));
   assert.ok(client.includes('Evet, kalıcı iptal et'));
   assert.ok(client.includes('reason.trim().length < 3'));
+  assert.ok(client.includes('if (!requireReason()) return;'));
+  assert.ok(client.includes('reasonRef.current?.focus()'));
+  assert.ok(client.includes('ref={reauthRef}'));
+  assert.ok(!client.includes('disabled={busy || !reason.trim()}'));
+  assert.ok(!client.includes('disabled={busy || !reason.trim() || !selected.devices.length}'));
   assert.ok(css.includes(':focus-visible'));
   assert.ok(css.includes('var(--h-accentbg)'));
   assert.ok(!/#[0-9a-f]{3,8}/i.test(css));

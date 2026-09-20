@@ -113,6 +113,7 @@ export default function LisansClient({ mode = 'licenses' }) {
   const [selectedNo, setSelectedNo] = useState('');
   const [history, setHistory] = useState([]);
   const [reason, setReason] = useState('');
+  const [reasonError, setReasonError] = useState(false);
   const [suspensionDays, setSuspensionDays] = useState(7);
   const [revokeNo, setRevokeNo] = useState('');
   const [remoteLevel, setRemoteLevel] = useState('temel');
@@ -126,6 +127,8 @@ export default function LisansClient({ mode = 'licenses' }) {
   const [desktopPairing, setDesktopPairing] = useState(null);
   const [desktopPairingStatus, setDesktopPairingStatus] = useState('');
   const googleButtonRef = useRef(null);
+  const reasonRef = useRef(null);
+  const reauthRef = useRef(null);
 
   const selected = useMemo(
     () => rows.find((row) => row.licenseNo === selectedNo) || null,
@@ -269,6 +272,7 @@ export default function LisansClient({ mode = 'licenses' }) {
     setRemoteFeatures(Array.isArray(selected.remoteFeatures) ? selected.remoteFeatures.filter((feature) => FEATURES.includes(feature)) : []);
     setHistory([]);
     setReason('');
+    setReasonError(false);
     setRevokeNo('');
   }, [selectedNo]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -464,21 +468,35 @@ export default function LisansClient({ mode = 'licenses' }) {
     finally { setBusy(false); }
   }
 
+  function requireReason() {
+    if (reason.trim().length >= 3) return true;
+    setReasonError(true);
+    setError('İşlem gerekçesi en az 3 karakter olmalı. Yukarıdaki alana gerekçeyi yaz.');
+    reasonRef.current?.focus();
+    return false;
+  }
+
   async function action(path, body, success) {
+    if (!requireReason()) return;
     clearNotice(); setBusy(true);
     try {
       await api(path, { token, method: 'POST', body: { ...body, istekId: requestId() } });
       setMessage(success); await loadRows();
-    } catch (err) { setError(errorText(err.message)); }
+    } catch (err) {
+      setError(err.status === 403
+        ? 'İşlem için aşağıdaki Authenticator alanından yeniden doğrula, sonra tekrar dene.'
+        : errorText(err.message));
+      if (err.status === 403 && reauthRef.current) {
+        reauthRef.current.open = true;
+        reauthRef.current.scrollIntoView({ block: 'nearest' });
+      }
+    }
     finally { setBusy(false); }
   }
 
   function prepareRevocation() {
     if (!selected || selected.status === 'iptal' || busy) return;
-    if (reason.trim().length < 3) {
-      setError('Kalıcı iptal için en az 3 karakterlik işlem gerekçesi yaz.');
-      return;
-    }
+    if (!requireReason()) return;
     clearNotice();
     setRevokeNo(selected.licenseNo);
   }
@@ -703,19 +721,20 @@ export default function LisansClient({ mode = 'licenses' }) {
                 <div><dt>Müşteri</dt><dd>{selected.customerRef || '—'}</dd></div><div><dt>E-posta</dt><dd>{selected.customerEmail || '—'}</dd></div><div><dt>Etkin cihaz</dt><dd>{selected.devices.length} / {selected.deviceLimit}</dd></div><div><dt>Yetki sürümü</dt><dd>{selected.authorizationVersion}</dd></div>
               </dl>
 
-              <label className={styles.gerekce}>İşlem gerekçesi<textarea value={reason} onChange={(e) => { setReason(e.target.value); setRevokeNo(''); }} rows={3} maxLength={1000} /></label>
+              <label className={styles.gerekce}>İşlem gerekçesi<textarea ref={reasonRef} value={reason} onChange={(e) => { setReason(e.target.value); setReasonError(false); setRevokeNo(''); }} rows={3} maxLength={1000} aria-invalid={reasonError} aria-describedby={reasonError ? 'lisans-gerekce-hata' : undefined} /></label>
+              {reasonError && <p id="lisans-gerekce-hata" className={styles.gerekceHata} role="alert">İşlem için en az 3 karakterlik gerekçe yaz.</p>}
 
-              {mayStatus && <section className={styles.eylemKart}><h3>Durum</h3><div className={styles.eylemSatir}><label>Askı günü<input type="number" min="1" max={role === 'destek' ? 7 : 365} value={suspensionDays} onChange={(e) => setSuspensionDays(Number(e.target.value))} /></label><button className={styles.ikincil} disabled={busy || !reason.trim()} onClick={() => action('/api/lisans/v1/yonetim/durum', { lisansNo: selected.licenseNo, durum: 'askida', gerekce: reason, askiGun: suspensionDays }, 'Lisans askıya alındı.')}>Askıya al</button><button className={styles.ikincil} disabled={busy || !reason.trim()} onClick={() => action('/api/lisans/v1/yonetim/durum', { lisansNo: selected.licenseNo, durum: 'aktif', gerekce: reason }, 'Lisans etkinleştirildi.')}>Etkinleştir</button></div></section>}
+              {mayStatus && <section className={styles.eylemKart}><h3>Durum</h3><div className={styles.eylemSatir}><label>Askı günü<input type="number" min="1" max={role === 'destek' ? 7 : 365} value={suspensionDays} onChange={(e) => setSuspensionDays(Number(e.target.value))} /></label><button className={styles.ikincil} disabled={busy} onClick={() => action('/api/lisans/v1/yonetim/durum', { lisansNo: selected.licenseNo, durum: 'askida', gerekce: reason, askiGun: suspensionDays }, 'Lisans askıya alındı.')}>Askıya al</button><button className={styles.ikincil} disabled={busy} onClick={() => action('/api/lisans/v1/yonetim/durum', { lisansNo: selected.licenseNo, durum: 'aktif', gerekce: reason }, 'Lisans etkinleştirildi.')}>Etkinleştir</button></div></section>}
 
-              {mayTransfer && <section className={styles.eylemKart}><h3>Cihaz transferi</h3><p>Etkin cihaz bırakılır; yeni cihaz ilk güvenli doğrulamada bağlanır.</p><button className={styles.ikincil} disabled={busy || !reason.trim() || !selected.devices.length} onClick={() => action('/api/lisans/v1/yonetim/cihaz-transferi', { lisansNo: selected.licenseNo, cihazId: selected.devices[0]?.id, gerekce: reason }, 'Cihaz transferi başlatıldı.')}>Etkin cihazı bırak</button></section>}
+              {mayTransfer && <section className={styles.eylemKart}><h3>Cihaz transferi</h3><p>Etkin cihaz bırakılır; yeni cihaz ilk güvenli doğrulamada bağlanır.</p><button className={styles.ikincil} disabled={busy || !selected.devices.length} onClick={() => action('/api/lisans/v1/yonetim/cihaz-transferi', { lisansNo: selected.licenseNo, cihazId: selected.devices[0]?.id, gerekce: reason }, 'Cihaz transferi başlatıldı.')}>Etkin cihazı bırak</button></section>}
 
-              {mayRights && <section className={styles.eylemKart}><h3>Etkin yetkiler</h3><label>Seviye<select value={remoteLevel} onChange={(e) => setRemoteLevel(e.target.value)}>{LEVELS.map((level) => <option key={level} value={level} disabled={LEVELS.indexOf(level) > LEVELS.indexOf(selected.signedLevel)}>{level}</option>)}</select></label><div className={styles.ozellikler}>{FEATURES.map((feature) => <label key={feature} className={!signedFeatures.includes(feature) ? styles.kapali : ''}><input type="checkbox" checked={remoteFeatures.includes(feature)} disabled={!signedFeatures.includes(feature)} onChange={(e) => setRemoteFeatures((current) => e.target.checked ? [...current, feature] : current.filter((item) => item !== feature))} />{feature}</label>)}</div><button className={styles.ikincil} disabled={busy || !reason.trim()} onClick={() => action('/api/lisans/v1/yonetim/yetki', { lisansNo: selected.licenseNo, seviye: remoteLevel, ozellikler: remoteFeatures, gerekce: reason }, 'Yetki profili güncellendi.')}>Yetkileri kaydet</button></section>}
+              {mayRights && <section className={styles.eylemKart}><h3>Etkin yetkiler</h3><label>Seviye<select value={remoteLevel} onChange={(e) => setRemoteLevel(e.target.value)}>{LEVELS.map((level) => <option key={level} value={level} disabled={LEVELS.indexOf(level) > LEVELS.indexOf(selected.signedLevel)}>{level}</option>)}</select></label><div className={styles.ozellikler}>{FEATURES.map((feature) => <label key={feature} className={!signedFeatures.includes(feature) ? styles.kapali : ''}><input type="checkbox" checked={remoteFeatures.includes(feature)} disabled={!signedFeatures.includes(feature)} onChange={(e) => setRemoteFeatures((current) => e.target.checked ? [...current, feature] : current.filter((item) => item !== feature))} />{feature}</label>)}</div><button className={styles.ikincil} disabled={busy} onClick={() => action('/api/lisans/v1/yonetim/yetki', { lisansNo: selected.licenseNo, seviye: remoteLevel, ozellikler: remoteFeatures, gerekce: reason }, 'Yetki profili güncellendi.')}>Yetkileri kaydet</button></section>}
 
-              {role === 'sahip' && <section className={styles.eylemKart}><h3>Uygulama modu</h3><p>İzleme modu kullanıcıyı kilitlemez. Yaptırıma hazırlamak tek başına yeterli değildir; global sunucu kapısı da ayrıca açılmalıdır.</p><button className={styles.ikincil} disabled={busy || !reason.trim()} onClick={() => action('/api/lisans/v1/yonetim/yaptirim', { lisansNo: selected.licenseNo, izlemeModu: !selected.monitoringOnly, gerekce: reason }, selected.monitoringOnly ? 'Lisans yaptırıma hazırlandı.' : 'Lisans izleme moduna alındı.')}>{selected.monitoringOnly ? 'Yaptırıma hazırla' : 'İzleme moduna al'}</button></section>}
+              {role === 'sahip' && <section className={styles.eylemKart}><h3>Uygulama modu</h3><p>İzleme modu kullanıcıyı kilitlemez. Yaptırıma hazırlamak tek başına yeterli değildir; global sunucu kapısı da ayrıca açılmalıdır.</p><button className={styles.ikincil} disabled={busy} onClick={() => action('/api/lisans/v1/yonetim/yaptirim', { lisansNo: selected.licenseNo, izlemeModu: !selected.monitoringOnly, gerekce: reason }, selected.monitoringOnly ? 'Lisans yaptırıma hazırlandı.' : 'Lisans izleme moduna alındı.')}>{selected.monitoringOnly ? 'Yaptırıma hazırla' : 'İzleme moduna al'}</button></section>}
 
               {role === 'sahip' && <section className={styles.tehlike}><h3>Kalıcı iptal</h3><p><strong>{selected.licenseNo}</strong> yeniden etkinleştirilemez. Önce aşağıdaki yeniden doğrulama alanını kullan.</p>{revokeNo === selected.licenseNo && selected.status !== 'iptal' ? <div className={styles.iptalOnayi} role="group" aria-label="Kalıcı iptal son onayı"><strong>{selected.licenseNo} kalıcı olarak iptal edilsin mi?</strong><p>Bu işlem geri alınamaz.</p><button type="button" className={styles.ikincil} onClick={() => setRevokeNo('')} disabled={busy}>Vazgeç</button><button type="button" onClick={confirmRevocation} disabled={busy}>Evet, kalıcı iptal et</button></div> : <button type="button" disabled={busy || selected.status === 'iptal'} onClick={prepareRevocation}>Kalıcı iptal et</button>}</section>}
 
-              <details className={styles.reauth}><summary>Kritik işlem için yeniden doğrula</summary><form onSubmit={reauthenticate}><label>6 haneli kod<input value={kod} onChange={(e) => setKod(e.target.value.replace(/\D/g, '').slice(0, 6))} inputMode="numeric" autoComplete="one-time-code" /></label><label>Kurtarma kodu<input value={kurtarmaKodu} onChange={(e) => setKurtarmaKodu(e.target.value.toUpperCase())} /></label><button className={styles.birincil} disabled={busy || (!kod && !kurtarmaKodu)}>10 dakika için doğrula</button></form></details>
+              <details className={styles.reauth} ref={reauthRef}><summary>Kritik işlem için yeniden doğrula</summary><form onSubmit={reauthenticate}><label>6 haneli kod<input value={kod} onChange={(e) => setKod(e.target.value.replace(/\D/g, '').slice(0, 6))} inputMode="numeric" autoComplete="one-time-code" /></label><label>Kurtarma kodu<input value={kurtarmaKodu} onChange={(e) => setKurtarmaKodu(e.target.value.toUpperCase())} /></label><button className={styles.birincil} disabled={busy || (!kod && !kurtarmaKodu)}>10 dakika için doğrula</button></form></details>
 
               {history.length > 0 && <section className={styles.gecmis}><h3>İşlem geçmişi</h3>{history.map((event) => <article key={event.requestId}><div><strong>{event.action}</strong><time>{formatDate(event.createdAt)}</time></div><p>{event.reason || 'Gerekçe yok'}</p><small>{event.actorRole || 'sistem'} · {event.outcome}</small></article>)}</section>}
             </>}
