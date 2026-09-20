@@ -13,6 +13,7 @@ import {
   sha256,
   signLicenseResponse
 } from './protocol.mjs';
+import { effectiveEnforcement } from './enforcement.mjs';
 
 function jsonError(status, error) {
   return { status, body: { tamam: false, error } };
@@ -91,9 +92,11 @@ export async function verifyLicenseRequest({
   if (license.expiresAt && new Date(license.expiresAt).getTime() < now.getTime()) observedStatus = 'suresi_doldu';
   if (!device.allowed) observedStatus = 'cihaz_transferi';
 
-  // Canlı yaptırım iki ayrı açık karar ister: ortam kapısı + lisans kaydı.
-  const monitoring = !enforcementEnabled || license.monitoringOnly !== false;
-  const effectiveStatus = monitoring ? 'aktif' : observedStatus;
+  // Genel pilot iki kapılıdır; terminal iptaldeki açık sahip kararı yalnız o
+  // lisansı kapatır ve genel pilotu diğer müşteriler için açmaz.
+  const { monitoring, effectiveStatus } = effectiveEnforcement({
+    license, observedStatus, enforcementEnabled
+  });
   const accessContinues = effectiveStatus === 'aktif' || effectiveStatus === 'bakim';
   const nextCheckAt = accessContinues ? addMs(now, CHECK_INTERVAL_MS) : new Date(now);
   const graceUntil = accessContinues ? addMs(now, OFFLINE_GRACE_MS) : new Date(now);

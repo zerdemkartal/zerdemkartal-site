@@ -1,11 +1,13 @@
 import { prisma } from '@/lib/db';
 import { authorizeLicenseRequest } from '@/lib/license/access.mjs';
 import { appendLicenseEvent } from '@/lib/license/events.mjs';
+import { canChangeMonitoringOnly } from '@/lib/license/enforcement.mjs';
 import { z } from 'zod';
 
 const Input = z.object({
   lisansNo: z.string().regex(/^[A-Z0-9]{6}\d{10}(?:-\d{2,})?$/),
   izlemeModu: z.boolean(),
+  lisansNoOnayi: z.string().max(40).optional(),
   gerekce: z.string().trim().min(3).max(1000),
   istekId: z.string().uuid()
 }).strict();
@@ -36,7 +38,9 @@ export async function POST(request) {
       if (!found) return { status: 404, body: { error: 'kayit-bulunamadi' } };
       await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${`license:${found.id}`}))`;
       const current = await tx.license.findUnique({ where: { id: found.id } });
-      if (!current || current.status === 'iptal') {
+      if (!current || (current.status === 'iptal' && (
+        !canChangeMonitoringOnly(current, q.izlemeModu) || q.lisansNoOnayi !== current.licenseNo
+      ))) {
         return { status: 409, body: { error: 'yaptirim-modu-degisikligi-reddedildi' } };
       }
       if (current.monitoringOnly === q.izlemeModu) {

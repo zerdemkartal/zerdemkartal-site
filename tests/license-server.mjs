@@ -12,6 +12,7 @@ import {
 import { LICENSE_LEVELS, LICENSE_PROTOCOL, effectiveLicenseRights } from '../src/lib/license/contract.mjs';
 import { verifyLicenseResponse } from '../src/lib/license/protocol.mjs';
 import { desktopCompatibleRights, verifyLicenseRequest } from '../src/lib/license/service.mjs';
+import { canChangeMonitoringOnly } from '../src/lib/license/enforcement.mjs';
 import { authorizeLicenseRequest, licenseSessionTokenHash } from '../src/lib/license/access.mjs';
 import { canonicalJson, canonicalLicenseEvent, createLicenseEvent } from '../src/lib/license/events.mjs';
 import {
@@ -826,6 +827,31 @@ await test('Lisans yönetim yüzeyi rol-duyarlı, erişilebilir ve yalnız tema 
   assert.ok(!/#[0-9a-f]{3,8}/i.test(css));
 });
 
+await test('Terminal iptalde yalnız sahipçe seçilen lisans genel pilot kapalıyken de erişimi kesiyor', async () => {
+  const now = new Date('2026-09-21T09:00:00.000Z');
+  const watched = await verifyLicenseRequest({
+    raw: baseRequest(now), repository: new FakeRepository(baseLicense({ status: 'iptal', monitoringOnly: true })),
+    now, privateKey, enforcementEnabled: false
+  });
+  assert.equal(watched.body.durum, 'aktif');
+  assert.equal(watched.body.izlemeModu, true);
+
+  const blockedRepo = new FakeRepository(baseLicense({ status: 'iptal', monitoringOnly: false }));
+  const blocked = await verifyLicenseRequest({
+    raw: baseRequest(now), repository: blockedRepo, now, privateKey, enforcementEnabled: false
+  });
+  assert.equal(blocked.body.durum, 'iptal');
+  assert.equal(blocked.body.izlemeModu, false);
+  assert.equal(blocked.body.toleransBitisi, now.toISOString());
+  assert.equal(blockedRepo.leases[0].status, 'iptal');
+  assert.equal(verifyLicenseResponse(blocked.body, publicKey), true);
+
+  assert.equal(canChangeMonitoringOnly(baseLicense({ status: 'iptal', monitoringOnly: true }), false), true);
+  assert.equal(canChangeMonitoringOnly(baseLicense({ status: 'iptal', monitoringOnly: false }), true), false);
+  assert.equal(canChangeMonitoringOnly(baseLicense({ status: 'iptal', monitoringOnly: false }), false), false);
+  assert.equal(canChangeMonitoringOnly(baseLicense({ status: 'aktif', monitoringOnly: false }), true), true);
+});
+
 await test('İptal edilmiş lisansın geçersiz işlemleri görünür biçimde kapanıyor ve işlem sonucu ilgili kartta kalıyor', () => {
   const client = fs.readFileSync(path.join(ROOT, 'src/app/yonetim/lisans/LisansClient.jsx'), 'utf8');
   const status = fs.readFileSync(path.join(ROOT, 'src/app/api/lisans/v1/yonetim/durum/route.js'), 'utf8');
@@ -847,6 +873,19 @@ await test('İptal edilmiş lisansın geçersiz işlemleri görünür biçimde k
   assert.ok(client.includes('<ActionNotice notice={operationNotice} licenseNo={selected.licenseNo} section="cihaz" />'));
   assert.ok(client.includes("setOperationNotice({ licenseNo: body.lisansNo, section, kind: 'success', text: success })"));
   assert.ok(client.includes('setHistory([]); clearNotice();'));
+});
+
+await test('İptal edilen lisansın erişimi ayrı onay ve MFA ile yalnız seçili kayıtta kapanıyor', () => {
+  const client = fs.readFileSync(path.join(ROOT, 'src/app/yonetim/lisans/LisansClient.jsx'), 'utf8');
+  const route = fs.readFileSync(path.join(ROOT, 'src/app/api/lisans/v1/yonetim/yaptirim/route.js'), 'utf8');
+  assert.ok(route.includes("action: 'lisans.yaptirim_modu'"));
+  assert.ok(route.includes('canChangeMonitoringOnly(current, q.izlemeModu)'));
+  assert.ok(route.includes('q.lisansNoOnayi !== current.licenseNo'));
+  assert.ok(client.includes('blockNo !== selected.licenseNo'));
+  assert.ok(client.includes('lisansNoOnayi: selected.licenseNo'));
+  assert.ok(client.includes('Evet, erişimi kapat'));
+  assert.ok(client.includes('Kurulu uygulama bir sonraki çevrimiçi kontrolde'));
+  assert.ok(client.includes("role === 'sahip' && <section className={isRevoked ? styles.tehlike"));
 });
 
 console.log(`\nSONUÇ: ${passed.length}/${passed.length} lisans sunucusu kapısı geçti.`);
