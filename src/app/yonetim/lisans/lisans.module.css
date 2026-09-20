@@ -83,6 +83,10 @@
 .ozellikler input{width:auto;margin:0}.ozellikler .kapali{opacity:.48}
 .tehlike{border-color:color-mix(in srgb,var(--h-error) 44%,var(--h-border))}
 .tehlike button{margin-top:12px;border:1px solid var(--h-error);background:var(--h-card);color:var(--h-error)}
+.iptalOnayi{margin-top:12px;padding:12px;border:1px solid var(--h-error);border-radius:12px;background:var(--h-bg)}
+.iptalOnayi strong{display:block;color:var(--h-ink);font-size:13px;overflow-wrap:anywhere}
+.iptalOnayi p{margin:5px 0 0}.iptalOnayi button+button{margin-left:8px}
+.iptalOnayi .ikincil{border-color:var(--h-border);color:var(--h-ink)}
 .reauth summary{cursor:pointer;color:var(--h-ink);font-weight:650}.reauth form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}.reauth .birincil{grid-column:1/-1;justify-self:start}
 .gecmis article{padding:11px 0;border-top:1px solid var(--h-border)}.gecmis article>div{display:flex;justify-content:space-between;gap:12px}.gecmis time,.gecmis small{color:var(--h-muted);font-size:10px}.gecmis p{margin:6px 0;color:var(--h-ink2);font-size:12px}
 .bos{padding:38px;color:var(--h-muted);text-align:center}

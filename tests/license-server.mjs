@@ -810,7 +810,12 @@ await test('Lisans yönetim yüzeyi rol-duyarlı, erişilebilir ve yalnız tema 
   assert.ok(client.includes('row.licenseNo'));
   assert.ok(client.includes('Aramana uyan lisans bulunamadı.'));
   assert.ok(client.includes("role === 'sahip'"));
-  assert.ok(client.includes('confirmNo !== selected.licenseNo'));
+  assert.ok(!client.includes('confirmNo'));
+  assert.ok(client.includes('setRevokeNo(selected.licenseNo)'));
+  assert.ok(client.includes('revokeNo !== selected.licenseNo'));
+  assert.ok(client.includes('lisansNoOnayi: selected.licenseNo'));
+  assert.ok(client.includes('Evet, kalıcı iptal et'));
+  assert.ok(client.includes('reason.trim().length < 3'));
   assert.ok(css.includes(':focus-visible'));
   assert.ok(css.includes('var(--h-accentbg)'));
   assert.ok(!/#[0-9a-f]{3,8}/i.test(css));

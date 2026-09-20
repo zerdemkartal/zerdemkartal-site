@@ -114,7 +114,7 @@ export default function LisansClient({ mode = 'licenses' }) {
   const [history, setHistory] = useState([]);
   const [reason, setReason] = useState('');
   const [suspensionDays, setSuspensionDays] = useState(7);
-  const [confirmNo, setConfirmNo] = useState('');
+  const [revokeNo, setRevokeNo] = useState('');
   const [remoteLevel, setRemoteLevel] = useState('temel');
   const [remoteFeatures, setRemoteFeatures] = useState([]);
   const [adminUsers, setAdminUsers] = useState([]);
@@ -269,7 +269,7 @@ export default function LisansClient({ mode = 'licenses' }) {
     setRemoteFeatures(Array.isArray(selected.remoteFeatures) ? selected.remoteFeatures.filter((feature) => FEATURES.includes(feature)) : []);
     setHistory([]);
     setReason('');
-    setConfirmNo('');
+    setRevokeNo('');
   }, [selectedNo]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function verifyGoogleMfa(event) {
@@ -471,6 +471,27 @@ export default function LisansClient({ mode = 'licenses' }) {
       setMessage(success); await loadRows();
     } catch (err) { setError(errorText(err.message)); }
     finally { setBusy(false); }
+  }
+
+  function prepareRevocation() {
+    if (!selected || selected.status === 'iptal' || busy) return;
+    if (reason.trim().length < 3) {
+      setError('Kalıcı iptal için en az 3 karakterlik işlem gerekçesi yaz.');
+      return;
+    }
+    clearNotice();
+    setRevokeNo(selected.licenseNo);
+  }
+
+  function confirmRevocation() {
+    if (!selected || selected.status === 'iptal' || revokeNo !== selected.licenseNo || reason.trim().length < 3 || busy) return;
+    setRevokeNo('');
+    action('/api/lisans/v1/yonetim/durum', {
+      lisansNo: selected.licenseNo,
+      durum: 'iptal',
+      gerekce: reason,
+      lisansNoOnayi: selected.licenseNo
+    }, 'Lisans kalıcı olarak iptal edildi.');
   }
 
   async function loadHistory() {
@@ -682,7 +703,7 @@ export default function LisansClient({ mode = 'licenses' }) {
                 <div><dt>Müşteri</dt><dd>{selected.customerRef || '—'}</dd></div><div><dt>E-posta</dt><dd>{selected.customerEmail || '—'}</dd></div><div><dt>Etkin cihaz</dt><dd>{selected.devices.length} / {selected.deviceLimit}</dd></div><div><dt>Yetki sürümü</dt><dd>{selected.authorizationVersion}</dd></div>
               </dl>
 
-              <label className={styles.gerekce}>İşlem gerekçesi<textarea value={reason} onChange={(e) => setReason(e.target.value)} rows={3} maxLength={1000} /></label>
+              <label className={styles.gerekce}>İşlem gerekçesi<textarea value={reason} onChange={(e) => { setReason(e.target.value); setRevokeNo(''); }} rows={3} maxLength={1000} /></label>
 
               {mayStatus && <section className={styles.eylemKart}><h3>Durum</h3><div className={styles.eylemSatir}><label>Askı günü<input type="number" min="1" max={role === 'destek' ? 7 : 365} value={suspensionDays} onChange={(e) => setSuspensionDays(Number(e.target.value))} /></label><button className={styles.ikincil} disabled={busy || !reason.trim()} onClick={() => action('/api/lisans/v1/yonetim/durum', { lisansNo: selected.licenseNo, durum: 'askida', gerekce: reason, askiGun: suspensionDays }, 'Lisans askıya alındı.')}>Askıya al</button><button className={styles.ikincil} disabled={busy || !reason.trim()} onClick={() => action('/api/lisans/v1/yonetim/durum', { lisansNo: selected.licenseNo, durum: 'aktif', gerekce: reason }, 'Lisans etkinleştirildi.')}>Etkinleştir</button></div></section>}
 
@@ -692,7 +713,7 @@ export default function LisansClient({ mode = 'licenses' }) {
 
               {role === 'sahip' && <section className={styles.eylemKart}><h3>Uygulama modu</h3><p>İzleme modu kullanıcıyı kilitlemez. Yaptırıma hazırlamak tek başına yeterli değildir; global sunucu kapısı da ayrıca açılmalıdır.</p><button className={styles.ikincil} disabled={busy || !reason.trim()} onClick={() => action('/api/lisans/v1/yonetim/yaptirim', { lisansNo: selected.licenseNo, izlemeModu: !selected.monitoringOnly, gerekce: reason }, selected.monitoringOnly ? 'Lisans yaptırıma hazırlandı.' : 'Lisans izleme moduna alındı.')}>{selected.monitoringOnly ? 'Yaptırıma hazırla' : 'İzleme moduna al'}</button></section>}
 
-              {role === 'sahip' && <section className={styles.tehlike}><h3>Kalıcı iptal</h3><p>Bu lisans yeniden etkinleştirilemez. Önce aşağıdaki yeniden doğrulama alanını kullan.</p><label>Lisans numarasını yaz<input value={confirmNo} onChange={(e) => setConfirmNo(e.target.value.toUpperCase())} /></label><button disabled={busy || !reason.trim() || confirmNo !== selected.licenseNo} onClick={() => action('/api/lisans/v1/yonetim/durum', { lisansNo: selected.licenseNo, durum: 'iptal', gerekce: reason, lisansNoOnayi: confirmNo }, 'Lisans kalıcı olarak iptal edildi.')}>Kalıcı iptal et</button></section>}
+              {role === 'sahip' && <section className={styles.tehlike}><h3>Kalıcı iptal</h3><p><strong>{selected.licenseNo}</strong> yeniden etkinleştirilemez. Önce aşağıdaki yeniden doğrulama alanını kullan.</p>{revokeNo === selected.licenseNo && selected.status !== 'iptal' ? <div className={styles.iptalOnayi} role="group" aria-label="Kalıcı iptal son onayı"><strong>{selected.licenseNo} kalıcı olarak iptal edilsin mi?</strong><p>Bu işlem geri alınamaz.</p><button type="button" className={styles.ikincil} onClick={() => setRevokeNo('')} disabled={busy}>Vazgeç</button><button type="button" onClick={confirmRevocation} disabled={busy}>Evet, kalıcı iptal et</button></div> : <button type="button" disabled={busy || selected.status === 'iptal'} onClick={prepareRevocation}>Kalıcı iptal et</button>}</section>}
 
               <details className={styles.reauth}><summary>Kritik işlem için yeniden doğrula</summary><form onSubmit={reauthenticate}><label>6 haneli kod<input value={kod} onChange={(e) => setKod(e.target.value.replace(/\D/g, '').slice(0, 6))} inputMode="numeric" autoComplete="one-time-code" /></label><label>Kurtarma kodu<input value={kurtarmaKodu} onChange={(e) => setKurtarmaKodu(e.target.value.toUpperCase())} /></label><button className={styles.birincil} disabled={busy || (!kod && !kurtarmaKodu)}>10 dakika için doğrula</button></form></details>
 
