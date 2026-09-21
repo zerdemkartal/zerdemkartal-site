@@ -1,11 +1,8 @@
-// Kalıcı iptal edilmiş tek lisans için sahipçe verilen erişim kapatma kararı,
-// genel izleme pilotundan bağımsızdır. Bu karar geri alınmaz; yeni erişim yeni
-// bir imzalı lisansla verilir.
+// Kalıcı iptal edilmiş tek lisansın sahipçe verilen geçici erişim kararı,
+// genel izleme pilotundan bağımsızdır. Lisansın terminal iptal durumu değişmez;
+// yalnız kurulu uygulamaya gönderilen erişim kararı açılıp kapatılır.
 export function canChangeMonitoringOnly(license, nextMonitoringOnly) {
   if (!license || license.monitoringOnly === nextMonitoringOnly) return false;
-  if (license.status === 'iptal') {
-    return license.monitoringOnly === true && nextMonitoringOnly === false;
-  }
   return true;
 }
 

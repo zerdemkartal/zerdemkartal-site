@@ -21,7 +21,7 @@ const ERROR_TEXT = {
   'iptal-edilmis-siparis': 'İptal edilmiş sipariş için ödeme onaylanamaz.',
   'durum-gecisi-reddedildi': 'Bu lisansın mevcut durumunda istenen işlem yapılamaz. Güncel durumu kontrol et.',
   'cihaz-transferi-reddedildi': 'Kalıcı iptal edilmiş lisansın cihazı transfer edilemez.',
-  'yaptirim-modu-degisikligi-reddedildi': 'İptal edilmiş lisansın erişim kapatma kararı geri alınamaz. Güncel durumu yenile.',
+  'yaptirim-modu-degisikligi-reddedildi': 'Erişim durumu değiştirilemedi. Güncel lisans durumunu yenileyip tekrar dene.',
   'etkin-cihaz-bulunamadi': 'Bırakılabilecek etkin cihaz bulunamadı.',
   forbidden: 'Bu işlem için yetkin veya son yeniden doğrulaman geçerli değil.',
   'gecersiz-istek': 'Giriş bilgileri geçerli biçimde gönderilemedi.'
@@ -91,7 +91,7 @@ async function api(path, { token, method = 'GET', body } = {}) {
 function Status({ value, monitoring }) {
   return (
     <span className={`${styles.durum} ${styles[`durum_${value}`] || ''}`}>
-      {value.replaceAll('_', ' ')}{monitoring ? ' · izleme' : value === 'iptal' ? ' · erişim kapatma açık' : ''}
+      {value.replaceAll('_', ' ')}{value === 'iptal' ? monitoring ? ' · erişim açık' : ' · geçici erişim kapalı' : monitoring ? ' · izleme' : ''}
     </span>
   );
 }
@@ -528,21 +528,25 @@ export default function LisansClient({ mode = 'licenses' }) {
     }, 'Lisans kalıcı olarak iptal edildi.', 'iptal');
   }
 
-  function prepareTerminalBlock() {
-    if (!selected || selected.status !== 'iptal' || !selected.monitoringOnly || busy) return;
+  function prepareTerminalAccessChange() {
+    if (!selected || selected.status !== 'iptal' || busy) return;
     if (!requireReason()) return;
     clearNotice();
     setBlockNo(selected.licenseNo);
   }
 
-  function confirmTerminalBlock() {
-    if (!selected || selected.status !== 'iptal' || !selected.monitoringOnly || blockNo !== selected.licenseNo || reason.trim().length < 3 || busy) return;
+  function confirmTerminalAccessChange() {
+    if (!selected || selected.status !== 'iptal' || blockNo !== selected.licenseNo || reason.trim().length < 3 || busy) return;
+    const reopening = !selected.monitoringOnly;
+    setBlockNo('');
     action('/api/lisans/v1/yonetim/yaptirim', {
       lisansNo: selected.licenseNo,
       lisansNoOnayi: selected.licenseNo,
-      izlemeModu: false,
+      izlemeModu: reopening,
       gerekce: reason
-    }, 'Bu lisansın erişim kapatması açıldı. Kurulu uygulama bir sonraki çevrimiçi kontrolde kapanır.', 'yaptirim');
+    }, reopening
+      ? 'Bu lisansın erişimi yeniden açıldı. Kurulu uygulama bir sonraki çevrimiçi kontrolde açılır.'
+      : 'Bu lisansın erişimi geçici olarak kapatıldı. Kurulu uygulama bir sonraki çevrimiçi kontrolde kapanır.', 'yaptirim');
   }
 
   async function loadHistory() {
@@ -760,7 +764,7 @@ export default function LisansClient({ mode = 'licenses' }) {
 
               <label className={styles.gerekce}>İşlem gerekçesi<textarea ref={reasonRef} value={reason} onChange={(e) => { setReason(e.target.value); setReasonError(false); setRevokeNo(''); setBlockNo(''); }} rows={3} maxLength={1000} aria-invalid={reasonError} aria-describedby={reasonError ? 'lisans-gerekce-hata' : undefined} /></label>
               {reasonError && <p id="lisans-gerekce-hata" className={styles.gerekceHata} role="alert">İşlem için en az 3 karakterlik gerekçe yaz.</p>}
-              {isRevoked && <p className={styles.durumUyarisi}>Bu lisans kalıcı olarak iptal edilmiş. Aynı lisansı askıya alamaz, yeniden etkinleştiremez veya cihazını transfer edemezsin. Müşteriye yeniden erişim vermek için yerel Lisans Yöneticisi'nde Yeni Lisans oluşturmalısın.{selected.monitoringOnly ? ' İzleme modunda iptal kaydı tek başına kurulu uygulamayı kilitlemez.' : ' Erişim kapatma açık; kurulu uygulama bir sonraki çevrimiçi kontrolde bunu alır. Çevrimdışı kullanım mevcut tolerans süresince devam edebilir.'}</p>}
+              {isRevoked && <p className={styles.durumUyarisi}>Bu lisans kaydı kalıcı olarak iptal edilmiş; askıya alınamaz, normal etkin duruma getirilemez veya cihazı transfer edilemez.{selected.monitoringOnly ? ' Deneme erişimi açık; kurulu uygulama kullanılabilir.' : ' Deneme erişimi geçici olarak kapalı; aşağıdaki düğmeyle yeniden açabilirsin. Çevrimdışı kullanım mevcut tolerans süresince devam edebilir.'}</p>}
 
               {mayStatus && <section className={styles.eylemKart}><h3>Durum</h3><div className={styles.eylemSatir}><label>Askı günü<input type="number" min="1" max={role === 'destek' ? 7 : 365} value={suspensionDays} onChange={(e) => setSuspensionDays(Number(e.target.value))} /></label><button className={styles.ikincil} disabled={busy || !canSuspend} onClick={() => action('/api/lisans/v1/yonetim/durum', { lisansNo: selected.licenseNo, durum: 'askida', gerekce: reason, askiGun: suspensionDays }, 'Lisans askıya alındı.', 'durum')}>Askıya al</button><button className={styles.ikincil} disabled={busy || !canActivate} onClick={() => action('/api/lisans/v1/yonetim/durum', { lisansNo: selected.licenseNo, durum: 'aktif', gerekce: reason }, selected.status === 'askida' ? 'Askı kaldırıldı; lisans etkin.' : 'Lisans etkinleştirildi.', 'durum')}>{selected.status === 'askida' ? 'Askıyı kaldır' : 'Etkinleştir'}</button></div><ActionNotice notice={operationNotice} licenseNo={selected.licenseNo} section="durum" /></section>}
 
@@ -769,11 +773,11 @@ export default function LisansClient({ mode = 'licenses' }) {
               {mayRights && <section className={styles.eylemKart}><h3>Etkin yetkiler</h3><label>Seviye<select value={remoteLevel} onChange={(e) => setRemoteLevel(e.target.value)} disabled={isRevoked}>{LEVELS.map((level) => <option key={level} value={level} disabled={LEVELS.indexOf(level) > LEVELS.indexOf(selected.signedLevel)}>{level}</option>)}</select></label><div className={styles.ozellikler}>{FEATURES.map((feature) => <label key={feature} className={!signedFeatures.includes(feature) ? styles.kapali : ''}><input type="checkbox" checked={remoteFeatures.includes(feature)} disabled={isRevoked || !signedFeatures.includes(feature)} onChange={(e) => setRemoteFeatures((current) => e.target.checked ? [...current, feature] : current.filter((item) => item !== feature))} />{feature}</label>)}</div><button className={styles.ikincil} disabled={busy || isRevoked} onClick={() => action('/api/lisans/v1/yonetim/yetki', { lisansNo: selected.licenseNo, seviye: remoteLevel, ozellikler: remoteFeatures, gerekce: reason }, 'Yetki profili güncellendi.', 'yetki')}>Yetkileri kaydet</button><ActionNotice notice={operationNotice} licenseNo={selected.licenseNo} section="yetki" /></section>}
 
               {role === 'sahip' && <section className={isRevoked ? styles.tehlike : styles.eylemKart}>
-                <h3>{isRevoked ? 'İptal edilen lisansın erişimi' : 'Uygulama modu'}</h3>
-                {isRevoked ? selected.monitoringOnly ? <>
-                  <p>Bu lisans iptal edildi, ancak izleme modunda müşterinin erişimi sürüyor. Yalnız bu lisansı kapatabilirsin; diğer lisansların genel izleme ayarı değişmez. Kapatma geri alınamaz. Kurulu uygulama bir sonraki çevrimiçi kontrolde kararı alır; çevrimdışı kullanım tolerans süresi dolana kadar sürebilir.</p>
-                  {blockNo === selected.licenseNo ? <div className={styles.iptalOnayi} role="group" aria-label="İptal edilmiş lisansın erişimini kapatma onayı"><strong>{selected.licenseNo} için erişim kapatılsın mı?</strong><p>Seçili lisans numarası otomatik onaylanır. Gerekçe ve son 10 dakikadaki Authenticator doğrulaması gerekir.</p><button type="button" className={styles.ikincil} onClick={() => setBlockNo('')} disabled={busy}>Vazgeç</button><button type="button" onClick={confirmTerminalBlock} disabled={busy}>Evet, erişimi kapat</button></div> : <button type="button" onClick={prepareTerminalBlock} disabled={busy}>Erişimi kapat</button>}
-                </> : <p>Bu lisans için erişim kapatma açık. Aynı lisans yeniden açılamaz; yeniden erişim için yeni imzalı lisans gerekir.</p> : <>
+                <h3>{isRevoked ? 'İptal edilen lisansın deneme erişimi' : 'Uygulama modu'}</h3>
+                {isRevoked ? <>
+                  <p>{selected.monitoringOnly ? 'Erişim şu anda açık. Yalnız bu lisansı geçici olarak kapatıp yeniden açabilirsin.' : 'Erişim şu anda geçici olarak kapalı. Aynı lisansı yeniden açabilirsin.'} Diğer lisansların genel izleme ayarı değişmez. Karar kurulu uygulamaya bir sonraki çevrimiçi kontrolde ulaşır.</p>
+                  {blockNo === selected.licenseNo ? <div className={styles.iptalOnayi} role="group" aria-label="İptal edilmiş lisansın deneme erişimi onayı"><strong>{selected.licenseNo} için erişim {selected.monitoringOnly ? 'geçici olarak kapatılsın' : 'yeniden açılsın'} mı?</strong><p>Seçili lisans numarası otomatik onaylanır. Gerekçe ve son 10 dakikadaki Authenticator doğrulaması gerekir.</p><button type="button" className={styles.ikincil} onClick={() => setBlockNo('')} disabled={busy}>Vazgeç</button><button type="button" onClick={confirmTerminalAccessChange} disabled={busy}>{selected.monitoringOnly ? 'Evet, geçici kapat' : 'Evet, yeniden aç'}</button></div> : <button type="button" onClick={prepareTerminalAccessChange} disabled={busy}>{selected.monitoringOnly ? 'Geçici erişimi kapat' : 'Erişimi yeniden aç'}</button>}
+                </> : <>
                   <p>İzleme modu kullanıcıyı kilitlemez. Yaptırıma hazırlamak tek başına yeterli değildir; global sunucu kapısı da ayrıca açılmalıdır.</p>
                   <button className={styles.ikincil} disabled={busy} onClick={() => action('/api/lisans/v1/yonetim/yaptirim', { lisansNo: selected.licenseNo, izlemeModu: !selected.monitoringOnly, gerekce: reason }, selected.monitoringOnly ? 'Lisans yaptırıma hazırlandı.' : 'Lisans izleme moduna alındı.', 'yaptirim')}>{selected.monitoringOnly ? 'Yaptırıma hazırla' : 'İzleme moduna al'}</button>
                 </>}

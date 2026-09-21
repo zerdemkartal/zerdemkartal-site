@@ -827,7 +827,7 @@ await test('Lisans yönetim yüzeyi rol-duyarlı, erişilebilir ve yalnız tema 
   assert.ok(!/#[0-9a-f]{3,8}/i.test(css));
 });
 
-await test('Terminal iptalde yalnız sahipçe seçilen lisans genel pilot kapalıyken de erişimi kesiyor', async () => {
+await test('Terminal iptalde seçili lisansın geçici erişimi genel pilot kapalıyken kapanıp yeniden açılıyor', async () => {
   const now = new Date('2026-09-21T09:00:00.000Z');
   const watched = await verifyLicenseRequest({
     raw: baseRequest(now), repository: new FakeRepository(baseLicense({ status: 'iptal', monitoringOnly: true })),
@@ -847,9 +847,17 @@ await test('Terminal iptalde yalnız sahipçe seçilen lisans genel pilot kapal�
   assert.equal(verifyLicenseResponse(blocked.body, publicKey), true);
 
   assert.equal(canChangeMonitoringOnly(baseLicense({ status: 'iptal', monitoringOnly: true }), false), true);
-  assert.equal(canChangeMonitoringOnly(baseLicense({ status: 'iptal', monitoringOnly: false }), true), false);
+  assert.equal(canChangeMonitoringOnly(baseLicense({ status: 'iptal', monitoringOnly: false }), true), true);
   assert.equal(canChangeMonitoringOnly(baseLicense({ status: 'iptal', monitoringOnly: false }), false), false);
   assert.equal(canChangeMonitoringOnly(baseLicense({ status: 'aktif', monitoringOnly: false }), true), true);
+
+  const reopened = await verifyLicenseRequest({
+    raw: baseRequest(new Date(now.getTime() + 1000), 'b'),
+    repository: new FakeRepository(baseLicense({ status: 'iptal', monitoringOnly: true })),
+    now: new Date(now.getTime() + 1000), privateKey, enforcementEnabled: false
+  });
+  assert.equal(reopened.body.durum, 'aktif');
+  assert.equal(reopened.body.izlemeModu, true);
 });
 
 await test('İptal edilmiş lisansın geçersiz işlemleri görünür biçimde kapanıyor ve işlem sonucu ilgili kartta kalıyor', () => {
@@ -868,14 +876,14 @@ await test('İptal edilmiş lisansın geçersiz işlemleri görünür biçimde k
   assert.ok(client.includes("selected.status === 'askida' ? 'Askıyı kaldır' : 'Etkinleştir'"));
   assert.ok(client.includes('disabled={busy || !canTransfer}'));
   assert.ok(client.includes('disabled={busy || isRevoked}'));
-  assert.ok(client.includes('Aynı lisansı askıya alamaz, yeniden etkinleştiremez veya cihazını transfer edemezsin.'));
+  assert.ok(client.includes('askıya alınamaz, normal etkin duruma getirilemez veya cihazı transfer edilemez'));
   assert.ok(client.includes('<ActionNotice notice={operationNotice} licenseNo={selected.licenseNo} section="durum" />'));
   assert.ok(client.includes('<ActionNotice notice={operationNotice} licenseNo={selected.licenseNo} section="cihaz" />'));
   assert.ok(client.includes("setOperationNotice({ licenseNo: body.lisansNo, section, kind: 'success', text: success })"));
   assert.ok(client.includes('setHistory([]); clearNotice();'));
 });
 
-await test('İptal edilen lisansın erişimi ayrı onay ve MFA ile yalnız seçili kayıtta kapanıyor', () => {
+await test('İptal edilen lisansın deneme erişimi ayrı onay ve MFA ile kapanıp yeniden açılıyor', () => {
   const client = fs.readFileSync(path.join(ROOT, 'src/app/yonetim/lisans/LisansClient.jsx'), 'utf8');
   const route = fs.readFileSync(path.join(ROOT, 'src/app/api/lisans/v1/yonetim/yaptirim/route.js'), 'utf8');
   assert.ok(route.includes("action: 'lisans.yaptirim_modu'"));
@@ -883,7 +891,8 @@ await test('İptal edilen lisansın erişimi ayrı onay ve MFA ile yalnız seçi
   assert.ok(route.includes('q.lisansNoOnayi !== current.licenseNo'));
   assert.ok(client.includes('blockNo !== selected.licenseNo'));
   assert.ok(client.includes('lisansNoOnayi: selected.licenseNo'));
-  assert.ok(client.includes('Evet, erişimi kapat'));
+  assert.ok(client.includes("selected.monitoringOnly ? 'Evet, geçici kapat' : 'Evet, yeniden aç'"));
+  assert.ok(client.includes("selected.monitoringOnly ? 'Geçici erişimi kapat' : 'Erişimi yeniden aç'"));
   assert.ok(client.includes('Kurulu uygulama bir sonraki çevrimiçi kontrolde'));
   assert.ok(client.includes("role === 'sahip' && <section className={isRevoked ? styles.tehlike"));
 });
